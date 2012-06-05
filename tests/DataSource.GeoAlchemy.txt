@@ -1,0 +1,33 @@
+  >>> from sqlalchemy import *
+  >>> from sqlalchemy.orm import *
+  >>> from sqlalchemy.ext.declarative import declarative_base
+
+  >>> from tests.geoalchemy_model import Road, metadata
+
+  >>> metadata.create_all()
+
+  >>> from FeatureServer.DataSource.GeoAlchemy import GeoAlchemy
+  >>> from FeatureServer.Server import Server
+
+  >>> params = {'model': 'tests.geoalchemy_model',
+  ...           'dburi': 'postgres://gis:gis@localhost/gis',
+  ...           'cls': 'Road',
+  ...           'fid': 'id',
+  ...           'geometry': 'geom'}
+  >>> ds = GeoAlchemy('roads', **params)
+  >>> fs = Server({'roads': ds})
+  >>> fs.dispatchRequest(path_info="/roads", params={'format':'geojson'}, base_path= "")
+  ('text/plain', '{"crs": null, "type": "FeatureCollection", "features": []}')
+  >>> data = '{"type":"FeatureCollection","features":[{"type":"Feature","id":" OpenLayers.Feature.Vector_217","properties" :{"name":"Feature 3","width": 6},"geometry":{"type":"LineString","coordinates" :[[-88.913933292993605, 42.508280299363101], [-88.8203027197452, 42.598566923566899], [-88.738375968152894, 42.723965012738901], [-88.611305904458604, 42.968073292993601], [-88.365525649681501, 43.140286668789798]]}}],"crs":{"type":"OGC","properties":{"urn":"urn:ogc:def:crs:OGC:1 .3:CRS84"}}}'
+  >>> fs.dispatchRequest(params={'format':'geojson'}, path_info="/roads", base_path="", post_data=data, request_method="POST")
+  {"type":"FeatureCollection","features":[{"type":"Feature","id":" OpenLayers.Feature.Vector_217","properties" :{"name":"Feature 3","width": 6},"geometry":{"type":"LineString","coordinates" :[[-88.913933292993605, 42.508280299363101], [-88.8203027197452, 42.598566923566899], [-88.738375968152894, 42.723965012738901], [-88.611305904458604, 42.968073292993601], [-88.365525649681501, 43.140286668789798]]}}],"crs":{"type":"OGC","properties":{"urn":"urn:ogc:def:crs:OGC:1 .3:CRS84"}}}
+  ('text/plain', '{"crs": null, "type": "FeatureCollection", "features": [{"geometry": {"type": "LineString", "coordinates": [[-88.913933, 42.508279999999999], [-88.820302999999996, 42.598567000000003], [-88.738376000000002, 42.723965], [-88.611305999999999, 42.968072999999997], [-88.365526000000003, 43.140287000000001]]}, "type": "Feature", "id": 1, "properties": {"width": 6, "name": "Feature 3"}}]}')
+
+  >>> fs.dispatchRequest(path_info="/roads", params={'format':'gml'}, base_path= "")
+  ('text/xml', '<wfs:FeatureCollection\n   xmlns:fs="http://example.com/featureserver"\n   xmlns:wfs="http://www.opengis.net/wfs"\n   xmlns:gml="http://www.opengis.net/gml"\n   xmlns:ogc="http://www.opengis.net/ogc"\n   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"\n   xsi:schemaLocation="http://www.opengis.net/wfs http://schemas.opengeospatial.net//wfs/1.0.0/WFS-basic.xsd">\n        \n\n        <gml:featureMember><fs:roads fid="1">\n        <fs:geometry>\n        <gml:LineString><gml:coordinates>-88.913933,42.50828 -88.820303,42.598567 -88.738376,42.723965 -88.611306,42.968073 -88.365526,43.140287</gml:coordinates></gml:LineString>\n        </fs:geometry>\n        <fs:width>6</fs:width>\n<fs:name>Feature 3</fs:name>\n        </fs:roads></gml:featureMember>\n</wfs:FeatureCollection>')
+
+  >>> fs.dispatchRequest(params={}, path_info="/roads/1", base_path="", post_data="", request_method="DELETE")
+  ('text/plain', '{"crs": null, "type": "FeatureCollection", "features": []}')
+
+  >>> metadata.drop_all()
+

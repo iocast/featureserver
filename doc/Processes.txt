@@ -1,0 +1,137 @@
+Processing Data With FeatureServer
+++++++++++++++++++++++++++++++++++
+
+FeatureServer now has the ability to support processes similar to those
+performed by a Web Processing Server (WPS) on a FeatureServer datasource.
+
+This allows you to do geospatial operations, such as centroids, buffers,
+line simplification, and more on your FeatureServer data source.
+
+Configuration
+-------------
+Configuring a process to be applied to your datasource is simple. First,
+you create a process configuration in your featureserver.cfg.
+
+Processes are specially named sections in your config: any section of your
+config which begins with "process_" will be treated as a process, instead of a
+datasource.
+
+You configure a process in your FeatureServer configuration to perform
+additional operations; once defined, you can use that process on any of your
+datasources. 
+
+Example
+=======
+
+One example of a possible process to configure is a buffer. A buffer is an
+operation which expands a single geometry outward to contain a data of a certain
+radius around the original geometry.
+
+The WebProcessingServer buffer Process has one parameter: called 'buffer',
+this is the amount to expand the geometry by, in map units.
+
+Assuming you have WebProcessingServer installed on your PYTHONPATH, you can
+specify the Process as follows:
+
+  [process_buffer]
+  module=WebProcessingServer.Action.OGRGeos
+  class=Buffer
+  buffer_default=0.1
+  buffer_locked=yes
+
+The module specifies an importable module --
+WebProcessingServer.Action.OGRGeos, which is a collection of processes which
+use OGR and GEOS to perform their work. The class within OGRGeos is "Buffer".
+Each parameter you want to provide to the Action *must* be specified in the
+config with a parametername_default option, to define to FeatureServer what
+properties are needed to perform the action.
+
+The 'locked' property states whether the parameter can be overridden: if it
+is set to 'yes', that means that the parameter can *not* be overridden by
+URL Parameters. If it not set to yes, then a URL parameter, named:
+ 
+  process_<action>_<param>
+
+or, in this case, process_buffer_buffer, can be used to override the value.
+
+To use this process on a datasource, simply specify it in the 'processes'
+arg of your DataSource:
+
+  [foo_ds]
+  type=DBM
+  file=/location/file.db
+  processes=buffer
+
+For another example, see featureserver.cfg, which includes an example
+configuration of a pure-Python Douglas-Puecker line simplification algorithm.
+In order to use this example, simply copy doc/examples/Simplify.py into your
+PYTHONPATH (or specify PYTHONPATH=doc/examples, if you are using the standalone
+server).
+
+A number of other processes are available from the web processing server project
+at http://code.google.com/p/webprocessingserver/ .
+
+Chaining Processes
+------------------
+
+In order to allow for maximum configurability, processes can be chained by
+adding multiple comma separated processes to a single data source.
+
+As an example, in order to get a unified coverage map polygon, you could take
+the buffer of all data (for a given bounding box), buffer it, then union the
+result.
+
+Other Use Cases
+---------------
+This toolset allows one to create 'clickable Polygons' in KML more easily.
+Because Google Earth doesn't allow one to click on polygons and select them,
+you can now set up two datasources: One for the polygons, and one for a
+clickable 'centroid' layer. 
+
+Building Your Own
+-----------------
+
+Building your own Python code to process features is not difficult. Simply
+create a Python file which is importable. (Test this with 'import modulename'
+in a Python shell.) Then, inside that module, create a class with a 
+__call__ method which accepts two arguments:
+ 
+* self
+* list of features
+
+A Feature is an instance of a vectorformats.Feature.Feature object. It has
+an 'id' property, a 'properties' property and a 'geometry' property which
+contains a GeoJSON-like Geometry object in Python. 
+
+You can also include other key/value parameters, which can have defaults, but
+FeatureServer should always send something for any given value.
+
+It should return a list of features with these same properties (which can 
+be empty). 
+
+This means that the a simple Process is similar to:
+
+Filename: foo.py
+
+Code:
+
+  class Foo(object):
+      def __call__(self, features, return_nothing=0):
+          if int(return_nothing) == 1: 
+              return []
+          return features
+
+Example Configuration:
+
+  [process_foo]
+  module=foo
+  class=Foo
+  return_nothing_default=0
+  return_nothing_locked=no
+
+Additional Notes
+----------------
+No actual kittens were harmed by this documentation. (That we know of.)
+
+Written in association with Rich Gibson, Alan Glennon, and Sophia Parafina,
+in the lovely campus of Google.

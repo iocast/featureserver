@@ -1,0 +1,10 @@
+FeatureServer is copyright MetaCarta, released under the clear BSD 
+open source license, included as licenses/featureserver-license.txt
+
+Paste is copyright Ian Bicking, released under the MIT license, included as
+licenses/mit-license.txt
+
+simplejson is copyright 2006 Bob Ippolito, released under the MIT license, included as
+licenses/mit-license.txt
+
+wsgiref is copyright Phillip J. Eby, released under the PSF or ZPL licenses.

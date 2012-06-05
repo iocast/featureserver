@@ -1,0 +1,143 @@
+FeatureServer API
+=================
+
+It's possible to use FeatureServer as an "API", rather than using it as
+a web service. This is an example of how to do so.
+
+
+    >>> from FeatureServer.Server import Server
+    >>> from FeatureServer.DataSource.SQLite import SQLite
+
+    >>> db = "/tmp/scribble_test.db"
+    >>> import os 
+    >>> if os.path.exists(db): os.remove(db)
+
+
+create the datasource, and the fs service to call it.
+    >>> datasource = SQLite('scribble', layer="scribble", dsn=db)
+    >>> featureserver = Server({'scribble': datasource })
+
+
+some fake data.
+
+    >>> data = '{"type":"FeatureCollection","features":[{"type":"Feature","id":"OpenLayers.Feature.Vector_217","properties" :{"title":"Feature 3","strokeColor":"red","author":"Your Name Here"},"geometry":{"type":"Point","coordinates" :[-92.8125,35.15625]}}],"crs":{"type":"OGC","properties":{"urn":"urn:ogc:def:crs:OGC:1.3:CRS84"}}}'
+
+
+
+see what's in there, request the result in format JSON
+
+    >>> featureserver.dispatchRequest(path_info="/scribble", params={'format':'geojson'}, base_path= "")
+    ('text/plain', '{"crs": null, "type": "FeatureCollection", "features": []}')
+
+then POST some new data
+
+    >>> featureserver.dispatchRequest(params={'format':'geojson'}, path_info="/scribble", base_path="", post_data=data, request_method="POST")
+    ('text/plain', '{"crs": null, "type": "FeatureCollection", "features": [{"geometry": {"type": "Point", "coordinates": [-92.8125, 35.15625]}, "type": "Feature", "id": 1, "properties": {"strokeColor": "red", "title": "Feature 3", "author": "Your Name Here"}}]}')
+
+
+yep, it's there
+    >>> featureserver.dispatchRequest(params={'format':'geojson'}, path_info="/scribble", base_path="")
+    ('text/plain', '{"crs": null, "type": "FeatureCollection", "features": [{"geometry": {"type": "Point", "coordinates": [-92.8125, 35.15625]}, "type": "Feature", "id": 1, "properties": {"strokeColor": "red", "title": "Feature 3", "author": "Your Name Here"}}]}')
+
+
+
+see in in KML
+
+    >>> featureserver.dispatchRequest(params={'format':'kml'}, path_info="/scribble", base_path="")
+    ('application/vnd.google-earth.kml+xml', '<?xml version="1.0" encoding="UTF-8"?>\n<kml xmlns="http://earth.google.com/kml/2.0" xmlns:fs="http://featureserver.com/ns" xmlns:atom="http://www.w3.org/2005/Atom">\n<Document>\n<atom:link rel="self" href="/scribble/scribble-data.kml" type="application/vnd.google-earth.kml+xml" /> \n<Style id="allstyle">\n    <LineStyle>\n        <width>5</width>\n        <color>ff0099ee</color>\n    </LineStyle>\n    <PolyStyle>\n        <color>900099ee</color>\n    </PolyStyle>\n</Style>\n        \n\n        <Placemark id="1">\n        <name>Feature 3</name>\n        <description><![CDATA[Properties:<br /><b>strokeColor</b>: red<br /><b>author</b>: Your Name Here]]></description>\n        <styleUrl>#allstyle</styleUrl>\n        <atom:link href="/scribble/1.kml" type="edit" />\n        <Metadata>\n          <fs:strokeColor>red</fs:strokeColor>\n<fs:author>Your Name Here</fs:author>\n        </Metadata>\n        <Point><coordinates>-92.8125,35.15625</coordinates></Point>\n        </Placemark>\n</Document>\n        </kml>')
+
+
+do something with the JSON
+
+    >>> import simplejson
+    >>> format, json = featureserver.dispatchRequest(params={'format':'geojson'}, path_info="/scribble", base_path="")
+    >>> features = simplejson.loads(json) 
+    >>> features
+    {'crs': None, 'type': 'FeatureCollection', 'features': [{'geometry': {'type': 'Point', 'coordinates': [-92.8125, 35.15625]}, 'type': 'Feature', 'id': 1, 'properties': {'strokeColor': 'red', 'author': 'Your Name Here', 'title': 'Feature 3'}}]}
+
+it's a point, only one coord
+    >>> features['features'][0]['geometry']['coordinates']
+    [-92.8125, 35.15625]
+
+
+change it:
+    >>> pt = [-121.232, 42.123]
+    >>> features['features'][0]['geometry']['coordinates'] = pt
+
+    >>> new_json = simplejson.dumps(features)
+    >>> "-121.232" in new_json
+    True
+
+overwrite the old 1 by add "/scribble/1" 
+
+    >>> featureserver.dispatchRequest(params={}, path_info="/scribble/1", base_path="", post_data=new_json, request_method="POST") 
+    ('text/plain', '{"crs": null, "type": "FeatureCollection", "features": [{"geometry": {"type": "Point", "coordinates": [-121.232, 42.122999999999998]}, "type": "Feature", "id": 1, "properties": {"strokeColor": "red", "title": "Feature 3", "author": "Your Name Here"}}]}')
+
+    
+    >>> format, features_json = featureserver.dispatchRequest(params={'format':'json'}, path_info="/scribble", base_path="")
+    >>> features = simplejson.loads(features_json)
+    >>> features
+    {'crs': None, 'type': 'FeatureCollection', 'features': [{'geometry': {'type': 'Point', 'coordinates': [-121.232, 42.122999999999998]}, 'type': 'Feature', 'id': 1, 'properties': {'strokeColor': 'red', 'author': 'Your Name Here', 'title': 'Feature 3'}}]}
+
+    >>> len(features['features'])
+    1
+
+
+
+add a new feature by just using "/scribble"
+    >>> features['features'][0]['id'] = 2
+    >>> pts = features['features'][0]['geometry']['coordinates']
+
+change a property
+    >>> features['features'][0]['properties']['strokeColor'] = 'blue'
+    >>> features['features'][0]['properties']['author'] = 'bsp'
+
+    >>> new_json = simplejson.dumps(features)
+    >>> _ = featureserver.dispatchRequest(params={}, path_info="/scribble/create", base_path="", post_data=new_json, request_method="POST") 
+    >>> format, features_json = featureserver.dispatchRequest(params={'format':'json'}, path_info="/scribble", base_path="")
+    >>> features = simplejson.loads(features_json)
+    >>> len(features['features'])
+    2
+    >>> features
+    {'crs': None, 'type': 'FeatureCollection', 'features': [{'geometry': {'type': 'Point', 'coordinates': [-121.232, 42.122999999999998]}, 'type': 'Feature', 'id': 1, 'properties': {'strokeColor': 'red', 'author': 'Your Name Here', 'title': 'Feature 3'}}, {'geometry': {'type': 'Point', 'coordinates': [-121.232, 42.122999999999998]}, 'type': 'Feature', 'id': 2, 'properties': {'strokeColor': 'blue', 'title': 'Feature 3', 'author': 'bsp'}}]}
+
+DELETE  a record:
+
+    >>> _ = featureserver.dispatchRequest(params={}, path_info="/scribble/1", base_path="", post_data="", request_method="DELETE") 
+    >>> format, features_json = featureserver.dispatchRequest(params={'format':'json'}, path_info="/scribble", base_path="")
+    >>> features_json
+    '{"crs": null, "type": "FeatureCollection", "features": [{"geometry": {"type": "Point", "coordinates": [-121.232, 42.122999999999998]}, "type": "Feature", "id": 2, "properties": {"strokeColor": "blue", "author": "bsp", "title": "Feature 3"}}]}'
+
+QUERY by attribute:
+
+{'service': 'WFS', 'format': 'WFS', 'maxfeatures': '100', 'request': 'GetFeature', 'fred': '222', 'srs': 'EPSG:4326', 'version': '1.0.0', 'queryable': 'fred,asdf'}, '/scribble', 'http://75.51.135.218/featureserver-svn/featureserver.cgi', None, 'GET', 'text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5')
+
+
+    >>> format, features_json = featureserver.dispatchRequest(params={'request': 'GetFeature', 'queryable': 'author', 'author': 'bsp'}, path_info="/scribble", base_path="" , request_method="GET")
+    >>> features_json
+    '{"crs": null, "type": "FeatureCollection", "features": [{"geometry": {"type": "Point", "coordinates": [-121.232, 42.122999999999998]}, "type": "Feature", "id": 2, "properties": {"strokeColor": "blue", "author": "bsp", "title": "Feature 3"}}]}'
+
+QUERY by queryable:
+    >>> feature = simplejson.loads(data)['features'][0]
+    >>> feature['properties']['some_val'] = 15
+    >>> data_json = simplejson.dumps(feature)
+    >>> _ = featureserver.dispatchRequest(params={}, path_info="/scribble/create", base_path="", post_data=data_json, request_method="POST") 
+    >>> format, features_json = featureserver.dispatchRequest(params={'request': 'GetFeature', 'queryable': 'author,', 'author': 'bsp'}, path_info="/scribble", base_path="" , request_method="GET")
+
+    >>> featureserver.dispatchRequest(params={'request': 'GetFeature', 'queryable': 'some_val', 'some_val__lte': 14 }, path_info="/scribble", base_path="" , request_method="GET")
+    ('text/plain', '{"crs": null, "type": "FeatureCollection", "features": []}')
+
+
+    >>> featureserver.dispatchRequest(params={'request': 'GetFeature', 'queryable': 'some_val', 'some_val__gte': 14 }, path_info="/scribble", base_path="" , request_method="GET")
+    ('text/plain', '{"crs": null, "type": "FeatureCollection", "features": [{"geometry": {"type": "Point", "coordinates": [-92.8125, 35.15625]}, "type": "Feature", "id": 3, "properties": {"strokeColor": "red", "author": "Your Name Here", "some_val": "15", "title": "Feature 3"}}]}')
+
+
+post some data with no properties (check brian hamlin bug):
+
+    >>> data = '{"type":"FeatureCollection","features":[{"type":"Feature","id":"OpenLayers.Feature.Vector_217","properties" :{},"geometry":{"type":"Point","coordinates" :[-111.111,111.11111]}}],"crs":{"type":"OGC","properties":{"urn":"urn:ogc:def:crs:OGC:1.3:CRS84"}}}'
+    >>> r = featureserver.dispatchRequest(params={'format':'geojson'}, path_info="/scribble", base_path="", post_data=data, request_method="POST")
+    >>> h, json_data = featureserver.dispatchRequest(params={'format':'geojson'}, path_info="/scribble", base_path="")
+    >>> "111.111" in json_data
+    True
+
+

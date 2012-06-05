@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<uml:Package xmi:version="2.1" xmlns:xmi="http://schema.omg.org/spec/XMI/2.1" xmlns:uml="http://www.eclipse.org/uml2/3.0.0/UML" xmi:id="_p_VJ4VukEeGMppbpyD86Yg">
+  <packagedElement xmi:type="uml:Package" xmi:id="_BObtwFulEeGMppbpyD86Yg" name="FilterEncoding">
+    <packagedElement xmi:type="uml:Package" xmi:id="_LVHC0FulEeGMppbpyD86Yg" name="ComparisonOperators">
+      <packagedElement xmi:type="uml:Class" xmi:id="_ocMRQFumEeGMppbpyD86Yg" name="ComparisonOperator"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="_WZWhcFunEeGMppbpyD86Yg" name="PropertyIsBetween"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="_Y_by4FunEeGMppbpyD86Yg" name="PropertyIsEqualTo"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="_bUnhkFunEeGMppbpyD86Yg" name="PropertyIsGreaterThan"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="_fIfb0FunEeGMppbpyD86Yg" name="PropertyIsGreaterThanOrEqualTo"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="_iU008FunEeGMppbpyD86Yg" name="PropertyIsLessThan"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="_lVaREFunEeGMppbpyD86Yg" name="PropertyIsLessThanOrEqualTo"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="_oNbAAFunEeGMppbpyD86Yg" name="PropertyIsLike"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="_tfFG4FunEeGMppbpyD86Yg" name="PropertyIsNotEqualTo"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="_wgWfgFunEeGMppbpyD86Yg" name="PropertyIsNull"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="_rcTW0FunEeGMppbpyD86Yg" name="PropertyIsNil"/>
+    </packagedElement>
+    <packagedElement xmi:type="uml:Package" xmi:id="_Mf1JgFulEeGMppbpyD86Yg" name="LogicalOperators">
+      <packagedElement xmi:type="uml:Class" xmi:id="_09gnUFunEeGMppbpyD86Yg" name="And"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="_2_tvoFunEeGMppbpyD86Yg" name="LogicalOperator"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="_4sZT4FunEeGMppbpyD86Yg" name="Not"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="_6WXiYFunEeGMppbpyD86Yg" name="Or"/>
+    </packagedElement>
+    <packagedElement xmi:type="uml:Package" xmi:id="_NfnLgFulEeGMppbpyD86Yg" name="ObjectIdentifiers">
+      <packagedElement xmi:type="uml:Class" xmi:id="_86qEEFunEeGMppbpyD86Yg" name="ObjectIdentifier"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="__oduIFunEeGMppbpyD86Yg" name="ResourceId"/>
+    </packagedElement>
+    <packagedElement xmi:type="uml:Package" xmi:id="_OjUrQFulEeGMppbpyD86Yg" name="SpatialOperators">
+      <packagedElement xmi:type="uml:Class" xmi:id="_CqsJAFuoEeGMppbpyD86Yg" name="BBOX"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="_EKAmsFuoEeGMppbpyD86Yg" name="Beyond"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="_FqfiAFuoEeGMppbpyD86Yg" name="Contains"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="_ILKvAFuoEeGMppbpyD86Yg" name="Crosses"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="_MVgogFuoEeGMppbpyD86Yg" name="Disjoint"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="_PEsyoFuoEeGMppbpyD86Yg" name="DWithin"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="_RGlx4FuoEeGMppbpyD86Yg" name="Equals"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="_TAQCMFuoEeGMppbpyD86Yg" name="Intersects"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="_U2P6gFuoEeGMppbpyD86Yg" name="Overlaps"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="_WhAzMFuoEeGMppbpyD86Yg" name="SpatialOperators"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="_YhMiQFuoEeGMppbpyD86Yg" name="Touches"/>
+      <packagedElement xmi:type="uml:Class" xmi:id="_avRjYFuoEeGMppbpyD86Yg" name="Within"/>
+    </packagedElement>
+    <packagedElement xmi:type="uml:Class" xmi:id="_e-zw0FumEeGMppbpyD86Yg" name="FilterEncoding"/>
+    <packagedElement xmi:type="uml:Class" xmi:id="_jzmVgFumEeGMppbpyD86Yg" name="Operator"/>
+    <packagedElement xmi:type="uml:Class" xmi:id="_k4RekFumEeGMppbpyD86Yg" name="Select"/>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Package" xmi:id="_FHKS0FulEeGMppbpyD86Yg" name="Transaction">
+    <packagedElement xmi:type="uml:Class" xmi:id="_CHx7IFumEeGMppbpyD86Yg" name="ActionResult"/>
+    <packagedElement xmi:type="uml:Class" xmi:id="_JDr9UFumEeGMppbpyD86Yg" name="Delete"/>
+    <packagedElement xmi:type="uml:Class" xmi:id="_JZyJIFumEeGMppbpyD86Yg" name="Insert"/>
+    <packagedElement xmi:type="uml:Class" xmi:id="_Kh5AsFumEeGMppbpyD86Yg" name="Update"/>
+    <packagedElement xmi:type="uml:Class" xmi:id="_K2bGQFumEeGMppbpyD86Yg" name="Transaction"/>
+    <packagedElement xmi:type="uml:Class" xmi:id="_Li_4YFumEeGMppbpyD86Yg" name="TransactionAction"/>
+    <packagedElement xmi:type="uml:Class" xmi:id="_MY4XgFumEeGMppbpyD86Yg" name="TransactionResponse"/>
+    <packagedElement xmi:type="uml:Class" xmi:id="_NJBbAFumEeGMppbpyD86Yg" name="TransactionSummary"/>
+  </packagedElement>
+</uml:Package>

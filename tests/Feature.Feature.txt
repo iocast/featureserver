@@ -1,0 +1,5 @@
+
+    >>> from vectorformats.Feature import Feature
+    >>> dir(Feature)
+    ['__class__', '__delattr__', '__dict__', '__doc__', '__geo_interface__', '__getattribute__', '__getitem__', '__hash__', '__init__', '__module__', '__new__', '__reduce__', '__reduce_ex__', '__repr__', '__setattr__', '__setitem__', '__str__', '__weakref__', 'get_bbox', 'get_geo', 'set_geo', 'to_dict']
+

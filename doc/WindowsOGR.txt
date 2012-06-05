@@ -1,0 +1,65 @@
+FeatureServer on Windows
+========================
+
+You can run FeatureServer under IIS, Apache, or using its own WSGI based HTTP
+server. This page outlines how to get it up and running quickly on Windows 
+using the builtin HTTP server and FWTools for supporting OGR dataformats.
+
+* Ensure you downloaded the "full" FeatureServer archive from 
+  http://featureserver.org.  This zipfile should include simplejson, paste, 
+  and wsgiref subfolders, amongst  others. Unzip this to somewhere (e.g. 
+  c:\temp\featureserver).
+
+* Go to where you unzipped featureserver, and modify featureserver.cfg 
+  so that the scribble layer points to a valid filename in a folder you have 
+  write access to (e.g. c:/temp/featureserver.scribble). Do not use a single 
+  backslash (e.g. c:\temp) -- use a single forward slash instead in this portion 
+  of the file.
+
+* Actually, you are done now. Assuming you already have Python v2.3 or 
+  above installed, you can just run the featureserver_http_server.py 
+
+However, assuming you want to use OGR datasources (e.g. shapefiles, or your 
+SDE instance, etc), then you should install another program -- one that lets
+you import OGR from within Python so you can access OGR datasources.  An
+easy one-click install solution on Windows is FWTools.
+
+* Download and install FWTools from http://fwtools.maptools.org.
+
+* Open a command prompt (start->run->cmd) and set your FWTools environment 
+  variable (run, for example, "C:\Program Files\FWTools2.1.0\setfw.bat").
+
+* Now have FWTools' Python run the basic webserver, e.g.:
+  
+  C:\Program Files\FWTools2.0.0\python\python.exe c:\temp\featureserver\featureserver_http_server.py
+
+*  Note that you can combine 5 and 6 in a simple batch file so you don't 
+   need to do this each time manually.
+
+It should say it's now listening on port 8080 (you can choose your 
+port with the -p switch. Choose port 80 if you don't have another 
+webserver running on that already, and then you can leave the port 
+out of the URL you go to).
+
+* Go check it out in a browser: http://localhost:8080 (or just 
+  http://localhost if you are running it on port 80)
+
+You should see the list of layers (probably just the scribble layer).  
+Add /scribble to your URL to get to it (right now it is probably an
+empty datasource, so you will get no features returned). 
+
+Read the DataSource in the doc folder and add a new OGR layer (e.g. 
+shapefile) as they describe, by modifying featureserver.cfg - For example:
+
+  [cities]
+  type=OGR
+  dsn=c:/temp/top_cities.shp
+  layer=top_cities
+
+Now, restart the webserver so it reloads the configuration, and send your 
+friends to: http://your_computer_name_or_ip/cities?format=kml&maxfeatures=40 
+where cities is the name of the FeatureServer layer you put in the brackets 
+in featureserver.cfg
+
+Now it is time to read the other stuff in the doc folder to see what kind of 
+services (output and input formats) and queries are supported.

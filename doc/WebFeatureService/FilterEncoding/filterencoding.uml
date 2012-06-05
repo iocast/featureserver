@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<uml:Model xmi:version="2.1" xmlns:xmi="http://schema.omg.org/spec/XMI/2.1" xmlns:uml="http://www.eclipse.org/uml2/3.0.0/UML" xmi:id="_s0yKUcGkEeCSbNMIum8osQ">
+  <packagedElement xmi:type="uml:Class" xmi:id="_E-k00MGlEeCSbNMIum8osQ" name="FilterEncoding">
+    <ownedOperation xmi:id="_9gPToMGnEeC7AJIerFP8jw" name="parse">
+      <ownedParameter xmi:id="_-HJioMGnEeC7AJIerFP8jw" direction="return"/>
+    </ownedOperation>
+    <ownedOperation xmi:id="_AeWDgMGoEeC7AJIerFP8jw" name="getFilterInstance">
+      <ownedParameter xmi:id="_1Ch1kMGpEeC7AJIerFP8jw" direction="return"/>
+      <ownedParameter xmi:id="_1Ch1kcGpEeC7AJIerFP8jw" name="node"/>
+    </ownedOperation>
+    <ownedOperation xmi:id="_3Qh-MMGpEeC7AJIerFP8jw" name="render">
+      <ownedParameter xmi:id="_4CiC4MGpEeC7AJIerFP8jw" direction="return"/>
+      <ownedParameter xmi:id="_4CjRAMGpEeC7AJIerFP8jw" name="datasource"/>
+      <ownedParameter xmi:id="_4Cj4EMGpEeC7AJIerFP8jw" name="node"/>
+    </ownedOperation>
+    <ownedOperation xmi:id="_6KktcMGpEeC7AJIerFP8jw" name="assemble">
+      <ownedParameter xmi:id="_7FsR4MGpEeC7AJIerFP8jw" direction="return"/>
+      <ownedParameter xmi:id="_7Fs48MGpEeC7AJIerFP8jw" name="datasource"/>
+      <ownedParameter xmi:id="_7FtgAMGpEeC7AJIerFP8jw" name="node"/>
+      <ownedParameter xmi:id="_7FuHEMGpEeC7AJIerFP8jw" name="sql"/>
+    </ownedOperation>
+    <ownedOperation xmi:id="_83Xq4MGpEeC7AJIerFP8jw" name="create">
+      <ownedParameter xmi:id="_-WIH4MGpEeC7AJIerFP8jw" direction="return"/>
+      <ownedParameter xmi:id="_-WIu8MGpEeC7AJIerFP8jw" name="datasource"/>
+      <ownedParameter xmi:id="_-WJWAMGpEeC7AJIerFP8jw" name="node"/>
+    </ownedOperation>
+    <ownedOperation xmi:id="__5IywMGpEeC7AJIerFP8jw" name="__str__">
+      <ownedParameter xmi:id="_HvhgMMGqEeC7AJIerFP8jw" name="" direction="return"/>
+    </ownedOperation>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Class" xmi:id="_Tu-uEMGlEeCSbNMIum8osQ" name="Operator" isAbstract="true">
+    <ownedOperation xmi:id="_NWvnYMGqEeC7AJIerFP8jw" name="getStatement">
+      <ownedParameter xmi:id="_PBTrwMGqEeC7AJIerFP8jw" direction="return"/>
+      <ownedParameter xmi:id="_PBTrwcGqEeC7AJIerFP8jw" name="datasource"/>
+    </ownedOperation>
+    <ownedOperation xmi:id="_QfwmwMGqEeC7AJIerFP8jw" name="setStatement">
+      <ownedParameter xmi:id="_Q7UhYMGqEeC7AJIerFP8jw" direction="return"/>
+      <ownedParameter xmi:id="_Q7UhYcGqEeC7AJIerFP8jw" name="stmt"/>
+    </ownedOperation>
+    <ownedOperation xmi:id="_SC2xMMGqEeC7AJIerFP8jw" name="createStatement" isAbstract="true">
+      <ownedParameter xmi:id="_SkgFsMGqEeC7AJIerFP8jw" direction="return"/>
+      <ownedParameter xmi:id="_SkgswMGqEeC7AJIerFP8jw" name="datasource"/>
+    </ownedOperation>
+    <ownedOperation xmi:id="_XYbHsMGqEeC7AJIerFP8jw" name="appendChild">
+      <ownedParameter xmi:id="_ZxYjIMGqEeC7AJIerFP8jw" direction="return"/>
+      <ownedParameter xmi:id="_ZxYjIcGqEeC7AJIerFP8jw" name="node"/>
+    </ownedOperation>
+    <ownedOperation xmi:id="_bHjE0MGqEeC7AJIerFP8jw" name="__len__">
+      <ownedParameter xmi:id="_cz4q0MGqEeC7AJIerFP8jw" direction="return"/>
+    </ownedOperation>
+    <ownedOperation xmi:id="_d9jBkMGqEeC7AJIerFP8jw" name="__str__">
+      <ownedParameter xmi:id="_ecLeUMGqEeC7AJIerFP8jw" direction="return"/>
+    </ownedOperation>
+    <ownedOperation xmi:id="_ffQE4MGqEeC7AJIerFP8jw" name="next">
+      <ownedParameter xmi:id="_f0y3EMGqEeC7AJIerFP8jw" direction="return"/>
+    </ownedOperation>
+    <ownedOperation xmi:id="_gyywYMGqEeC7AJIerFP8jw" name="get">
+      <ownedParameter xmi:id="_hJc84MGqEeC7AJIerFP8jw" direction="return"/>
+      <ownedParameter xmi:id="_hJdj8MGqEeC7AJIerFP8jw" name="index"/>
+    </ownedOperation>
+    <ownedOperation xmi:id="_iKvawMGqEeC7AJIerFP8jw" name="hasChildren">
+      <ownedParameter xmi:id="_i6PlEMGqEeC7AJIerFP8jw" direction="return"/>
+    </ownedOperation>
+    <ownedOperation xmi:id="_kCsa4MGqEeC7AJIerFP8jw" name="getChildren">
+      <ownedParameter xmi:id="_knB3AMGqEeC7AJIerFP8jw" direction="return"/>
+    </ownedOperation>
+    <ownedOperation xmi:id="_lnToQMGqEeC7AJIerFP8jw" name="getName">
+      <ownedParameter xmi:id="_l468sMGqEeC7AJIerFP8jw" direction="return"/>
+    </ownedOperation>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Association" xmi:id="_Y_m6MMGlEeCSbNMIum8osQ" name="" memberEnd="_Y_oIUMGlEeCSbNMIum8osQ _Y_qkkcGlEeCSbNMIum8osQ">
+    <ownedEnd xmi:id="_Y_oIUMGlEeCSbNMIum8osQ" name="tree" type="_E-k00MGlEeCSbNMIum8osQ" association="_Y_m6MMGlEeCSbNMIum8osQ">
+      <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_Y_qkkMGlEeCSbNMIum8osQ" value="1"/>
+      <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_Y_p9gMGlEeCSbNMIum8osQ" value="1"/>
+      <defaultValue xmi:type="uml:LiteralString" xmi:id="_6fWyAcGmEeC7AJIerFP8jw" value=""/>
+    </ownedEnd>
+    <ownedEnd xmi:id="_Y_qkkcGlEeCSbNMIum8osQ" name="" type="_Tu-uEMGlEeCSbNMIum8osQ" association="_Y_m6MMGlEeCSbNMIum8osQ">
+      <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_Y_rLocGlEeCSbNMIum8osQ" value="*"/>
+      <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_Y_rLoMGlEeCSbNMIum8osQ"/>
+      <defaultValue xmi:type="uml:LiteralString" xmi:id="_MkyGUMGnEeC7AJIerFP8jw" value=""/>
+    </ownedEnd>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Class" xmi:id="_ua0sUMGqEeC7AJIerFP8jw" name="ComparisonOperator">
+    <generalization xmi:id="_223EgMGqEeC7AJIerFP8jw" general="_Tu-uEMGlEeCSbNMIum8osQ"/>
+    <ownedOperation xmi:id="_wP6lsMGqEeC7AJIerFP8jw" name="getValueReference">
+      <ownedParameter xmi:id="_xsyzYMGqEeC7AJIerFP8jw" direction="return"/>
+    </ownedOperation>
+    <ownedOperation xmi:id="_zWofAMGqEeC7AJIerFP8jw" name="getLiteral">
+      <ownedParameter xmi:id="_0Z3doMGqEeC7AJIerFP8jw" direction="return"/>
+    </ownedOperation>
+    <ownedOperation xmi:id="_1n0egMGqEeC7AJIerFP8jw" name="createStatement">
+      <ownedParameter xmi:id="_182TUMGqEeC7AJIerFP8jw" direction="return"/>
+    </ownedOperation>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Class" xmi:id="_9pLF0MGqEeC7AJIerFP8jw" name="ObjectIdentifier">
+    <generalization xmi:id="_DnNxkMGrEeC7AJIerFP8jw" general="_Tu-uEMGlEeCSbNMIum8osQ"/>
+    <ownedOperation xmi:id="__ttwcMGqEeC7AJIerFP8jw" name="getResourceId">
+      <ownedParameter xmi:id="_AxmPUMGrEeC7AJIerFP8jw" direction="return"/>
+    </ownedOperation>
+    <ownedOperation xmi:id="_B9BgoMGrEeC7AJIerFP8jw" name="createStatement">
+      <ownedParameter xmi:id="_CVKT0MGrEeC7AJIerFP8jw" direction="return"/>
+    </ownedOperation>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Class" xmi:id="_Iv2fUMGrEeC7AJIerFP8jw" name="SpatialOperator">
+    <generalization xmi:id="_Iv2fUcGrEeC7AJIerFP8jw" general="_Tu-uEMGlEeCSbNMIum8osQ"/>
+    <ownedOperation xmi:id="_Iv2fUsGrEeC7AJIerFP8jw" name="getValueReference">
+      <ownedParameter xmi:id="_Iv2fU8GrEeC7AJIerFP8jw" direction="return"/>
+    </ownedOperation>
+    <ownedOperation xmi:id="_Iv2fVMGrEeC7AJIerFP8jw" name="getLiteral">
+      <ownedParameter xmi:id="_Iv2fVcGrEeC7AJIerFP8jw" direction="return"/>
+    </ownedOperation>
+    <ownedOperation xmi:id="_Iv2fVsGrEeC7AJIerFP8jw" name="createStatement">
+      <ownedParameter xmi:id="_Iv2fV8GrEeC7AJIerFP8jw" direction="return"/>
+    </ownedOperation>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Class" xmi:id="_MrsCwMGrEeC7AJIerFP8jw" name="LogicalOperator">
+    <generalization xmi:id="_MrsCwcGrEeC7AJIerFP8jw" general="_Tu-uEMGlEeCSbNMIum8osQ"/>
+    <ownedOperation xmi:id="_MrsCwsGrEeC7AJIerFP8jw" name="addOperators">
+      <ownedParameter xmi:id="_PlkZ8MGrEeC7AJIerFP8jw" direction="return"/>
+    </ownedOperation>
+    <ownedOperation xmi:id="_MrsCxsGrEeC7AJIerFP8jw" name="createStatement">
+      <ownedParameter xmi:id="_MrsCx8GrEeC7AJIerFP8jw" direction="return"/>
+    </ownedOperation>
+  </packagedElement>
+</uml:Model>

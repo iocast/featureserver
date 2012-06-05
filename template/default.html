@@ -1,0 +1,30 @@
+<html>
+<head>
+    <title>FeatureServer : $datasource</title>
+</head>
+<body>
+<h1>FeatureServer : $datasource</h1>
+<hr noshade="noshade" />
+
+#set length = len($actions) 
+Showing $length   features.
+#for $feature in $actions
+    #set $coords = str($feature.geometry.coordinates)
+    #if len($actions) > 1 and len($coords) > 120:
+      #set $coords = $coords[:120] + "..."  
+    #end if
+    <table cellpadding="5" border="0">
+    <tr><th>ID</th><td><a href="${feature.id}.html">$feature.id</a></td></tr>
+    #for $key, $val in $feature.properties.items
+      #if $val 
+      <tr><th>$key.encode('utf-8')</th><td>$val.encode('utf-8')</td></tr>
+      #end if
+    #end for
+    <tr><th>Geometry</th><td>${feature.geometry.type}: $coords</td></tr>
+    </table>
+    <hr noshade="noshade" />
+#end for
+
+
+</body>
+</html>

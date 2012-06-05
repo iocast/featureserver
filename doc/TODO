@@ -1,0 +1,15 @@
+ * OGR datasource doesn't support MultiGeoms
+ * KML Format (vectorformats) does not support multigeoms
+ * GeoRSS Format doesn't adequately bail when given multigeoms (maybe)
+ * Need support for processing-actions -- reading from config, applying to
+   datasources
+   * Once an action is on a Datasource, needs to be called in Server.py
+   * Once processing-actions work, need support for reading processing-info
+     from URL params
+     
+ * Improved querying: 
+   * Update parsing in Service.Request to parse more action types 
+   * Update backends to support more action types.
+
+ * Needs testing on mod_python, CGI
+

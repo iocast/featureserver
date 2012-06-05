@@ -1,0 +1,12 @@
+Contributors
+============
+
+The following users have contributed to the development of FeatureServer.
+
+| Howard Butler
+| Schuyler Erle
+| Stephan Holl
+| Josh Livni
+| Brent Pedersen
+| Christopher Schmidt
+| Sanjiv Singh
