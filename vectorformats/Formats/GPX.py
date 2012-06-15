@@ -25,7 +25,7 @@ class GPX(Format):
         xml = []
         
         if feature.geometry['type'] == 'Point':
-            xml.append("""<wpt lat="%s" lon="%s">""" % (str(feature.geometry["coordinates"][0]), str(feature.geometry["coordinates"][1])))
+            xml.append("""<wpt lon="%s" lat="%s">""" % (str(feature.geometry["coordinates"][0]), str(feature.geometry["coordinates"][1])))
             if feature.properties.has_key('name'):
                 if isinstance(feature.properties["name"], types.NoneType):
                     xml.append("""<name>%s</name>""" % str(feature.id))
