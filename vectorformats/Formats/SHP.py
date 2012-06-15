@@ -14,10 +14,10 @@ class SHP(Format):
         ''' '''
         writer = shapefile.Writer()
         
-        columns = self.datasource.attribute_cols.split(',')
-        for col in columns:
-            col = self.getFormatedAttributName(col)
-            writer.field(col)
+        if len(features) > 0:
+            feature = features[0]
+            for key, value in feature.properties.items():
+                writer.field(key)
         
         for feature in features:
             self.encode_feature(feature, writer)
@@ -49,9 +49,11 @@ class SHP(Format):
             raise Exception("Could not convert geometry of type %s." % feature['geometry']['type'])
         
         records = {}
+        # TODO: same amount as above
         for key, property in feature.properties.iteritems():
+            key = self.getFormatedAttributName(key)
             if property == None:
-                records[key] = ''
+                records[key] = ' '
             else:
                 records[key] = property.encode('utf-8')
         writer.record(**records)
