@@ -12,7 +12,7 @@ from lxml import etree
 class SHP(Request):
     def encode(self, result):
         shp = vectorformats.Formats.SHP.SHP(layername=self.datasources[0], datasource=self.service.datasources[self.datasources[0]])
-        (shpBuffer, shxBuffer, dbfBuffer)  = shp.encode(result)
+        (shpBuffer, shxBuffer, dbfBuffer, prjBuffer)  = shp.encode(result)
 
         output = StringIO.StringIO()
         
@@ -21,6 +21,7 @@ class SHP(Request):
         zip.writestr('pois.shp', shpBuffer.getvalue())
         zip.writestr('pois.shx', shxBuffer.getvalue())
         zip.writestr('pois.dbf', dbfBuffer.getvalue())
+        zip.writestr('pois.prj', prjBuffer.getvalue())
         
         
         

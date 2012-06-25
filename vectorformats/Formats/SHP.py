@@ -25,12 +25,24 @@ class SHP(Format):
         shpBuffer = StringIO.StringIO()
         shxBuffer = StringIO.StringIO()
         dbfBuffer = StringIO.StringIO()
+        prjBuffer = StringIO.StringIO()
         
         writer.saveShp(shpBuffer)
         writer.saveShx(shxBuffer)
         writer.saveDbf(dbfBuffer)
         
-        return (shpBuffer, shxBuffer, dbfBuffer)
+        if hasattr(feature, "geometry_attr"):
+            srs = str(feature.srs);
+            if 'EPSG' not in srs:
+                srs = "EPSG:" + str(feature.srs)
+            
+            organization = srs[:srs.find(":")]
+            number = srs[srs.find(":")+1:]
+            
+            file = open("resources/projections/" + str(organization).lower() + "/" + str(number) + ".prj")
+            prjBuffer.write(file.read())
+        
+        return (shpBuffer, shxBuffer, dbfBuffer, prjBuffer)
     
     def encode_feature(self, feature, writer):
         
