@@ -251,5 +251,5 @@ END;
             id = row[self.fid_col]
 
             if (geom):
-                features.append( Feature( id, geom, d ) ) 
+                features.append( Feature( id, geom, self.geom_col, self.srid_out, d ) ) 
         return features

@@ -93,5 +93,5 @@ class AppEngine(DataSource):
             props = {}
             for key in obj.dynamic_properties():
                 props[key] = getattr(obj, key)
-            return_list.append(Feature(obj.key().id(), from_wkt(obj.geometry), props))
+            return_list.append(Feature(id=obj.key().id(), geometry=from_wkt(obj.geometry), srs=self.srid_out, props=props))
         return return_list    

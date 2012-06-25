@@ -94,7 +94,7 @@ class Flickr (DataSource):
         
         loc = xml.getElementsByTagName("location")[0]
         coordinates = [float(loc.attributes['longitude'].value), float(loc.attributes['latitude'].value)]
-        return Feature(xml.getAttribute("id"), {'type':"Point", 'coordinates':coordinates}, props)
+        return Feature(id=xml.getAttribute("id"), geometry={'type':"Point", 'coordinates':coordinates}, srs=self.srid_out, props=props)
         
     def convert_photo_xml_to_feature(self, xml):
         """Convert the Flickr Photo XML to a Feature object. XML arg is an
@@ -108,7 +108,7 @@ class Flickr (DataSource):
         props['img_url'] = "http://farm%s.static.flickr.com/%s/%s_%s_m.jpg" % (props['farm'], props['server'], props['id'], props['secret'])
         del props['latitude']
         del props['longitude']
-        return Feature(xml.getAttribute("id"), {'type':"Point", 'coordinates':coordinates}, props)
+        return Feature(id=xml.getAttribute("id"), geometry={'type':"Point", 'coordinates':coordinates}, srs=self.srid_out, props=props)
 
 class API:
     """Utility class for talking to Flickr API. This is a very lightweight

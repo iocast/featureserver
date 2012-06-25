@@ -42,7 +42,7 @@ class OSM (DataSource):
             nodes[id] = [float(node.getAttribute("lon")), float(node.getAttribute("lat"))]
             if interesting == True:
                 geom = {'type':'Point', 'coordinates':nodes[id]}
-                features.append(Feature(id, geom, properties))
+                features.append(Feature(id=id, geometry=geom, srs=self.srid_out, props=properties))
         
         for way in doc.getElementsByTagName("way"):
             geometry = {'type':'LineString', 'coordinates':[]}
@@ -54,7 +54,7 @@ class OSM (DataSource):
                 key = tag.getAttribute("k")
                 properties[key] = tag.getAttribute("v")
             
-            features.append(Feature(int(way.getAttribute("id")), geometry, properties))
+            features.append(Feature(id=int(way.getAttribute("id")), geometry=geometry, srs=self.srid_out, props=properties))
         
         return features
     

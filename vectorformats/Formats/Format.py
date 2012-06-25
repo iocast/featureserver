@@ -8,8 +8,8 @@ class Format(object):
     def getFormatedAttributName(self, name):
         attrib_name = name
         
-        attrib_pos = name.find('\' as "')
+        attrib_pos = name.find(' as "')
         if attrib_pos >= 0:
-            attrib_name = name[attrib_pos+6:-1]
+            attrib_name = name[attrib_pos+5:-1]
             
         return attrib_name

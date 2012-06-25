@@ -121,7 +121,7 @@ class VersionedPostGIS (PostGIS):
             for key, value in props.items():
                 if isinstance(value, str): 
                     props[key] = unicode(value, "utf-8")
-            features.append( Feature( fid, geom, props ) ) 
+            features.append( Feature( fid, geom, self.geom_col, self.srid_out, props ) ) 
         return features
     
     def _serializeattrs(self, properties):

@@ -135,5 +135,5 @@ class AppEngineGeoModel(DataSource):
             except: 
                 logging.error('fail on obj %s' % key)
                 continue
-            return_list.append(Feature(action.id, from_wkt(obj.geometry), props))
+            return_list.append(Feature(id=action.id, geometry=from_wkt(obj.geometry), srs=self.srid_out, props=props))
         return return_list    

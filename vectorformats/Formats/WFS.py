@@ -2,6 +2,7 @@ from vectorformats.Formats.Format import Format
 import re, xml.dom.minidom as m
 from lxml import etree
 from FeatureServer.Exceptions.InvalidValue import InvalidValue
+from xml.sax.saxutils import escape
 
 class WFS(Format):
     """WFS-like GML writer."""
@@ -38,24 +39,20 @@ class WFS(Format):
                 attr_value = attr_value.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
             if isinstance(attr_value, str):
                 attr_value = unicode(attr_value, "utf-8")
-            attr_fields.append( "<fs:%s>%s</fs:%s>" % (key, attr_value,key) )
+            attr_fields.append( "<fs:%s>%s</fs:%s>" % (key, attr_value, key) )
             
         
-        xml = '<gml:featureMember><fs:%s fid="%s">' % (layername, feature.id)
+        xml = "<gml:featureMember gml:id=\"%s\"><fs:%s fid=\"%s\">" % (str(feature.id), layername, str(feature.id))
         
-        xml += self.geometry_to_gml(feature.geometry) 
-        
-        #if feature.geometry['type'] == 'Point':
-        #    xml += "<gml:pointProperty>%s</gml:pointProperty>" % self.geometry_to_gml(feature.geometry)
-        #elif feature.geometry['type'] == "LineString":
-        #    xml += "<gml:lineStringProperty>%s</gml:lineStringProperty>" % self.geometry_to_gml(feature.geometry)
-        #elif feature.geometry['type'] == "Polygon":
-        #    xml += "<gml:polygonProperty>%s</gml:polygonProperty>" % self.geometry_to_gml(feature.geometry)   
+        if hasattr(feature, "geometry_attr"):
+            xml += "<fs:%s>%s</fs:%s>" % (feature.geometry_attr, self.geometry_to_gml(feature.geometry, feature.srs), feature.geometry_attr)
+        else:
+            xml += self.geometry_to_gml(feature.geometry, feature.srs)
         
         xml += "%s</fs:%s></gml:featureMember>" % ("\n".join(attr_fields), layername)  
         return xml
     
-    def geometry_to_gml(self, geometry):
+    def geometry_to_gml(self, geometry, srs):
         """
         >>> w = WFS()
         >>> print w.geometry_to_gml({'type':'Point', 'coordinates':[1.0,2.0]})
@@ -64,38 +61,57 @@ class WFS(Format):
         '<gml:LineString><gml:coordinates>1.0,2.0 2.0,1.0</gml:coordinates></gml:LineString>'
         """
         
+        if "EPSG" not in str(srs):
+            srs = "EPSG:" + str(srs)
+        
         if geometry['type'] == "Point":
             coords = ",".join(map(str, geometry['coordinates']))
-            return "<gml:Point><gml:coordinates decimal=\".\" cs=\",\" ts=\" \">%s</gml:coordinates></gml:Point>" % coords
+            return "<gml:Point srsName=\"%s\"><gml:coordinates decimal=\".\" cs=\",\" ts=\" \">%s</gml:coordinates></gml:Point>" % (str(srs), coords)
+            #coords = " ".join(map(str, geometry['coordinates']))
+            #return "<gml:Point srsDimension=\"2\" srsName=\"%s\"><gml:pos>%s</gml:pos></gml:Point>" % (str(srs), coords)
         elif geometry['type'] == "LineString":
             coords = " ".join(",".join(map(str, coord)) for coord in geometry['coordinates'])
-            return "<gml:LineString><gml:coordinates decimal=\".\" cs=\",\" ts=\" \">%s</gml:coordinates></gml:LineString>" % coords
+            return "<gml:LineString><gml:coordinates decimal=\".\" cs=\",\" ts=\" \" srsName=\"%s\">%s</gml:coordinates></gml:LineString>" % (str(srs), coords)
+            #return "<gml:curveProperty><gml:LineString srsDimension=\"2\" srsName=\"%s\"><gml:coordinates>%s</gml:coordinates></gml:LineString></gml:curveProperty>" % (str(srs), coords)
         elif geometry['type'] == "Polygon":
             coords = " ".join(map(lambda x: ",".join(map(str, x)), geometry['coordinates'][0]))
             #out = """
-            #  <gml:outerBoundaryIs><gml:LinearRing>
-            #  <gml:coordinates decimal=\".\" cs=\",\" ts=\" \">%s</gml:coordinates>
-            #  </gml:LinearRing></gml:outerBoundaryIs>
+            #    <gml:exterior>
+            #        <gml:LinearRing>
+            #            <gml:coordinates decimal=\".\" cs=\",\" ts=\" \">%s</gml:coordinates>
+            #        </gml:LinearRing>
+            #    </gml:exterior>
             #""" % coords 
             out = """
-              <gml:exterior><gml:LinearRing>
-              <gml:coordinates decimal=\".\" cs=\",\" ts=\" \">%s</gml:coordinates>
-              </gml:LinearRing></gml:exterior>
+                <gml:exterior>
+                    <gml:LinearRing srsDimension="2">
+                        <gml:coordinates>%s</gml:coordinates>
+                    </gml:LinearRing>
+                </gml:exterior>
             """ % coords 
             
-            #outerBoundaryIs
             inner_rings = []
             for inner_ring in geometry['coordinates'][1:]:
                 coords = " ".join(map(lambda x: ",".join(map(str, x)), inner_ring))
+                #inner_rings.append("""
+                #    <gml:interior>
+                #        <gml:LinearRing>
+                #            <gml:coordinates decimal=\".\" cs=\",\" ts=\" \">%s</gml:coordinates>
+                #        </gml:LinearRing>
+                #    </gml:interior>
+                #""" % coords) 
                 inner_rings.append("""
-                  <gml:interior><gml:LinearRing>
-                  <gml:coordinates decimal=\".\" cs=\",\" ts=\" \">%s</gml:coordinates>
-                  </gml:LinearRing></gml:interior>
+                    <gml:interior>
+                        <gml:LinearRing srsDimension="2">
+                            <gml:coordinates>%s</gml:coordinates>
+                        </gml:LinearRing>
+                    </gml:interior>
                 """ % coords) 
-                #innerBoundaryIs
-            return """<fs:geometry><gml:Polygon>
-              %s %s
-              </gml:Polygon></fs:geometry>""" % (out, "\n".join(inner_rings))
+            
+            return """
+                            <gml:Polygon srsName="%s">
+                                %s %s
+                            </gml:Polygon>""" % (srs, out, "".join(inner_rings))
         else:
             raise Exception("Could not convert geometry of type %s." % geometry['type'])
     
@@ -257,8 +273,8 @@ class WFS(Format):
 
             
             srs = etree.Element('SRS')
-            if hasattr(self.datasources[layer], 'srid') and self.datasources[layer].srid is not None:
-                srs.text = 'EPSG:' + self.datasources[layer].srid
+            if hasattr(self.datasources[layer], 'srid_out') and self.datasources[layer].srid_out is not None:
+                srs.text = 'EPSG:' + str(self.datasources[layer].srid_out)
             else:
                 srs.text = 'EPSG:4326'
             type.append(srs)
@@ -363,12 +379,14 @@ class WFS(Format):
                 sequence.append(element)
             elif property == 'Line':
                 element = etree.Element('element', attrib={'name' : datasource.geom_col,
-                                                           'type' : 'LineStringPropertyType',
+                                                           'type' : 'gml:LineStringPropertyType',
+                                                           #'ref' : 'gml:curveProperty',
                                                            'minOccurs' : '0'})
                 sequence.append(element)
             elif property == 'Polygon':
                 element = etree.Element('element', attrib={'name' : datasource.geom_col,
                                                            'type' : 'gml:PolygonPropertyType',
+                                                           #'substitutionGroup' : 'gml:_Surface',
                                                            'minOccurs' : '0'})
                 sequence.append(element)
                     
@@ -392,5 +410,3 @@ class WFS(Format):
                                      'miny':latlongArray[1],
                                      'maxx':latlongArray[2],
                                      'maxy':latlongArray[3]})
-    
-           

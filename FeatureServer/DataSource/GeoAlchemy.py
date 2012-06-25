@@ -223,5 +223,5 @@ class GeoAlchemy (DataSource):
                     pass
                     
             if (geom):
-                features.append( Feature( id, geom, props ) ) 
+                features.append( Feature( id=id, geometry=geom, geometry_attr=self.geom_col, srs=self.srid_out, props=props ) ) 
         return features

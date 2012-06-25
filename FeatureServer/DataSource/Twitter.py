@@ -20,5 +20,5 @@ class Twitter (DataSource):
         data = urllib.urlopen("http://api.twittervision.com/user/current_status/%s.json" % self.username).read()
         user_data = simplejson.loads(data)
         geom = {'type':'Point', 'coordinates': [user_data['location']['longitude'], user_data['location']['latitude']]}
-        f = Feature(int(user_data["id"]), geom)
+        f = Feature(id=int(user_data["id"]), geometry=geom, srs=self.srid_out, )
         return [f]

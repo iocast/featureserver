@@ -10,11 +10,13 @@ class Feature (object):
     {'type': 'Point', 'coordinates': [2.0, 0.0]}
     """
     
-    def __init__ (self, id = None, geometry = None, props = None):
-        self.id         = id
-        self.geometry   = geometry 
-        self.properties = props or {}
-        self.bbox       = None
+    def __init__ (self, id = None, geometry = None, geometry_attr=None, srs=None, props = None):
+        self.id             = id
+        self.geometry       = geometry 
+        self.properties     = props or {}
+        self.bbox           = None
+        self.geometry_attr  = geometry_attr
+        self.srs            = srs
     
     def get_geo(self):
         return self.geometry
@@ -31,6 +33,10 @@ class Feature (object):
             return self.properties
         elif key == "id":
             return self.id
+        elif key == "geometry_attr":
+            return self.geometry_attr
+        elif key == "srs":
+            return self.srs
         raise KeyError(key)    
     
     def __setitem__(self, key, value):
@@ -40,6 +46,10 @@ class Feature (object):
             self.properties = value
         elif key == "id":
             self.id = value
+        elif key == "geometry_attr":
+            self.geometry_attr = value
+        elif key == "srs":
+            self.srs = value
         else:
             raise KeyError(key)
         return     
@@ -80,4 +90,6 @@ class Feature (object):
     def to_dict (self):
         return {"id": self.id,
                 "geometry": self.geometry,
+                "geometry_attr" : self.geometry_attr,
+                "srs" : self.srs,
                 "properties": self.properties}

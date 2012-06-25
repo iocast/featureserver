@@ -314,7 +314,7 @@ class PostGIS (DataSource):
                     pass
                     
             if (geom):
-                features.append( Feature( id, geom, props ) ) 
+                features.append( Feature( id, geom, self.geom_col, self.srid_out, props ) ) 
         return features
     
     def getAttributeDescription(self, attribute):
