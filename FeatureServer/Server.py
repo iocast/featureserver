@@ -120,9 +120,6 @@ class Server (object):
           'ov2': 'OV2'
         }  
         
-        #sys.path.append("/home/michel/.eclipse/org.eclipse.platform_3.7.0_155965261/plugins/org.python.pydev.debug_2.5.0.2012040618/pysrc/")
-        #import pydevd; pydevd.settrace('localhost', port=5678, stdoutToServer=True, stderrToServer=True)
-        
         path = path_info.split("/")
         
         found = False
