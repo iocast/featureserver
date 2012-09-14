@@ -70,7 +70,7 @@ def to_wkt (geom):
     if geom["type"] == "Point":
         return "POINT(%s)" % coords_to_wkt((coords,))
     elif geom["type"] == "LineString":
-        return "LINESTRING (%s)" % coords_to_wkt(coords)
+        return "LINESTRING(%s)" % coords_to_wkt(coords)
     elif geom["type"] == "Polygon":
         rings = ["(" + coords_to_wkt(ring) + ")" for ring in coords]
         rings = ",".join(rings)
