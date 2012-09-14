@@ -117,7 +117,8 @@ class Server (object):
           'shp': 'SHP',
           'csv': 'CSV',
           'gpx': 'GPX',
-          'ov2': 'OV2'
+          'ov2': 'OV2',
+          'sqlite': 'SQLite'
         }  
         
         path = path_info.split("/")
@@ -239,10 +240,7 @@ class Server (object):
         mime, data, headers, encoding = request.encode(response)
         return Response(data=data, content_type=mime, headers=headers, status_code=response_code, encoding=encoding)     
 
-    def dispatchWorkspaceRequest (self, base_path="", path_info="/", params={}, request_method = "GET", post_data = None,  accepts = ""):
-        #sys.path.append("/home/michel/.eclipse/org.eclipse.platform_3.5.0_155965261/plugins/org.python.pydev.debug_2.2.2.2011082312/pysrc/")
-        #import pydevd; pydevd.settrace('localhost', port=5678, stdoutToServer=True, stderrToServer=True)
-        
+    def dispatchWorkspaceRequest (self, base_path="", path_info="/", params={}, request_method = "GET", post_data = None,  accepts = ""):        
         handler = FileHandler('workspace.db')
         handler.removeExpired()
         

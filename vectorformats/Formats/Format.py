@@ -13,3 +13,10 @@ class Format(object):
             attrib_name = name[attrib_pos+5:-1]
             
         return attrib_name
+    
+    def escapeSQL(self, value):
+        newValue = value
+        newValue = value.replace("'", "''")
+        
+        return newValue 
+    
