@@ -31,3 +31,22 @@ pip-log.txt
 .settings/
 #PyDev
 .pydevproject
+
+# osx noise
+.DS_Store
+profile
+
+# xcode 3
+*.pbxuser
+*.mode1
+*.mode1v3
+*.mode2v3
+*.perspectivev3
+*.xcclassmodel/
+profile
+# xcode 4
+*.xcodeproj/
+xcuserdata/
+# build products
+*.build
+DerivedData/
