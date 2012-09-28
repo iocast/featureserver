@@ -60,7 +60,7 @@ if __name__ == '__main__':
         dest="port", 
         action='store', 
         type="int", 
-        default=8081)
+        default=8080)
     parser.add_option("-t", help="enable threading in HTTP Server.", dest="thread", action="store_true", default=False)   
     parser.add_option("-l", help="serve files from local disk", dest="local_path")
 
