@@ -24,8 +24,8 @@ Service (Input/Output)
 * __OSM__ -- Output-only support of features as OpenStreetMap '.osm' files. (These files can be opened using JOSM and posted to the OSM server.)
 * __OV2__ -- for TomTom devices
 * __Shapefile__ -- as zip
-* __SQLite/SpatiaLite__ --
-* __DXF__ -- only points
+* __SQLite/SpatiaLite__ -- points, polyline (linestring), polygon
+* __DXF__ -- points, polyline (linestring), polygon
 
 Setup
 -----
