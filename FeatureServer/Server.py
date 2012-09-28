@@ -118,8 +118,9 @@ class Server (object):
           'csv': 'CSV',
           'gpx': 'GPX',
           'ov2': 'OV2',
-          'sqlite': 'SQLite'
-        }  
+          'sqlite': 'SQLite',
+          'dxf' : 'DXF'
+        }
         
         path = path_info.split("/")
         
