@@ -28,10 +28,18 @@ class DXF(Format):
         
         elif feature["geometry"]["type"] == "LineString":
             polyline= dxf.polyline()
-            poly_points = []
+            coords = feature["geometry"]["coordinates"]
+            for coord in coords:
+                polyline.add_vertex((coord[0], coord[1]))
+            self._drawing.add(polyline)
+
+        elif feature["geometry"]["type"] == "Polygon":
+            polygon = dxf.polyline()
             
             coords = feature["geometry"]["coordinates"]
             for coord in coords:
-                poly_points.append((coord[0], coord[1]))
-            polyline.add_vertices(poly_points)
-            self._drawing.add(polyline)
+                for point in coord:
+                    polygon.add_vertex((point[0], point[1]))
+                polygon.close()
+            self._drawing.add(polygon)
+		
