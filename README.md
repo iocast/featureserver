@@ -24,7 +24,8 @@ Service (Input/Output)
 * __OSM__ -- Output-only support of features as OpenStreetMap '.osm' files. (These files can be opened using JOSM and posted to the OSM server.)
 * __OV2__ -- for TomTom devices
 * __Shapefile__ -- as zip
-* __SQLite/SpatiaLite__
+* __SQLite/SpatiaLite__ -- only points
+* __DXF__ -- only points
 
 Setup
 -----
@@ -34,3 +35,20 @@ FeatureServer can be configured to use one of three different server configurati
 * Standalone wsgi HTTP server
 * FastCGI
 
+
+Installation
+============
+
+
+Dependencies
+------------
+* dxfwrite
+* lxml
+* pyspatialite
+* Cheetah
+* simplejson
+* psycopg2
+
+Mac OSX Mountain Lion
+---------------------
+GEOS and PROJ is required. Use the OSX Frameworks from http://www.kyngchaos.com/software/frameworks
