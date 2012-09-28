@@ -23,6 +23,15 @@ class DXF(Format):
 
 
     def encode_feature(self, feature):
-        if feature['geometry']['type'] == 'Point':
-            self._drawing.add(dxf.point(point=(feature['geometry']['coordinates'][0],feature['geometry']['coordinates'][1])))
+        if feature["geometry"]["type"] == "Point":
+            self._drawing.add(dxf.point(point=(feature["geometry"]["coordinates"][0],feature["geometry"]["coordinates"][1])))
+        
+        elif feature["geometry"]["type"] == "LineString":
+            polyline= dxf.polyline()
+            poly_points = []
             
+            coords = feature["geometry"]["coordinates"]
+            for coord in coords:
+                poly_points.append((coord[0], coord[1]))
+            polyline.add_vertices(poly_points)
+            self._drawing.add(polyline)
