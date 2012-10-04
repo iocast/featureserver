@@ -25,7 +25,7 @@ Service (Input/Output)
 * __OV2__ -- for TomTom devices
 * __Shapefile__ -- as zip
 * __SQLite/SpatiaLite__ -- points, polyline (linestring), polygon
-* __DXF__ -- points, polyline (linestring), polygon
+* __DXF (AutoCAD)__ -- Compatible with release 11 and 12, points, polyline (linestring), polygon
 
 Setup
 -----
