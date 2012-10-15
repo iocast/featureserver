@@ -4,13 +4,15 @@ __license__ = "Clear BSD"
 __version__ = "$Id: PostGIS.py 615 2009-09-23 00:47:48Z jlivni $"
 
 from psycopg2 import errorcodes
-from FeatureServer.Exceptions.InvalidValue import InvalidValue
 
 from FeatureServer.DataSource import DataSource
 from vectorformats.Feature import Feature
 from vectorformats.Formats import WKT
 
 from FeatureServer.WebFeatureService.Transaction.ActionResult import ActionResult
+
+from FeatureServer.Exceptions.WebFeatureService.InvalidValueException import InvalidValueException
+from FeatureServer.Exceptions.ConnectionException import ConnectionException
 
 try:
     import psycopg2 as psycopg
@@ -58,8 +60,11 @@ class PostGIS (DataSource):
             self.hstoreAttribute = "";
 
     def begin (self):
-        self.db = psycopg.connect(self.dsn)
-
+        try:
+            self.db = psycopg.connect(self.dsn)
+        except Exception as e:
+            raise ConnectionException(**{'dump':str(e),'layer':self.name,'locator':'PostGIS','code':e.pgcode})
+    
     def commit (self):
         if self.writable:
             self.db.commit()
@@ -282,10 +287,8 @@ class PostGIS (DataSource):
             try:
                 cursor.execute(str(sql), attrs)
             except Exception, e:
-                errors = []
                 if e.pgcode[:2] == errorcodes.CLASS_SYNTAX_ERROR_OR_ACCESS_RULE_VIOLATION:
-                    errors.append(InvalidValue(**{'dump':e.pgerror}))
-                return errors
+                    raise InvalidValueException(**{'dump':e.pgerror,'layer':self.name,'locator':'PostGIS'})
                 
             result = cursor.fetchall() # should use fetchmany(action.maxfeatures)
         
