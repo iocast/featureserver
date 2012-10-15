@@ -1,8 +1,8 @@
 '''
-    Created on May 24, 2011
+Created on May 24, 2011
     
-    @author: michel
-    '''
+@author: michel
+'''
 from FeatureServer.Exceptions.WebFeatureService.WFSException import WFSException
 
 class InvalidValueException(WFSException):
