@@ -39,7 +39,6 @@ FeatureServer can be configured to use one of three different server configurati
 Installation
 ============
 
-
 Dependencies
 ------------
 * dxfwrite
@@ -48,6 +47,32 @@ Dependencies
 * Cheetah
 * simplejson
 * psycopg2
+
+Virtual Environment
+-------------------
+download virtualenv.py the recent version from http://pypi.python.org/pypi/virtualenv
+
+```
+curl https://raw.github.com/pypa/virtualenv/master/virtualenv.py -o virtualenv.py
+```
+
+To create a new environment with the name ```featureserver``` run:
+
+```
+python virtualenv.py featureserver
+```
+
+To activate the virtual env call:
+
+```
+source featureserver/bin/activate
+```
+
+Now you can install the needed dependencies using the command ```pip install``` as follow:
+
+```
+pip install lxml
+```
 
 Mac OSX Mountain Lion
 ---------------------
