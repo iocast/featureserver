@@ -9,7 +9,6 @@ from FeatureServer.Service import NoLayerException
 from FeatureServer.Service import Action
 from FeatureServer.WebFeatureService.WFSRequest import WFSRequest
 from FeatureServer.WebFeatureService.Transaction.TransactionResponse import TransactionResponse
-from FeatureServer.Exceptions.WFSException import WFSException
 
 class WFS(Request):
     def encode(self, results):
@@ -18,14 +17,13 @@ class WFS(Request):
         if isinstance(results, TransactionResponse):
             return ("text/xml", wfs.encode_transaction(results), None, 'utf-8')
         
-        # if at least one error in the result is included create a WFS exception report.
-        for result in results:
-            if isinstance(result, WFSException):
-                return ("text/xml", wfs.encode_exception(results), None, 'utf-8')
-            
         output = wfs.encode(results)
         return ("text/xml", output, None, 'utf-8')
     
+    def encode_exception(self, exceptionReport):
+        wfs = vectorformats.Formats.WFS.WFS(layername=self.datasources[0])
+        return ("text/xml", wfs.encode_exception(exceptionReport), None, 'utf-8')
+        
     def parse(self, params, path_info, host, post_data, request_method):
         self.host = host
         

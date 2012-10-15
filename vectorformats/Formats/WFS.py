@@ -1,7 +1,6 @@
 from vectorformats.Formats.Format import Format
 import re, xml.dom.minidom as m
 from lxml import etree
-from FeatureServer.Exceptions.InvalidValue import InvalidValue
 from xml.sax.saxutils import escape
 
 class WFS(Format):
@@ -116,7 +115,7 @@ class WFS(Format):
             raise Exception("Could not convert geometry of type %s." % geometry['type'])
     
     
-    def encode_exception(self, errors, **kwargs):
+    def encode_exception(self, exceptionReport):
         results = ["""<?xml version="1.0" encoding="UTF-8"?>
         <ExceptionReport xmlns="http://www.opengis.net/ows/1.1"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -124,8 +123,8 @@ class WFS(Format):
         version="1.0.0"
         xml:lang="en">
         """]
-        for error in errors:
-            results.append(error.getXML())
+        for exception in exceptionReport:
+            results.append("<Exception exceptionCode=\"%s\" locator=\"%s\" layer=\"%s\"><ExceptionText>%s</ExceptionText><ExceptionDump>%s</ExceptionDump></Exception>" % (exception.code, exception.locator, exception.layer, exception.message, exception.dump))
         results.append("""</ExceptionReport>""")
         return "\n".join(results)
     

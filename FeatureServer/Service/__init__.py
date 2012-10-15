@@ -54,6 +54,8 @@ class Request (object):
                 data.append(" * %s, %s/%s" % (layer, self.host, layer))
         return ("text/plain", "\n".join(data))
     
+    def encode_exception(self, exceptionReport): pass
+    
     def parse(self, params, path_info, host, post_data, request_method, format_obj = None):
         """Used by most of the subclasses without changes. Does general
            processing of request information using request method and 

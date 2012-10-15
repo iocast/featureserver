@@ -4,14 +4,10 @@ Created on May 24, 2011
 @author: michel
 '''
 
-class WFSException(object):
-    locator = 'service'
-    dump = ''
-    code = ''
-    message = ''
+from FeatureServer.Exceptions.BaseException import BaseException
+
+class WFSException(BaseException):
+
+    def __init__(self, locator, layer, message, code="", dump = ""):
+        BaseException.__init__(self, message, code, locator, layer, dump)
     
-    def __init__(self, **kwargs):        
-        for key, val in kwargs.iteritems():
-            setattr(self, key, val)
-    
-    def getXML(self): pass

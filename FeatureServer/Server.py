@@ -1,5 +1,4 @@
 #!/usr/bin/python
-from FeatureServer.Workspace.FileHandler import FileHandler
 __author__  = "MetaCarta"
 __copyright__ = "Copyright (c) 2006-2008 MetaCarta"
 __license__ = "Clear BSD" 
@@ -16,6 +15,12 @@ import cgi as cgimod
 
 from FeatureServer.WebFeatureService.Transaction.TransactionResponse import TransactionResponse
 from FeatureServer.WebFeatureService.Transaction.TransactionSummary import TransactionSummary
+
+from FeatureServer.Workspace.FileHandler import FileHandler
+
+from FeatureServer.Exceptions.ExceptionReport import ExceptionReport
+from FeatureServer.Exceptions.WebFeatureService.InvalidValueException import InvalidValueException
+from FeatureServer.Exceptions.ConnectionException import ConnectionException
 
 import FeatureServer.Processing 
 from web_request.response import Response
@@ -122,6 +127,8 @@ class Server (object):
           'dxf' : 'DXF'
         }
         
+        exceptionReport = ExceptionReport()
+        
         path = path_info.split("/")
         
         found = False
@@ -172,6 +179,7 @@ class Server (object):
                 format = self.metadata['default_service']
             else:    
                 format = "GeoJSON"
+        
                 
         #===============================================================================
         # (reflection) dynamic load of format class e.g. WFS, KML, etc.
@@ -210,35 +218,47 @@ class Server (object):
             raise Exception("You can't post data to a processed layer.") 
 
         
-        datasource.begin()
-        
-        if len(request.actions) > 0 and hasattr(request.actions[0], 'request') and request.actions[0].request is not None:
-            if request.actions[0].request.lower() == "getfeature":
-                ''' '''
-        
         try:
-            transactionResponse = TransactionResponse()
-            transactionResponse.setSummary(TransactionSummary())
-            
-            for action in request.actions:
-                method = getattr(datasource, action.method)
-                result = method(action, transactionResponse)
-                response += result
-                                                    
-            datasource.commit()
-        except:
-            datasource.rollback()
-            raise
-        
-        if hasattr(datasource, 'processes'):
-            for process in datasource.processes.split(","):
-                if not self.processes.has_key(process): 
-                    raise Exception("Process %s configured incorrectly. Possible processes: \n\n%s" % (process, ",".join(self.processes.keys() ))) 
-                response = self.processes[process].dispatch(features=response, params=params)
-        if transactionResponse.summary.totalDeleted > 0 or transactionResponse.summary.totalInserted > 0 or transactionResponse.summary.totalUpdated > 0 or transactionResponse.summary.totalReplaced > 0:
-            response = transactionResponse
-        
-        mime, data, headers, encoding = request.encode(response)
+            datasource.begin()
+
+            if len(request.actions) > 0 and hasattr(request.actions[0], 'request') and request.actions[0].request is not None:
+                if request.actions[0].request.lower() == "getfeature":
+                    ''' '''
+
+            try:
+                transactionResponse = TransactionResponse()
+                transactionResponse.setSummary(TransactionSummary())
+    
+                for action in request.actions:
+                    method = getattr(datasource, action.method)
+                    try:
+                        result = method(action, transactionResponse)
+                        response += result
+                    except InvalidValueException as e:
+                        exceptionReport.add(e)
+    
+                    datasource.commit()
+            except:
+                datasource.rollback()
+                raise
+
+            if hasattr(datasource, 'processes'):
+                for process in datasource.processes.split(","):
+                    if not self.processes.has_key(process):
+                        raise Exception("Process %s configured incorrectly. Possible processes: \n\n%s" % (process, ",".join(self.processes.keys() )))
+                    response = self.processes[process].dispatch(features=response, params=params)
+            if transactionResponse.summary.totalDeleted > 0 or transactionResponse.summary.totalInserted > 0 or transactionResponse.summary.totalUpdated > 0 or transactionResponse.summary.totalReplaced > 0:
+                response = transactionResponse
+
+        except ConnectionException as e:
+            exceptionReport.add(e)
+    
+
+        if len(exceptionReport) > 0:
+            mime, data, headers, encoding = request.encode_exception(exceptionReport)
+        else:
+            mime, data, headers, encoding = request.encode(response)
+
         return Response(data=data, content_type=mime, headers=headers, status_code=response_code, encoding=encoding)     
 
     def dispatchWorkspaceRequest (self, base_path="", path_info="/", params={}, request_method = "GET", post_data = None,  accepts = ""):        
