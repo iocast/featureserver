@@ -46,8 +46,11 @@ class WFS(Request):
             return
         
         wfsrequest = WFSRequest()
-        Request.parse(self, params, path_info, host, post_data, request_method, format_obj=wfsrequest)
-    
+        try:
+            Request.parse(self, params, path_info, host, post_data, request_method, format_obj=wfsrequest)
+        except:
+            raise
+
     def getcapabilities(self, version):
         wfs = vectorformats.Formats.WFS.WFS(layers=self.datasources, datasources=self.service.datasources, host=self.host)
         result = wfs.getcapabilities()

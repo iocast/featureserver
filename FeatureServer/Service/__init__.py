@@ -8,6 +8,8 @@ __license__ = "Clear BSD"
 __version__ = "$Id: __init__.py 614 2009-09-16 01:50:40Z jlivni $"
 
 
+from FeatureServer.Exceptions.LayerNotFoundException import LayerNotFoundException
+
 class NoLayerException(ApplicationException): pass
 
 class Action (object):
@@ -86,7 +88,7 @@ class Request (object):
         
         for datasource in self.datasources:
             if not self.service.datasources.has_key(datasource):
-                raise Exception("Could not find the layer %s: Check your config file? (Available layers are: %s)" % (self.datasource, ",".join(self.service.datasources.keys())))
+                raise LayerNotFoundException("Request", datasource, self.service.datasources.keys())
         
         action = Action()
         

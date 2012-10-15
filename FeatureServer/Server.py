@@ -21,6 +21,8 @@ from FeatureServer.Workspace.FileHandler import FileHandler
 from FeatureServer.Exceptions.ExceptionReport import ExceptionReport
 from FeatureServer.Exceptions.WebFeatureService.InvalidValueException import InvalidValueException
 from FeatureServer.Exceptions.ConnectionException import ConnectionException
+from FeatureServer.Exceptions.LayerNotFoundException import LayerNotFoundException
+
 
 import FeatureServer.Processing 
 from web_request.response import Response
@@ -194,65 +196,68 @@ class Server (object):
         
         response = []
         
-        request.parse(params, path_info, host, post_data, request_method)
-        
-        # short circuit datasource where the first action is a metadata request. 
-        if len(request.actions) and request.actions[0].method == "metadata": 
-            return request.encode_metadata(request.actions[0])
-
-        # short circuit datasource where a OGC WFS request is set
-        # processing by service
-        if len(request.actions) > 0 and hasattr(request.actions[0], 'request') and request.actions[0].request is not None:
-            version = '1.0.0'
-            if hasattr(request.actions[0], 'version') and len(request.actions[0].version) > 0:
-                version = request.actions[0].version
-                
-            if request.actions[0].request.lower() == "getcapabilities": 
-                return getattr(request, request.actions[0].request.lower())(version)
-            elif request.actions[0].request.lower() == "describefeaturetype":
-                return getattr(request, request.actions[0].request.lower())(version)
-        
-        datasource = self.datasources[request.datasources[0]]
-        
-        if request_method != "GET" and hasattr(datasource, 'processes'):
-            raise Exception("You can't post data to a processed layer.") 
-
-        
         try:
-            datasource.begin()
+            request.parse(params, path_info, host, post_data, request_method)
+        
+            # short circuit datasource where the first action is a metadata request. 
+            if len(request.actions) and request.actions[0].method == "metadata": 
+                return request.encode_metadata(request.actions[0])
 
+            # short circuit datasource where a OGC WFS request is set
+            # processing by service
             if len(request.actions) > 0 and hasattr(request.actions[0], 'request') and request.actions[0].request is not None:
-                if request.actions[0].request.lower() == "getfeature":
-                    ''' '''
+                version = '1.0.0'
+                if hasattr(request.actions[0], 'version') and len(request.actions[0].version) > 0:
+                    version = request.actions[0].version
+                
+                if request.actions[0].request.lower() == "getcapabilities":
+                    return getattr(request, request.actions[0].request.lower())(version)
+                elif request.actions[0].request.lower() == "describefeaturetype":
+                    return getattr(request, request.actions[0].request.lower())(version)
 
+            datasource = self.datasources[request.datasources[0]]
+        
+            if request_method != "GET" and hasattr(datasource, 'processes'):
+                raise Exception("You can't post data to a processed layer.")
+
+        
             try:
-                transactionResponse = TransactionResponse()
-                transactionResponse.setSummary(TransactionSummary())
-    
-                for action in request.actions:
-                    method = getattr(datasource, action.method)
-                    try:
-                        result = method(action, transactionResponse)
-                        response += result
-                    except InvalidValueException as e:
-                        exceptionReport.add(e)
-    
-                    datasource.commit()
-            except:
-                datasource.rollback()
-                raise
+                datasource.begin()
 
-            if hasattr(datasource, 'processes'):
-                for process in datasource.processes.split(","):
-                    if not self.processes.has_key(process):
-                        raise Exception("Process %s configured incorrectly. Possible processes: \n\n%s" % (process, ",".join(self.processes.keys() )))
-                    response = self.processes[process].dispatch(features=response, params=params)
-            if transactionResponse.summary.totalDeleted > 0 or transactionResponse.summary.totalInserted > 0 or transactionResponse.summary.totalUpdated > 0 or transactionResponse.summary.totalReplaced > 0:
-                response = transactionResponse
+                if len(request.actions) > 0 and hasattr(request.actions[0], 'request') and request.actions[0].request is not None:
+                    if request.actions[0].request.lower() == "getfeature":
+                        ''' '''
 
-        except ConnectionException as e:
+                try:
+                    transactionResponse = TransactionResponse()
+                    transactionResponse.setSummary(TransactionSummary())
+    
+                    for action in request.actions:
+                        method = getattr(datasource, action.method)
+                        try:
+                            result = method(action, transactionResponse)
+                            response += result
+                        except InvalidValueException as e:
+                            exceptionReport.add(e)
+    
+                        datasource.commit()
+                except:
+                    datasource.rollback()
+                    raise
+
+                if hasattr(datasource, 'processes'):
+                    for process in datasource.processes.split(","):
+                        if not self.processes.has_key(process):
+                            raise Exception("Process %s configured incorrectly. Possible processes: \n\n%s" % (process, ",".join(self.processes.keys() )))
+                        response = self.processes[process].dispatch(features=response, params=params)
+                if transactionResponse.summary.totalDeleted > 0 or transactionResponse.summary.totalInserted > 0 or transactionResponse.summary.totalUpdated > 0 or transactionResponse.summary.totalReplaced > 0:
+                    response = transactionResponse
+
+            except ConnectionException as e:
+                exceptionReport.add(e)
+    
+        except LayerNotFoundException as e:
             exceptionReport.add(e)
-    
 
         if len(exceptionReport) > 0:
             mime, data, headers, encoding = request.encode_exception(exceptionReport)
