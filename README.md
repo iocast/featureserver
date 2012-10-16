@@ -14,18 +14,47 @@ DataSource (Storage)
 
 Service (Input/Output)
 ----------------------
-* __CSV__
-* __GeoJSON__ -- input and output in the emerging GeoJSON specification. FeatureServer supports GeoJSON Points, Lines, and Polygons with Rings, as both input and output.
-* __GeoRSS Atom (Simple)__ -- input and output of Points/Lines/Polygons (no rings/holes) in GeoRSS Simple (Atom). This allows one to take any GeoRSS Simple Atom feed and feed it to FeatureServer for storage.
-* __GML/WFS__ -- Output-only support of WFS/GML.
-* __GPX__ -- for Garmin devices
-* __HTML__ -- Output-only support of features as HTML files, powered by Cheetah templates.
-* __KML__ -- Input and output of Points, Lines, and Polygons from KML.
-* __OSM__ -- Output-only support of features as OpenStreetMap '.osm' files. (These files can be opened using JOSM and posted to the OSM server.)
-* __OV2__ -- for TomTom devices
-* __Shapefile__ -- as zip
-* __SQLite/SpatiaLite__ -- points, polyline (linestring), polygon
-* __DXF (AutoCAD)__ -- Compatible with release 11 and 12, points, polyline (linestring), polygon
+<table>
+    <tr>
+        <th>Service</th><th>Description</th><th>Exception/Error Output</th>
+    </tr>
+    <tr>
+        <td>CSV</td><td></td><td>comming</td>
+    </tr>
+    <tr>
+        <td>GeoJSON</td><td>input and output in the emerging GeoJSON specification. FeatureServer supports GeoJSON Points, Lines, and Polygons with Rings, as both input and output.</td><td>comming</td>
+    </tr>
+    <tr>
+        <td>GeoRSS Atom (Simple)</td><td>input and output of Points/Lines/Polygons (no rings/holes) in GeoRSS Simple (Atom). This allows one to take any GeoRSS Simple Atom feed and feed it to FeatureServer for storage.</td><td>comming</td>
+    </tr>
+    <tr>
+        <td>GML/WFS</td><td>Output-only support of WFS/GML.</td><td>yes</td>
+    </tr>
+    <tr>
+        <td>GPX</td><td>for Garmin devices</td><td>takes default serivce if supported, GML/WFS otherwise</td>
+    </tr>
+    <tr>
+        <td>HTML</td><td>Output-only support of features as HTML files, powered by Cheetah templates.</td><td>comming</td>
+    </tr>
+    <tr>
+        <td>KML</td><td>Input and output of Points, Lines, and Polygons from KML.</td><td></td>
+    </tr>
+    <tr>
+        <td>OSM</td><td>Output-only support of features as OpenStreetMap '.osm' files. (These files can be opened using JOSM and posted to the OSM server.)</td><td>unkown</td>
+    </tr>
+    <tr>
+        <td>OV2</td><td>for TomTom devices</td><td>takes default serivce if supported, GML/WFS otherwise</td>
+    </tr>
+    <tr>
+        <td>Shapefile</td><td>as zip</td><td></td>
+    </tr>
+    <tr>
+        <td>SQLite/SpatiaLite</td><td>points, polyline (linestring), polygon</td><td></td>
+    </tr>
+    <tr>
+        <td>DXF (AutoCAD)</td><td>Compatible with release 11 and 12, points, polyline (linestring), polygon</td><td></td>
+    </tr>
+</table>
 
 Setup
 -----
