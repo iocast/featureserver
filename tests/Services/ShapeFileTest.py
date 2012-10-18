@@ -20,7 +20,7 @@ class ShapeFileTestCase(unittest.TestCase):
               'geometry': 'way',
               'srid' : '4326',
               'attribute_cols' : 'boundary,name,landuse',
-              'LatLongBoundingBox' : '5.95459 45.75986 10.52490 47.83528'}
+              'bbox' : '5.95459 45.75986 10.52490 47.83528'}
     service = None
 
     def setUp(self):

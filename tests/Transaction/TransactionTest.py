@@ -23,9 +23,9 @@ class TransactionTest(unittest.TestCase):
               'srid' : '4326',
               'srid_out' : '4326',
               'attribute_cols' : 'name,amenity,operator,bridge,highway,power,place,route',
-              'LatLongBoundingBox' : '5.95459 45.75986 10.52490 47.83528',
+              'bbox' : '5.95459 45.75986 10.52490 47.83528',
               'ele' : 'ele',
-              'gmlProperty' : 'Point'}
+              'geometry_type' : 'Point'}
 
     def setUp(self):
         self.datasource = PostGIS('all', **self.params)
