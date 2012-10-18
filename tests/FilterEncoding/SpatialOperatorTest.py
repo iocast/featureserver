@@ -20,7 +20,7 @@ class SpatialOperatorTestCase(unittest.TestCase):
               'geometry': 'way',
               'srid' : '4326',
               'attribute_cols' : 'name,amenity,operator,bridge,highway,power,place,route',
-              'LatLongBoundingBox' : '5.95459 45.75986 10.52490 47.83528'}
+              'bbox' : '5.95459 45.75986 10.52490 47.83528'}
     
     def setUp(self):
         self.datasource = PostGIS('all', **self.params)
