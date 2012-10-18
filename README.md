@@ -81,25 +81,25 @@ Virtual Environment
 -------------------
 download virtualenv.py the recent version from http://pypi.python.org/pypi/virtualenv
 
-```
+```shell
 curl https://raw.github.com/pypa/virtualenv/master/virtualenv.py -o virtualenv.py
 ```
 
 To create a new environment with the name ```featureserver``` run:
 
-```
+```shell
 python virtualenv.py featureserver
 ```
 
 To activate the virtual env call:
 
-```
+```shell
 source featureserver/bin/activate
 ```
 
 Now you can install the needed dependencies using the command ```pip install``` as follow:
 
-```
+```shell
 pip install lxml
 ```
 
