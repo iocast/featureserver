@@ -284,7 +284,7 @@ class WFS(Format):
             featureOperations.append(etree.Element('Delete'))
             type.append(featureOperations)
             
-            latlong = self.getLatLongBoundingBox(self.datasources[layer])
+            latlong = self.getBBOX(self.datasources[layer])
             type.append(latlong)
             
             featureList.append(type)
@@ -366,8 +366,8 @@ class WFS(Format):
                 sequence.append(element)
         
         
-        if hasattr(datasource, 'gmlproperty'):
-            properties = datasource.gmlproperty.split(',')
+        if hasattr(datasource, 'geometry_type'):
+            properties = datasource.geometry_type.split(',')
         else:
             properties = ['Point', 'Line', 'Polygon']
         for property in properties:
@@ -397,14 +397,14 @@ class WFS(Format):
 
         return root
         
-    def getLatLongBoundingBox(self, datasource):
-        if hasattr(datasource, 'latlongboundingbox'):
-            latlong = datasource.latlongboundingbox
+    def getBBOX(self, datasource):
+        if hasattr(datasource, 'bbox'):
+            latlong = datasource.bbox
         else:
-            latlong = datasource.getLatLongBoundingBox()
+            latlong = datasource.getBBOX()
         latlongArray = latlong.split(' ')
         
-        return etree.Element('LatLongBoundingBox', 
+        return etree.Element('bbox', 
                              attrib={'minx':latlongArray[0],
                                      'miny':latlongArray[1],
                                      'maxx':latlongArray[2],
