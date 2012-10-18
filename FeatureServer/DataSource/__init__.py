@@ -33,7 +33,7 @@ class DataSource (object):
         pass
     def rollback (self):
         pass
-    def getLatLongBoundingBox(self):
+    def getBBOX(self):
         return '0 0 0 0'
     def getAttributeDescription(self, name): pass
 
