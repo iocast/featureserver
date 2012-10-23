@@ -34,7 +34,7 @@ class SQLite(Format):
         return self._connection
     
     def create_table(self, feature):
-        sql = "CREATE TABLE featureserver ("
+        sql = "CREATE TABLE featureserver (fid text, "
         
         for key, value in feature.properties.items():
             if key != "geometry":
@@ -71,13 +71,13 @@ class SQLite(Format):
         
         wkt = "GeomFromText('" + WKT.to_wkt(feature.geometry) + "', %i)" % int(srs)
         
-        sql = "INSERT INTO featureserver ("
+        sql = "INSERT INTO featureserver (fid, "
         
         for key, value in feature.properties.items():
             if key != "geometry":
                 sql += "%s, " % key
         sql += "geometry" 
-        sql += ") VALUES ("
+        sql += ") VALUES ('%s', " % self.escapeSQL(str(feature.id).encode('utf-8'))
         
         for key, value in feature.properties.items():
             #key = self.getFormatedAttributName(key)
