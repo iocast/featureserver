@@ -29,7 +29,7 @@ class WFSRequest(object):
         #self.data = self.data.replace('singleChar="?"', 'singleChar="\?"')
         
         self.dom = etree.XML(self.data, parser=self.parser)
-        
+    
         
     def render(self, datasource):
         '''

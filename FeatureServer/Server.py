@@ -152,18 +152,24 @@ class Server (object):
                     found = True
         
         if not found and not params.has_key("service") and post_data:
-            dom = etree.XML(post_data)
-            params['service'] = dom.get('service')
+            try:
+                dom = etree.XML(post_data)
+                params['service'] = dom.get('service')
+            except etree.ParseError: pass
 
         if not found and not params.has_key("version") and post_data:
-            dom = etree.XML(post_data)
-            params['version'] = dom.get('version')
+            try:
+                dom = etree.XML(post_data)
+                params['version'] = dom.get('version')
+            except etree.ParseError: pass
             
         if not found and not params.has_key("typename") and post_data:
-            dom = etree.XML(post_data)
-            for key, value in cgimod.parse_qsl(post_data, keep_blank_values=True):
-                if key.lower() == 'typename':
-                    params['typename'] = value
+            try:
+                dom = etree.XML(post_data)
+                for key, value in cgimod.parse_qsl(post_data, keep_blank_values=True):
+                    if key.lower() == 'typename':
+                        params['typename'] = value
+            except etree.ParseError: pass
 
         if not found and params.has_key("service"):
             format = params['service']
@@ -198,7 +204,7 @@ class Server (object):
         
         try:
             request.parse(params, path_info, host, post_data, request_method)
-        
+            
             # short circuit datasource where the first action is a metadata request. 
             if len(request.actions) and request.actions[0].method == "metadata": 
                 return request.encode_metadata(request.actions[0])
@@ -216,7 +222,7 @@ class Server (object):
                     return getattr(request, request.actions[0].request.lower())(version)
 
             datasource = self.datasources[request.datasources[0]]
-        
+
             if request_method != "GET" and hasattr(datasource, 'processes'):
                 raise Exception("You can't post data to a processed layer.")
 
@@ -231,7 +237,7 @@ class Server (object):
                 try:
                     transactionResponse = TransactionResponse()
                     transactionResponse.setSummary(TransactionSummary())
-    
+                    
                     for action in request.actions:
                         method = getattr(datasource, action.method)
                         try:

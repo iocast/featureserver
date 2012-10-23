@@ -216,6 +216,12 @@
 				-->
 				<Statement>ST_Intersects("<xsl:value-of select="$geometry" />", Transform(ST_MakeEnvelope(<xsl:value-of select="$lower1" />,<xsl:value-of select="$upper1"/>, <xsl:value-of select="$srs1"/>), <xsl:value-of select="$srs" />))</Statement>
 			</xsl:when>
+			<xsl:when test="$datasource='SpatialLite'">
+				<xsl:variable name="lower1" select="regexp:replace(string($lower), string(' '), 'g', ',')"/>
+				<xsl:variable name="upper1" select="regexp:replace(string($upper), string(' '), 'g', ',')"/>
+				<xsl:variable name="srs1" select="regexp:replace(string($srsName), '.*:(?!.*:)', 'g', '')"/>
+				<Statement>Intersects(Transform(BuildMBR(<xsl:value-of select="$lower1" />,<xsl:value-of select="$upper1"/>, <xsl:value-of select="$srs1"/>), <xsl:value-of select="$srs" />), <xsl:value-of select="$geometry" />)</Statement>
+			</xsl:when>
 		</xsl:choose>
 		
 	</xsl:template>

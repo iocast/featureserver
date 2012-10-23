@@ -101,7 +101,6 @@ class SpatialLite (DataSource):
             
             sql += " FROM \"%s\"" % (self.table)
             
-            #sql = "SELECT AsText(Transform(%s, %d)) as fs_text_geom, %s as ele, %s as version, \"%s\", %s FROM \"%s\"" % (self.geom_col, int(self.srid_out), self.ele, self.version, self.fid_col, self.attribute_cols, self.table)
             if filters:
                 sql += " WHERE " + " AND ".join(filters)
             if action.wfsrequest:
@@ -121,14 +120,10 @@ class SpatialLite (DataSource):
             #    sql += " LIMIT 1000"
             if action.startfeature:
                 sql += " OFFSET %d" % action.startfeature
+            
+            cursor.execute(str(sql), attrs)
 
-            try:
-                cursor.execute(str(sql), attrs)
-            except Exception, e:
-                if e.pgcode[:2] == errorcodes.CLASS_SYNTAX_ERROR_OR_ACCESS_RULE_VIOLATION:
-                    raise InvalidValueException(**{'dump':e.pgerror,'layer':self.name,'locator':'PostGIS'})
-            print sql
-            result = cursor.fetchall() # should use fetchmany(action.maxfeatures)
+            result = cursor.fetchall()
                 
         columns = [desc[0] for desc in cursor.description]
         features = []

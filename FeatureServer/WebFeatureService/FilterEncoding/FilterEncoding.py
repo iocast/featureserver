@@ -39,7 +39,6 @@ class FilterEncoding (object):
         self.dom = etree.XML(xml, parser=self.parser)
     
     def parse(self, node = None, operator = None):
-        
         if node == None:
             node = self.dom
         
@@ -77,7 +76,7 @@ class FilterEncoding (object):
     def render(self, datasource, node = None):
         if node == None:
             node = self.tree
-            
+        
         self.create(datasource, node)
         return self.assemble(datasource=datasource, node=node)
             

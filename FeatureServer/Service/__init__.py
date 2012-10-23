@@ -230,7 +230,7 @@ class Request (object):
                         action.method = transaction.__class__.__name__.lower()
                         action.wfsrequest = transaction
                         actions.append(action)
-                
+            
             return actions
         else:
             raise Exception("Service type does not support adding features.")
