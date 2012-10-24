@@ -19,17 +19,11 @@ class ComparisonOperator(Operator):
         xslt = etree.parse(os.path.dirname(os.path.abspath(__file__))+"/../../../../resources/filterencoding/comparison_operators.xsl")
         transform = etree.XSLT(xslt)
         
-        if hasattr(self.node, 'ValueReference'):        
-            if datasource.fid_col == self.node.ValueReference or self.node.ValueReference == "fid_col":
-                result = transform(self.node, datasource="'"+datasource.type+"'", operationType="'"+str(self.node.xpath('local-name()'))+"'", hstore="'false'", hstoreAttribute="'"+datasource.hstoreAttribute+"'")
-            else:
-                result = transform(self.node, datasource="'"+datasource.type+"'", operationType="'"+str(self.node.xpath('local-name()'))+"'", hstore="'"+str(datasource.hstore).lower()+"'", hstoreAttribute="'"+datasource.hstoreAttribute+"'")
+        if hasattr(datasource, 'hstore'):
+            result = transform(self.node, datasource="'"+datasource.type+"'", operationType="'"+str(self.node.xpath('local-name()'))+"'", hstore="'"+str(datasource.hstore).lower()+"'", hstoreAttribute="'"+datasource.hstoreAttribute+"'")
         else:
-            if datasource.fid_col == self.node.PropertyName or self.node.PropertyName == "fid_col":
-                result = transform(self.node, datasource="'"+datasource.type+"'", operationType="'"+str(self.node.xpath('local-name()'))+"'", hstore="'false'", hstoreAttribute="'"+datasource.hstoreAttribute+"'")
-            else:
-                result = transform(self.node, datasource="'"+datasource.type+"'", operationType="'"+str(self.node.xpath('local-name()'))+"'", hstore="'"+str(datasource.hstore).lower()+"'", hstoreAttribute="'"+datasource.hstoreAttribute+"'")
-            
+            result = transform(self.node, datasource="'"+datasource.type+"'", operationType="'"+str(self.node.xpath('local-name()'))+"'")
+
         elements = result.xpath("//Statement")
         if len(elements) > 0:
             self.setStatement(str(elements[0]))
