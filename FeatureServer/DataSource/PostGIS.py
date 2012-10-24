@@ -130,8 +130,7 @@ class PostGIS (DataSource):
             feature = action.feature
             columns = ", ".join(self.column_names(feature)+[self.geom_col])
             values = ", ".join(self.value_formats(feature)+["SetSRID('%s'::geometry, %s) " % (WKT.to_wkt(feature.geometry), self.srid)])
-            sql = "INSERT INTO \"%s\" (%s) VALUES (%s)" % (
-                                            self.table, columns, values)
+            sql = "INSERT INTO \"%s\" (%s) VALUES (%s)" % (self.table, columns, values)
             cursor = self.db.cursor()
             cursor.execute(str(sql), self.feature_values(feature))
             cursor.execute("SELECT currval('%s');" % self.id_sequence())
