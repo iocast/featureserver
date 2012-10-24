@@ -17,7 +17,7 @@
 	<xsl:template match="*[local-name(.)='And']">
 		<xsl:param name="datasource" />
 		<xsl:choose>
-			<xsl:when test="$datasource='PostGIS'">
+			<xsl:when test="$datasource='PostGIS' or $datasource='SpatialLite'">
 				<Statement>
 					<xsl:call-template name="operators">
 						<xsl:with-param name="sign"> AND </xsl:with-param>
@@ -30,7 +30,7 @@
 	<xsl:template match="*[local-name(.)='Or']">
 		<xsl:param name="datasource" />
 		<xsl:choose>
-			<xsl:when test="$datasource='PostGIS'">
+			<xsl:when test="$datasource='PostGIS' or $datasource='SpatialLite'">
 				<Statement>
 					<xsl:call-template name="operators">
 						<xsl:with-param name="sign"> OR </xsl:with-param>
@@ -43,7 +43,7 @@
 	<xsl:template match="*[local-name(.)='Not']">
 		<xsl:param name="datasource" />
 		<xsl:choose>
-			<xsl:when test="$datasource='PostGIS'">
+			<xsl:when test="$datasource='PostGIS' or $datasource='SpatialLite'">
 				<Statement> NOT <xsl:value-of select="//Operator"/></Statement>
 			</xsl:when>
 		</xsl:choose>

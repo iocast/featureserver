@@ -19,7 +19,7 @@
 	<xsl:template match="*[local-name(.)='ResourceId']">
 		<xsl:param name="datasource" />
 		<xsl:choose>
-			<xsl:when test="$datasource='PostGIS'">
+			<xsl:when test="$datasource='PostGIS' or $datasource='SpatialLite'">
 				<Statement>"<xsl:value-of select="$attributeIdName" />" = '<xsl:value-of select="@rid" />'</Statement>
 			</xsl:when>
 		</xsl:choose>
@@ -29,7 +29,7 @@
 	<xsl:template match="*[local-name(.)='FeatureId']">
 		<xsl:param name="datasource" />
 		<xsl:choose>
-			<xsl:when test="$datasource='PostGIS'">
+			<xsl:when test="$datasource='PostGIS' or $datasource='SpatialLite'">
 				<Statement>"<xsl:value-of select="$attributeIdName" />" = '<xsl:value-of select="@fid" />'</Statement>
 			</xsl:when>
 		</xsl:choose>

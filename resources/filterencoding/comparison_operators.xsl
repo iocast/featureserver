@@ -23,7 +23,7 @@
 		<xsl:param name="hstore" />
 		<xsl:param name="hstoreAttribute" />
 		<xsl:choose>
-			<xsl:when test="$datasource='PostGIS' and $hstore='false'">
+			<xsl:when test="($datasource='PostGIS' and $hstore='false') or $datasource='SpatialLite'">
 				<xsl:if test="//*[local-name() = 'ValueReference']">
 					<Statement>"<xsl:value-of select="//*[local-name() = 'ValueReference']" />" = '<xsl:value-of select="//*[local-name() = 'Literal']" />'</Statement>
 				</xsl:if>
