@@ -102,7 +102,7 @@ class Server (object):
 
     def dispatchRequest (self, base_path="", path_info="/", params={}, request_method = "GET", post_data = None,  accepts = ""):
         """Read in request data, and return a (content-type, response string) tuple. May
-           raise an exception, which should be returned as a 500 error to the user."""  
+           raise an exception, which should be returned as a 500 error to the user."""
         response_code = "200 OK"
         host = base_path
         request = None
