@@ -8,12 +8,20 @@ from FeatureServer.DataSource import DataSource
 from vectorformats.Feature import Feature
 from vectorformats.Formats import WKT
 
+from FeatureServer.WebFeatureService.Transaction.ActionResult import ActionResult
+
 from pyspatialite import dbapi2 as db
 
 import datetime
 
 
 class SpatialLite (DataSource):
+    
+    query_action_types = ['lt', 'gt', 'ilike', 'like', 'gte', 'lte']
+    
+    query_action_sql = {'lt': '<', 'gt': '>',
+        'ilike': 'ilike', 'like':'like',
+        'gte': '>=', 'lte': '<='}
 
     def __init__(self, name, file, fid = "fid", geometry = "geometry", order = "", srid = 4326, srid_out = 4326, writable = True, attribute_cols = "*", **kwargs):
         DataSource.__init__(self, name, **kwargs)
@@ -27,6 +35,44 @@ class SpatialLite (DataSource):
         self.attribute_cols = attribute_cols
         self.order          = order
 
+    def column_names (self, feature):
+        return feature.properties.keys()
+    
+    def value_formats (self, feature):
+        values = ["%%(%s)s" % self.geom_col]
+        values = []
+        for key, val in feature.properties.items():
+            valtype = type(val).__name__
+            if valtype == "dict":
+                val['pred'] = "%%(%s)s" % (key,)
+                values.append(val)
+            else:
+                fmt     = "%%(%s)s" % (key, )
+                values.append(fmt)
+        return values
+    
+    
+    def feature_predicates (self, feature):
+        columns = self.column_names(feature)
+        values  = self.value_formats(feature)
+        predicates = []
+        for pair in zip(columns, values):
+            if pair[0] != self.geom_col:
+                if isinstance(pair[1], dict):
+                    # Special Query: pair[0] is 'a', pair[1] is {'type', 'pred', 'value'}
+                    # We build a Predicate here, then we replace pair[1] with pair[1] value below
+                    if pair[1].has_key('value'):
+                        predicates.append("%s %s %s" % (pair[1]['column'],
+                                                        self.query_action_sql[pair[1]['type']],
+                                                        pair[1]['pred']))
+                
+                else:
+                    predicates.append("%s = %s" % pair)
+        if feature.geometry and feature.geometry.has_key("coordinates"):
+            predicates.append(" %s = SetSRID('%s'::geometry, %s) " % (self.geom_col, WKT.to_wkt(feature.geometry), self.srid))
+        return predicates
+
+    
     def begin(self):
         self._connection = db.connect(self.file)
 
@@ -40,9 +86,34 @@ class SpatialLite (DataSource):
             self._connection.rollback()
         self._connection.close()
 
-    
     def insert(self, action, response=None):
-        ''' '''
+        self.begin()
+        if action.feature != None:
+            feature = action.feature
+            columns = ", ".join(self.column_names(feature)+[self.geom_col])
+            values = ", ".join(self.value_formats(feature)+["SetSRID('%s'::geometry, %s) " % (WKT.to_wkt(feature.geometry), self.srid)])
+            sql = "INSERT INTO \"%s\" (%s) VALUES (%s)" % (self.table, columns, values)
+            cursor = self._connection.cursor()
+            cursor.execute(str(sql), self.feature_values(feature))
+            self.commit()
+            return self.select(action)
+        
+        elif action.wfsrequest != None:
+            sql = action.wfsrequest.getStatement(self)
+            
+            cursor = self._connection.cursor()
+            cursor.execute(str(sql))
+            
+            cursor.execute("SELECT last_insert_rowid()")
+            action.id =  cursor.fetchone()[0]
+            self.commit()
+            
+            response.addUpdateResult(ActionResult(action.id, ""))
+            response.getSummary().increaseUpdated()
+            
+            return self.select(action)
+        
+        return None
 
     def update(self, action, response=None):
         ''' '''
@@ -51,6 +122,7 @@ class SpatialLite (DataSource):
         ''' '''
 
     def select(self, action, response=None):
+        self.begin()
         cursor = self._connection.cursor()
         
         if action.id is not None:
@@ -67,9 +139,8 @@ class SpatialLite (DataSource):
                 cols = self.additional_cols.split(';')
                 additional_col = ",".join(cols)
                 sql += ", %s" % additional_col
-                
+            
             sql += " FROM \"%s\" WHERE %s = :%s" % (self.table, self.fid_col, self.fid_col)
-
             cursor.execute(str(sql), {self.fid_col: str(action.id)})
             
             result = [cursor.fetchone()]
@@ -86,7 +157,9 @@ class SpatialLite (DataSource):
                     else:
                         attrs[key] = value
             if action.bbox:
-                filters.append( "%s && Transform(SetSRID('BOX3D(%f %f,%f %f)'::box3d, %s), %s) AND intersects(%s, Transform(SetSRID('BOX3D(%f %f,%f %f)'::box3d, %s), %s))" % ((self.geom_col,) + tuple(action.bbox) + (self.srid_out,) + (self.srid,) + (self.geom_col,) + (tuple(action.bbox) + (self.srid_out,) + (self.srid,))))
+                filters.append("Intersects(Transform(BuildMBR(%f, %f, %f, %f, %s), %s), geometry)" % (tuple(action.bbox) + (self.srid_out,) + (self.srid,)))
+
+
             sql = "SELECT AsText(Transform(%s, %d)) as fs_text_geom, " % (self.geom_col, int(self.srid_out))
             if hasattr(self, 'ele'):
                 sql += "%s as ele, " % self.ele
@@ -108,7 +181,6 @@ class SpatialLite (DataSource):
                     sql += " AND "
                 else:
                     sql += " WHERE "
-                
                 sql += action.wfsrequest.render(self)
             
             
