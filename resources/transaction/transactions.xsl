@@ -75,6 +75,34 @@
 				);
 				</Statement>
 			</xsl:when>
+			<xsl:when test="$datasource='SpatialLite'">
+				<Statement>
+                    INSERT INTO <xsl:value-of select="$tableName"/> (
+                    <xsl:for-each select="child::*">
+                        <xsl:variable name="total" select="count(child::*)" />
+                        <xsl:for-each select="child::*">
+                            "<xsl:value-of select="local-name(.)"/>"
+                            <xsl:if test="position() &lt; $total">,</xsl:if>
+                        </xsl:for-each>
+                    </xsl:for-each>
+                    ) VALUES (
+                    <xsl:for-each select="child::*">
+                        <xsl:variable name="total" select="count(child::*)" />
+                        <xsl:for-each select="child::*">
+                            <xsl:choose>
+                                <xsl:when test="local-name(.)=$geometryAttribute">
+                                    GeomFromGML('<xsl:value-of select="string($geometryData)" />')
+                                </xsl:when>
+                                <xsl:otherwise>
+                                    '<xsl:value-of select="."/>'
+                                </xsl:otherwise>
+                            </xsl:choose>
+                            <xsl:if test="position() &lt; $total">,</xsl:if>
+                        </xsl:for-each>
+                    </xsl:for-each>
+                    );
+				</Statement>
+			</xsl:when>
 		</xsl:choose>
 	</xsl:template>
 	
