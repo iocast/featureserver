@@ -116,10 +116,53 @@ class SpatialLite (DataSource):
         return None
 
     def update(self, action, response=None):
-        ''' '''
+        self.begin()
+        if action.feature != None:
+            feature = action.feature
+            predicates = ", ".join( self.feature_predicates(feature) )
+            sql = "UPDATE \"%s\" SET %s WHERE %s = %d" % (self.table, predicates, self.fid_col, action.id )
+            cursor = self._connection.cursor()
+            cursor.execute(str(sql), self.feature_values(feature))
+            self.commit()
+            return self.select(action)
+        
+        elif action.wfsrequest != None:
+            sql = action.wfsrequest.getStatement(self)
+            cursor = self._connection.cursor()
+            cursor.execute(str(sql))
+            
+            self.commit()
+            
+            response.addUpdateResult(ActionResult(action.id, ""))
+            response.getSummary().increaseUpdated()
+            
+            return self.select(action)
+        
+        return None
+
 
     def delete(self, action, response=None):
-        ''' '''
+        self.begin()
+        if action.feature != None:
+            sql = "DELETE FROM \"%s\" WHERE %s = %%(%s)d" % (self.table, self.fid_col, self.fid_col )
+            cursor = self._connection.cursor()
+            try:
+                cursor.execute(str(sql) % {self.fid_col: action.id})
+            except:
+                cursor.execute(str(sql), {self.fid_col: action.id})
+            return []
+    
+        elif action.wfsrequest != None:
+            sql = action.wfsrequest.getStatement(self)
+            cursor = self._connection.cursor()
+            try:
+                cursor.execute(str(sql) % {self.fid_col: action.id})
+            except:
+                cursor.execute(str(sql), {self.fid_col: action.id})
+            
+            response.getSummary().increaseDeleted()
+            
+            return []
 
     def select(self, action, response=None):
         self.begin()
