@@ -74,17 +74,20 @@ class SpatialLite (DataSource):
 
     
     def begin(self):
-        self._connection = db.connect(self.file)
+        self._connection = db.connect(self.file, check_same_thread = False)
+    
+    def close(self):
+        self._connection.close()
 
     def commit(self):
         if self.writable:
             self._connection.commit()
-        self._connection.close()
+        self.close()
 
     def rollback(self):
         if self.writable:
             self._connection.rollback()
-        self._connection.close()
+        self.close()
 
     def insert(self, action, response=None):
         self.begin()
@@ -95,8 +98,8 @@ class SpatialLite (DataSource):
             sql = "INSERT INTO \"%s\" (%s) VALUES (%s)" % (self.table, columns, values)
             cursor = self._connection.cursor()
             cursor.execute(str(sql), self.feature_values(feature))
-            self.commit()
-            return self.select(action)
+            
+            return []
         
         elif action.wfsrequest != None:
             sql = action.wfsrequest.getStatement(self)
@@ -106,12 +109,11 @@ class SpatialLite (DataSource):
             
             cursor.execute("SELECT last_insert_rowid()")
             action.id =  cursor.fetchone()[0]
-            self.commit()
             
             response.addUpdateResult(ActionResult(action.id, ""))
             response.getSummary().increaseUpdated()
-            
-            return self.select(action)
+                        
+            return []
         
         return None
 
@@ -123,20 +125,18 @@ class SpatialLite (DataSource):
             sql = "UPDATE \"%s\" SET %s WHERE %s = %d" % (self.table, predicates, self.fid_col, action.id )
             cursor = self._connection.cursor()
             cursor.execute(str(sql), self.feature_values(feature))
-            self.commit()
-            return self.select(action)
+
+            return []
         
         elif action.wfsrequest != None:
             sql = action.wfsrequest.getStatement(self)
             cursor = self._connection.cursor()
             cursor.execute(str(sql))
             
-            self.commit()
-            
             response.addUpdateResult(ActionResult(action.id, ""))
             response.getSummary().increaseUpdated()
             
-            return self.select(action)
+            return []
         
         return None
 
@@ -150,6 +150,7 @@ class SpatialLite (DataSource):
                 cursor.execute(str(sql) % {self.fid_col: action.id})
             except:
                 cursor.execute(str(sql), {self.fid_col: action.id})
+                    
             return []
     
         elif action.wfsrequest != None:
@@ -159,7 +160,7 @@ class SpatialLite (DataSource):
                 cursor.execute(str(sql) % {self.fid_col: action.id})
             except:
                 cursor.execute(str(sql), {self.fid_col: action.id})
-            
+                
             response.getSummary().increaseDeleted()
             
             return []
@@ -226,7 +227,6 @@ class SpatialLite (DataSource):
                     sql += " WHERE "
                 sql += action.wfsrequest.render(self)
             
-            
             if self.order:
                 sql += " ORDER BY " + self.order
             if action.maxfeatures:
@@ -242,6 +242,7 @@ class SpatialLite (DataSource):
                 
         columns = [desc[0] for desc in cursor.description]
         features = []
+        
         for row in result:
             props = dict(zip(columns, row))
             if not props['fs_text_geom']: continue
