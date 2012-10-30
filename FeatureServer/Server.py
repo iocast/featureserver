@@ -13,8 +13,9 @@ from web_request.handlers import wsgi, mod_python, cgi
 from lxml import etree
 import cgi as cgimod
 
-from FeatureServer.WebFeatureService.Transaction.TransactionResponse import TransactionResponse
-from FeatureServer.WebFeatureService.Transaction.TransactionSummary import TransactionSummary
+from FeatureServer.WebFeatureService.Response.TransactionResponse import TransactionResponse
+from FeatureServer.WebFeatureService.Response.TransactionSummary import TransactionSummary
+from FeatureServer.WebFeatureService.Response.ActionResult import ActionResult
 
 from FeatureServer.Workspace.FileHandler import FileHandler
 
@@ -241,8 +242,11 @@ class Server (object):
                     for action in request.actions:
                         method = getattr(datasource, action.method)
                         try:
-                            result = method(action, transactionResponse)
-                            response += result
+                            result = method(action)
+                            if isinstance(result, ActionResult):
+                                transactionResponse.addResult(result)
+                            elif result is not None:
+                                response += result
                         except InvalidValueException as e:
                             exceptionReport.add(e)
     

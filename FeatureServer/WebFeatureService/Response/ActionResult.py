@@ -5,7 +5,7 @@ Created on Oct 21, 2011
 '''
 
 class ActionResult(object):
-
+    
     def __init__(self, resource, handle):
         self.resource = resource
         self.handle = handle

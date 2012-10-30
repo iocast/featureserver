@@ -8,7 +8,11 @@ from FeatureServer.DataSource import DataSource
 from vectorformats.Feature import Feature
 from vectorformats.Formats import WKT
 
-from FeatureServer.WebFeatureService.Transaction.ActionResult import ActionResult
+from FeatureServer.WebFeatureService.Response.InsertResult import InsertResult
+from FeatureServer.WebFeatureService.Response.UpdateResult import UpdateResult
+from FeatureServer.WebFeatureService.Response.DeleteResult import DeleteResult
+from FeatureServer.WebFeatureService.Response.ReplaceResult import ReplaceResult
+
 
 from pyspatialite import dbapi2 as db
 
@@ -89,17 +93,24 @@ class SpatialLite (DataSource):
             self._connection.rollback()
         self.close()
 
-    def insert(self, action, response=None):
+    def insert(self, action):
         self.begin()
         if action.feature != None:
             feature = action.feature
+
             columns = ", ".join(self.column_names(feature)+[self.geom_col])
             values = ", ".join(self.value_formats(feature)+["SetSRID('%s'::geometry, %s) " % (WKT.to_wkt(feature.geometry), self.srid)])
+
             sql = "INSERT INTO \"%s\" (%s) VALUES (%s)" % (self.table, columns, values)
+
             cursor = self._connection.cursor()
             cursor.execute(str(sql), self.feature_values(feature))
+    
+            cursor.execute("SELECT last_insert_rowid()")
+            action.id = cursor.fetchone()[0]
+    
+            return InsertResult(action.id, "")
             
-            return []
         
         elif action.wfsrequest != None:
             sql = action.wfsrequest.getStatement(self)
@@ -110,14 +121,11 @@ class SpatialLite (DataSource):
             cursor.execute("SELECT last_insert_rowid()")
             action.id =  cursor.fetchone()[0]
             
-            response.addUpdateResult(ActionResult(action.id, ""))
-            response.getSummary().increaseUpdated()
-                        
-            return []
-        
+            return InsertResult(action.id, "")
+            
         return None
 
-    def update(self, action, response=None):
+    def update(self, action):
         self.begin()
         if action.feature != None:
             feature = action.feature
@@ -126,22 +134,19 @@ class SpatialLite (DataSource):
             cursor = self._connection.cursor()
             cursor.execute(str(sql), self.feature_values(feature))
 
-            return []
+            return UpdateResult(action.id, "")
         
         elif action.wfsrequest != None:
             sql = action.wfsrequest.getStatement(self)
             cursor = self._connection.cursor()
             cursor.execute(str(sql))
             
-            response.addUpdateResult(ActionResult(action.id, ""))
-            response.getSummary().increaseUpdated()
+            return UpdateResult(action.id, "")
             
-            return []
-        
         return None
 
 
-    def delete(self, action, response=None):
+    def delete(self, action):
         self.begin()
         if action.feature != None:
             sql = "DELETE FROM \"%s\" WHERE %s = %%(%s)d" % (self.table, self.fid_col, self.fid_col )
@@ -151,7 +156,7 @@ class SpatialLite (DataSource):
             except:
                 cursor.execute(str(sql), {self.fid_col: action.id})
                     
-            return []
+            return DeleteResult(action.id, "")
     
         elif action.wfsrequest != None:
             sql = action.wfsrequest.getStatement(self)
@@ -160,12 +165,13 @@ class SpatialLite (DataSource):
                 cursor.execute(str(sql) % {self.fid_col: action.id})
             except:
                 cursor.execute(str(sql), {self.fid_col: action.id})
-                
-            response.getSummary().increaseDeleted()
             
-            return []
+            return DeleteResult(action.id, "")
+        
+        return None
+        
 
-    def select(self, action, response=None):
+    def select(self, action):
         self.begin()
         cursor = self._connection.cursor()
         

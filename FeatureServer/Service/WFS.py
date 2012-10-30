@@ -8,7 +8,7 @@ import vectorformats.Formats.WFS
 from FeatureServer.Service import NoLayerException
 from FeatureServer.Service import Action
 from FeatureServer.WebFeatureService.WFSRequest import WFSRequest
-from FeatureServer.WebFeatureService.Transaction.TransactionResponse import TransactionResponse
+from FeatureServer.WebFeatureService.Response.TransactionResponse import TransactionResponse
 
 class WFS(Request):
     def encode(self, results):

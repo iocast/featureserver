@@ -191,6 +191,17 @@ class WFS(Format):
             if len(replace.getHandle()) > 0:
                 failedCount += 1
         result += """</wfs:ReplaceResults>"""
+        
+        
+        deleteResult = response.getDeleteResults()
+        result += "<wfs:DeleteResults>"
+        for delete in deleteResult:
+            result += """<wfs:Feature handle="%s">
+                <ogc:ResourceId fid="%s"/>
+                </wfs:Feature>""" % (str(delete.getHandle()), str(delete.getResourceId()))
+            if len(delete.getHandle()) > 0:
+                failedCount += 1
+        result += """</wfs:DeleteResults>"""
 
         
         result += """<wfs:TransactionResult> 
