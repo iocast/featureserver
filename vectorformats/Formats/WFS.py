@@ -14,7 +14,7 @@ class WFS(Format):
                   'xsi' : 'http://www.w3.org/2001/XMLSchema-instance'}
     
     def encode(self, features, **kwargs):
-        results = ["""<wfs:FeatureCollection
+        results = ["""<?xml version="1.0" ?><wfs:FeatureCollection
    xmlns:fs="http://example.com/featureserver"
    xmlns:wfs="http://www.opengis.net/wfs"
    xmlns:gml="http://www.opengis.net/gml"
@@ -25,6 +25,7 @@ class WFS(Format):
         for feature in features:
             results.append( self.encode_feature(feature))
         results.append("""</wfs:FeatureCollection>""")
+        
         return "\n".join(results)        
     
     def encode_feature(self, feature):
