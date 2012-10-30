@@ -65,7 +65,7 @@ class Request (object):
            Returns a list of Actions. If the first action in the list is 
            of method 'metadata', encode_metadata is called (no datasource
            is touched), and encode_metadata is called. Otherwise, the actions
-           are passed onto DataSources to create lists of Features.""" 
+           are passed onto DataSources to create lists of Features."""
         self.host = host
         
         try:
@@ -73,7 +73,7 @@ class Request (object):
         except NoLayerException:
             a = Action()
             
-            if params.has_key('service') and params['service'] == 'WFS':
+            if params.has_key('service') and params['service'].lower() == 'wfs':
                 for layer in self.service.datasources:
                     self.datasources.append(layer)
                 if params.has_key('request'):
@@ -92,10 +92,10 @@ class Request (object):
         
         action = Action()
         
-        if request_method == "GET":
-            action = self.get_select_action(path_info, params) 
+        if request_method == "GET" or (request_method == "OPTIONS" and (post_data is None or len(post_data) <= 0)):
+            action = self.get_select_action(path_info, params)
         
-        elif request_method == "POST" or request_method == "PUT":
+        elif request_method == "POST" or request_method == "PUT" or (request_method == "OPTIONS" and len(post_data) > 0):
             actions = self.handle_post(params, path_info, host, post_data, request_method, format_obj = format_obj)
             for action in actions:
                 self.actions.append(action)
@@ -224,12 +224,12 @@ class Request (object):
                     format_obj.parse(post_data)
                     
                     transactions = format_obj.getActions()
-                    
-                    for transaction in transactions:
-                        action = Action()
-                        action.method = transaction.__class__.__name__.lower()
-                        action.wfsrequest = transaction
-                        actions.append(action)
+                    if transactions is not None:
+                        for transaction in transactions:
+                            action = Action()
+                            action.method = transaction.__class__.__name__.lower()
+                            action.wfsrequest = transaction
+                            actions.append(action)
             
             return actions
         else:
