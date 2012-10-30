@@ -9,7 +9,10 @@ from FeatureServer.DataSource import DataSource
 from vectorformats.Feature import Feature
 from vectorformats.Formats import WKT
 
-from FeatureServer.WebFeatureService.Transaction.ActionResult import ActionResult
+from FeatureServer.WebFeatureService.Response.InsertResult import InsertResult
+from FeatureServer.WebFeatureService.Response.UpdateResult import UpdateResult
+from FeatureServer.WebFeatureService.Response.DeleteResult import DeleteResult
+from FeatureServer.WebFeatureService.Response.ReplaceResult import ReplaceResult
 
 from FeatureServer.Exceptions.WebFeatureService.InvalidValueException import InvalidValueException
 from FeatureServer.Exceptions.ConnectionException import ConnectionException
@@ -124,19 +127,22 @@ class PostGIS (DataSource):
     def id_sequence (self):
         return self.table + "_" + self.fid_col + "_seq"
     
-    def insert (self, action, response=None):
+    def insert (self, action):
         self.begin()
         if action.feature != None:
             feature = action.feature
             columns = ", ".join(self.column_names(feature)+[self.geom_col])
             values = ", ".join(self.value_formats(feature)+["SetSRID('%s'::geometry, %s) " % (WKT.to_wkt(feature.geometry), self.srid)])
+
             sql = "INSERT INTO \"%s\" (%s) VALUES (%s)" % (self.table, columns, values)
+
             cursor = self.db.cursor()
             cursor.execute(str(sql), self.feature_values(feature))
+
             cursor.execute("SELECT currval('%s');" % self.id_sequence())
             action.id = cursor.fetchone()[0]
-            self.db.commit()
-            return self.select(action)
+            
+            return InsertResult(action.id, "")
         
         elif action.wfsrequest != None:
             sql = action.wfsrequest.getStatement(self)
@@ -146,54 +152,45 @@ class PostGIS (DataSource):
             
             cursor.execute("SELECT currval('%s');" % self.id_sequence())
             action.id = cursor.fetchone()[0]
-            self.db.commit()
             
-            response.addInsertResult(ActionResult(action.id, ""))
-            response.getSummary().increaseInserted()
-            
-            return self.select(action)
-            
-        return None
-        
-
-    def update (self, action, response=None):
-        if action.feature != None:
-            feature = action.feature
-            predicates = ", ".join( self.feature_predicates(feature) )
-            sql = "UPDATE \"%s\" SET %s WHERE %s = %d" % (
-                        self.table, predicates, self.fid_col, action.id )
-            cursor = self.db.cursor()
-            cursor.execute(str(sql), self.feature_values(feature))
-            self.db.commit()
-            return self.select(action)
-        
-        elif action.wfsrequest != None:
-            sql = action.wfsrequest.getStatement(self)
-            
-            cursor = self.db.cursor()
-            cursor.execute(str(sql))
-
-            #cursor.execute("SELECT currval('%s');" % self.id_sequence())
-            #action.id = cursor.fetchone()[0]
-            self.db.commit()
-            
-            response.addUpdateResult(ActionResult(action.id, ""))
-            response.getSummary().increaseUpdated()
-            
-            return self.select(action)
+            return InsertResult(action.id, "")
                         
         return None
         
-    def delete (self, action, response=None):
+
+    def update (self, action):
         if action.feature != None:
-            sql = "DELETE FROM \"%s\" WHERE %s = %%(%s)d" % (
-                        self.table, self.fid_col, self.fid_col )
+            feature = action.feature
+            predicates = ", ".join( self.feature_predicates(feature) )
+
+            sql = "UPDATE \"%s\" SET %s WHERE %s = %d" % ( self.table, predicates, self.fid_col, action.id )
+
             cursor = self.db.cursor()
+            cursor.execute(str(sql), self.feature_values(feature))
+            
+            return UpdateResult(action.id, "")
+        
+        elif action.wfsrequest != None:
+            sql = action.wfsrequest.getStatement(self)
+            
+            cursor = self.db.cursor()
+            cursor.execute(str(sql))
+
+            return UpdateResult(action.id, "")
+            
+        return None
+        
+    def delete (self, action):
+        if action.feature != None:
+            sql = "DELETE FROM \"%s\" WHERE %s = %%(%s)d" % ( self.table, self.fid_col, self.fid_col )
+            cursor = self.db.cursor()
+            
             try:
                 cursor.execute(str(sql) % {self.fid_col: action.id})
             except:    
                 cursor.execute(str(sql), {self.fid_col: action.id})
-            return []
+            
+            return DeleteResult(action.id, "")
         
         elif action.wfsrequest != None:
             sql = action.wfsrequest.getStatement(self)
@@ -203,12 +200,12 @@ class PostGIS (DataSource):
             except:    
                 cursor.execute(str(sql), {self.fid_col: action.id})
             
-            response.getSummary().increaseDeleted()
+            return DeleteResult(action.id, "")
             
-            return []
+        return None
 
 
-    def select (self, action, response=None):
+    def select (self, action):
         cursor = self.db.cursor()
 
         if action.id is not None:
