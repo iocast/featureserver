@@ -17,7 +17,7 @@ class SpatialOperator(Operator):
     def createStatement(self, datasource):
         xslt = etree.parse(os.path.dirname(os.path.abspath(__file__))+"/../../../../resources/filterencoding/spatial_operators.xsl")
         transform = etree.XSLT(xslt_input=xslt)
-        result = transform(self.node, datasource="'"+datasource.type+"'", operationType="'"+str(self.node.xpath('local-name()'))+"'", geometryName="'"+datasource.geom_col+"'", srs="'"+datasource.srid+"'")
+        result = transform(self.node, datasource="'"+datasource.type+"'", operationType="'"+str(self.node.xpath('local-name()'))+"'", geometryName="'"+datasource.geom_col+"'", srs="'"+str(datasource.srid)+"'")
         
         stmtTxt = ''
         stmtChild = ''
