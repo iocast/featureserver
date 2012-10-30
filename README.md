@@ -1,6 +1,6 @@
 FeatureServer
 =============
-FeatureServer is an implementation of a RESTful Geographic Feature Service. Using standard HTTP methods, you can fetch a representation of a feature or a collection of features, add new data to the service, or delete data from the service. Use it as an aggregator -- post your GeoRSS feeds to it, and then browse them using WFS. Use it as a translator: use the OGR DataSource to load a shapefile and open it in Google Earth.
+<a href="http://featureserver.org" target="_new">FeatureServer</a> is an implementation of a RESTful Geographic Feature Service. Using standard HTTP methods, you can fetch a representation of a feature or a collection of features, add new data to the service, or delete data from the service. Use it as an aggregator -- post your GeoRSS feeds to it, and then browse them using WFS. Use it as a translator: use the OGR DataSource to load a shapefile and open it in Google Earth.
 
 DataSource (Storage)
 --------------------
@@ -102,53 +102,5 @@ Service (Input/Output)
         </tr>
     </tbody>
 </table>
-
-Setup
------
-FeatureServer can be configured to use one of three different server configurations:
-* CGI
-* mod_python
-* Standalone wsgi HTTP server
-* FastCGI
-
-
-Installation
-============
-
-Dependencies
-------------
-* dxfwrite
-* lxml
-* pyspatialite
-* Cheetah
-* simplejson
-* psycopg2
-
-Virtual Environment
--------------------
-download virtualenv.py the recent version from <a href="http://pypi.python.org/pypi/virtualenv" target="_new">http://pypi.python.org/pypi/virtualenv</a>
-
-```shell
-curl https://raw.github.com/pypa/virtualenv/master/virtualenv.py -o virtualenv.py
-```
-
-To create a new environment with the name ```featureserver``` run:
-
-```shell
-python virtualenv.py featureserver
-```
-
-To activate the virtual env call:
-
-```shell
-source featureserver/bin/activate
-```
-
-Now you can install the needed dependencies using the command ```pip install``` as follow:
-
-```shell
-pip install lxml
-```
-
 
 for more information visit <a href="http://featureserver.org" target="_new">featureserver.org</a>
