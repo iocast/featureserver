@@ -55,9 +55,9 @@ def mod_python (dispatch_function, apache_request):
             fields = util.FieldStorage(apache_request) 
             for key in fields.keys():
                 params[key.lower()] = fields[key] 
-        if post_data:
-            for key, value in cgimod.parse_qsl(post_data, keep_blank_values=True):
-                params[key.lower()] = value
+         #if post_data:
+             #for key, value in cgimod.parse_qsl(post_data, keep_blank_values=True):
+                 #params[key.lower()] = value
         returned_data = dispatch_function( 
           base_path = base_path, 
           path_info = apache_request.path_info, 
@@ -126,13 +126,14 @@ def wsgi (dispatch_function, environ, start_response):
         
         params = {}
         post_data = None
+    
         if environ.has_key('CONTENT_LENGTH') and environ['CONTENT_LENGTH']:
             post_data = environ['wsgi.input'].read(int(environ['CONTENT_LENGTH']))
             
             #if post_data:
             #    for key, value in cgimod.parse_qsl(post_data, keep_blank_values=True):
             #        params[key.lower()] = value                
-        
+    
         if environ.has_key('QUERY_STRING'):
             for key, value in cgimod.parse_qsl(environ['QUERY_STRING'], keep_blank_values=True):
                 params[key.lower()] = value
