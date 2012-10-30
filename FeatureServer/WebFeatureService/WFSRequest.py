@@ -27,8 +27,11 @@ class WFSRequest(object):
         #self.data = self.data.replace('wildCard="?"', 'wildCard="\?"')
         #self.data = self.data.replace('singleChar="*"', 'singleChar="\*"')
         #self.data = self.data.replace('singleChar="?"', 'singleChar="\?"')
-        
-        self.dom = etree.XML(self.data, parser=self.parser)
+
+        try:
+            self.dom = etree.XML(self.data, parser=self.parser)
+        except Exception as e:
+            ''' '''
     
         
     def render(self, datasource):
@@ -49,6 +52,9 @@ class WFSRequest(object):
         '''
         Returns all WFS-T transactions
         '''
+        if self.dom is None:
+            return None
+        
         query = self.dom.xpath("//*[local-name() = 'Query']")
         if len(query) > 0:
             #query - return a dummy select object
