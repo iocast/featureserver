@@ -32,7 +32,7 @@ class WFS(Request):
         except NoLayerException:
             a = Action()
             
-            if params.has_key('service') and params['service'] == 'WFS':
+            if params.has_key('service') and params['service'].lower() == 'wfs':
                 for layer in self.service.datasources:
                     self.datasources.append(layer)
                 if params.has_key('request'):
