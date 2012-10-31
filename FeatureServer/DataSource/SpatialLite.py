@@ -4,6 +4,8 @@ Created on Oct 22, 2012
 @author: michel
 '''
 
+import os
+
 from FeatureServer.DataSource import DataSource
 from vectorformats.Feature import Feature
 from vectorformats.Formats import WKT
@@ -17,6 +19,8 @@ from FeatureServer.WebFeatureService.Response.ReplaceResult import ReplaceResult
 from pyspatialite import dbapi2 as db
 
 import datetime
+
+from FeatureServer.Exceptions.ConnectionException import ConnectionException
 
 
 class SpatialLite (DataSource):
@@ -78,6 +82,8 @@ class SpatialLite (DataSource):
 
     
     def begin(self):
+        if not os.path.exists(self.file):
+            raise ConnectionException(**{'layer':self.name,'locator':'SpatialLite'})
         self._connection = db.connect(self.file, check_same_thread = False)
     
     def close(self):

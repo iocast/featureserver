@@ -3,7 +3,7 @@ __copyright__ = "Copyright (c) 2006-2008 MetaCarta"
 __license__ = "Clear BSD" 
 __version__ = "$Id: HTML.py 561 2008-05-23 12:01:15Z crschmidt $"
 
-from __init__ import Request
+from FeatureServer.Service.Request import Request
 from Cheetah.Template import Template
 
 class HTML (Request):

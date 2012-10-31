@@ -3,7 +3,7 @@ __copyright__ = "Copyright (c) 2006-2008 MetaCarta"
 __license__ = "Clear BSD" 
 __version__ = "$Id: KML.py 556 2008-05-21 16:32:45Z crschmidt $"
 
-from FeatureServer.Service import Request
+from FeatureServer.Service.Request import Request
 import vectorformats.Formats.KML
 
 class KML(Request):
@@ -15,11 +15,9 @@ class KML(Request):
         return ("application/vnd.google-earth.kml+xml", results, None, 'utf-8')        
     
     def parse(self, params, path_info, host, post_data, request_method):
-        try:
-            self.get_layer(path_info, params)
-        except NoLayerException:
-            ''' '''
-        kml = vectorformats.Formats.KML.KML(url=self.host, layername=self.datasources[0]) 
+        self.get_layer(path_info, params)
+
+        kml = vectorformats.Formats.KML.KML(url=self.host, layername=self.datasources[0])
         Request.parse(self, params, path_info, host, post_data, request_method, format_obj=kml) 
     
     def encode_metadata(self, action):

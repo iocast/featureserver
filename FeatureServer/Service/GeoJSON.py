@@ -3,9 +3,8 @@ __copyright__ = "Copyright (c) 2006-2008 MetaCarta"
 __license__ = "Clear BSD" 
 __version__ = "$Id: GeoJSON.py 483 2008-05-18 10:38:32Z crschmidt $"
 
-from FeatureServer.Service import Request
-from FeatureServer.Service import Action
-from FeatureServer.Service import NoLayerException
+from FeatureServer.Service.Request import Request
+from FeatureServer.Service.Action import Action
 from vectorformats.Feature import Feature
 import vectorformats.Formats.GeoJSON 
 

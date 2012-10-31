@@ -3,8 +3,8 @@ __copyright__ = "Copyright (c) 2006-2008 MetaCarta"
 __license__ = "Clear BSD" 
 __version__ = "$Id: GeoRSS.py 482 2008-05-18 10:36:44Z crschmidt $"
 
-from FeatureServer.Service import Request
-import vectorformats.Formats.GeoRSS 
+from FeatureServer.Service.Request import Request
+import vectorformats.Formats.GeoRSS
 
 class GeoRSS(Request):
     def encode_metadata(self, action):
@@ -29,10 +29,7 @@ class GeoRSS(Request):
         return ("application/atom+xml", results, None, 'utf-8')
     
     def parse(self, params, path_info, host, post_data, request_method):
-        try:
-            self.get_layer(path_info, params)
-        except NoLayerException:
-            ''' '''
+        self.get_layer(path_info, params)
 
         atom = vectorformats.Formats.GeoRSS.GeoRSS(url=self.host, feedname=self.datasources[0]) 
         Request.parse(self, params, path_info, host, post_data, request_method, format_obj = atom) 

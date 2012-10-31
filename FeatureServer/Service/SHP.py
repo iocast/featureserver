@@ -3,7 +3,7 @@ Created on May 18, 2011
 
 @author: michel
 '''
-from FeatureServer.Service import Request
+from FeatureServer.Service.Request import Request
 import vectorformats.Formats.SHP
 import zipfile
 import StringIO

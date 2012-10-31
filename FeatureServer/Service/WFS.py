@@ -3,10 +3,11 @@ __copyright__ = "Copyright (c) 2006-2008 MetaCarta"
 __license__ = "Clear BSD" 
 __version__ = "$Id: WFS.py 485 2008-05-18 10:51:09Z crschmidt $"
 
-from FeatureServer.Service import Request
+from FeatureServer.Service.Request import Request
+from FeatureServer.Service.Action import Action
+from FeatureServer.Exceptions.NoLayerException import NoLayerException
+
 import vectorformats.Formats.WFS
-from FeatureServer.Service import NoLayerException
-from FeatureServer.Service import Action
 from FeatureServer.WebFeatureService.WFSRequest import WFSRequest
 from FeatureServer.WebFeatureService.Response.TransactionResponse import TransactionResponse
 
@@ -21,7 +22,7 @@ class WFS(Request):
         return ("text/xml", output, None, 'utf-8')
     
     def encode_exception(self, exceptionReport):
-        wfs = vectorformats.Formats.WFS.WFS(layername=self.datasources[0])
+        wfs = vectorformats.Formats.WFS.WFS()
         return ("text/xml", wfs.encode_exception(exceptionReport), None, 'utf-8')
         
     def parse(self, params, path_info, host, post_data, request_method):
@@ -29,7 +30,7 @@ class WFS(Request):
         
         try:
             self.get_layer(path_info, params)
-        except NoLayerException:
+        except NoLayerException as e:
             a = Action()
             
             if params.has_key('service') and params['service'].lower() == 'wfs':

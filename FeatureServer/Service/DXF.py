@@ -1,7 +1,7 @@
 '''
 @author: Michel Ott
 '''
-from FeatureServer.Service import Request
+from FeatureServer.Service.Request import Request
 import StringIO
 import os
 import tempfile

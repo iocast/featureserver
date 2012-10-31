@@ -5,7 +5,7 @@ __version__ = "$Id: DBM.py 444 2008-03-19 01:35:35Z brentp $"
 
 from FeatureServer.DataSource import DataSource
 from FeatureServer.DataSource import Lock
-from FeatureServer.Service import Action 
+from FeatureServer.Service.Action import Action
 import anydbm
 import UserDict
 

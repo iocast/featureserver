@@ -4,7 +4,7 @@ Created on Jul 30, 2011
 @author: michel
 '''
 
-from FeatureServer.Service import Request
+from FeatureServer.Service.Request import Request
 import vectorformats.Formats.GPX
 
 class GPX(Request):
