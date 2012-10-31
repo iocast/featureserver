@@ -55,7 +55,7 @@ class GeoJSON(Request):
         else:    
             return ("text/plain", result, None, 'utf-8')
 
-    def encode_exception(self, exceptionReport):
+    def encode_exception_report(self, exceptionReport):
         geojson = vectorformats.Formats.GeoJSON.GeoJSON()
-        return ("text/xml", geojson.encode_exception(exceptionReport), None, 'utf-8')
+        return ("text/plain", geojson.encode_exception_report(exceptionReport), None, 'utf-8')
 

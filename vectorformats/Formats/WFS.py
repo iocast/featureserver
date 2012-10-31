@@ -116,7 +116,7 @@ class WFS(Format):
             raise Exception("Could not convert geometry of type %s." % geometry['type'])
     
     
-    def encode_exception(self, exceptionReport):
+    def encode_exception_report(self, exceptionReport):
         results = ["""<?xml version="1.0" encoding="UTF-8"?>
         <ExceptionReport xmlns="http://www.opengis.net/ows/1.1"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"

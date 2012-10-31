@@ -63,10 +63,9 @@ class GeoJSON(Format):
             "geometry": feature.geometry, 
             "properties": feature.properties}
 
-    def encode_exception(self, exceptionReport):
+    def encode_exception_report(self, exceptionReport):
         results = []
         data = {}
-        
         
         for exception in exceptionReport:
             data = {

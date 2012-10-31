@@ -21,9 +21,9 @@ class WFS(Request):
         output = wfs.encode(results)
         return ("text/xml", output, None, 'utf-8')
     
-    def encode_exception(self, exceptionReport):
+    def encode_exception_report(self, exceptionReport):
         wfs = vectorformats.Formats.WFS.WFS()
-        return ("text/xml", wfs.encode_exception(exceptionReport), None, 'utf-8')
+        return ("text/xml", wfs.encode_exception_report(exceptionReport), None, 'utf-8')
         
     def parse(self, params, path_info, host, post_data, request_method):
         self.host = host
