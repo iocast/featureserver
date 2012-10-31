@@ -34,3 +34,6 @@ class GeoRSS(Request):
         atom = vectorformats.Formats.GeoRSS.GeoRSS(url=self.host, feedname=self.datasources[0]) 
         Request.parse(self, params, path_info, host, post_data, request_method, format_obj = atom) 
             
+    def encode_exception_report(self, exceptionReport):
+        atom = vectorformats.Formats.GeoRSS.GeoRSS(url=self.host) 
+        return ("application/atom+xml", atom.encode_exception_report(exceptionReport), None, 'utf-8')

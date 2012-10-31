@@ -118,7 +118,47 @@ class GeoRSS(Format):
         entry.appendChild(geo_node)
         
         return entry.toxml()
+
     
+    def encode_exception_report(self, exceptionReport):
+        timestamp = datetime.fromtimestamp(time.time())
+        timestamp = str(timestamp.strftime('%Y-%m-%dT%H:%M:%SZ'))
+        results = ["""<feed xmlns="http://www.w3.org/2005/Atom" xmlns:app="http://www.w3.org/2007/app"
+            xmlns:georss="http://www.georss.org/georss">
+            <title>%s</title>
+            <id>%s</id>
+            <link rel="self" href="%s" />
+            <author><name>FeatureServer</name></author>
+            <updated>%s</updated>
+            """ % (self.title, self.url, self.url, timestamp) ]
+        
+        for exception in exceptionReport:
+            results.append( self.encode_exception(exception))
+        
+        results.append("</feed>")
+        return "\n".join(results)
+    
+    def encode_exception(self, exception):
+        import xml.dom.minidom as m
+        doc = m.Document()
+        entry = doc.createElement("Exception")
+        
+        entry.setAttribute("exceptionCode", str(exception.code))
+        entry.setAttribute("locator", exception.locator)
+        entry.setAttribute("layer", exception.layer)
+            
+        message = doc.createElement("ExceptionText")
+        message.appendChild(doc.createTextNode(exception.message))
+            
+        dump = doc.createElement("ExceptionDump")
+        dump.appendChild(doc.createTextNode(exception.dump))
+        
+        entry.appendChild(message)
+        entry.appendChild(dump)
+        
+        return entry.toxml()
+
+
     def decode(self, post_data):
         try:
             doc = m.parseString(post_data)

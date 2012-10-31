@@ -271,21 +271,21 @@ class Server (object):
 
         if len(exceptionReport) > 0:
             # check if service supports exception encoding
-            if hasattr(request, "encode_exception"):
-                mime, data, headers, encoding = request.encode_exception(exceptionReport)
+            if hasattr(request, "encode_exception_report"):
+                mime, data, headers, encoding = request.encode_exception_report(exceptionReport)
             else:
                 # get default service and instantiate
                 service_module = __import__("Service.%s" % self.metadata['default_service'], globals(), locals(), self.metadata['default_service'])
                 service = getattr(service_module, self.metadata['default_service'])
                 default_service = service(self)
                 
-                if hasattr(default_service, "encode_exception"):
-                    mime, data, headers, encoding = default_service.encode_exception(exceptionReport)
+                if hasattr(default_service, "encode_exception_report"):
+                    mime, data, headers, encoding = default_service.encode_exception_report(exceptionReport)
                 else:
                     # load WFS for exception handling
                     from FeatureServer.Service.WFS import WFS
                     wfs_service = WFS(self)
-                    mime, data, headers, encoding = wfs_service.encode_exception(exceptionReport)
+                    mime, data, headers, encoding = wfs_service.encode_exception_report(exceptionReport)
 
         
         else:
