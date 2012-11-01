@@ -1,5 +1,6 @@
 from vectorformats.Feature import Feature
 from vectorformats.Formats.Format import Format
+from vectorformats.Formats.WKT import to_wkt, from_wkt
 
 import csv
 import StringIO
@@ -43,14 +44,15 @@ class CSV (Format):
         w.writerow(props)
 
         for feature in features:
-            if feature.geometry['type'] != "Point":
-                continue
+            #if feature.geometry['type'] != "Point":
+            #    continue
             row = []
             for key in props:
                 if key == "id":
                     row.append(feature.id)
                 elif key == "geometry":
-                    geom = ",".join(map(str, feature.geometry['coordinates']))
+                    geom = to_wkt(feature.geometry)
+                    #geom = ",".join(map(str, feature.geometry['coordinates']))
                     row.append(geom)
                 elif feature.properties.has_key(key):
                     val = feature.properties[key]
