@@ -62,4 +62,16 @@ class CSV (Format):
             w.writerow(row)
         s.seek(0)
         return s
-    
+
+
+    def encode_exception_report(self, exceptionReport):
+        s = StringIO.StringIO()
+        w = csv.writer(s)
+        
+        w.writerow(["exceptionCode", "locator", "layer", "ExceptionText", "ExceptionDump"])
+        
+        
+        for exception in exceptionReport:
+            w.writerow([str(exception.code), exception.locator, exception.layer, exception.message, exception.dump])
+            
+        return s

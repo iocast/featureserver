@@ -19,4 +19,11 @@ class CSV(Request):
         }
         
         return ("application/octet-stream;", output, headers, '')
-    
+
+    def encode_exception_report(self, exceptionReport):
+        csv = vectorformats.Formats.CSV.CSV()
+        headers = {
+            'Accept': '*/*',
+            'Content-Disposition' : 'attachment; filename=poidownload.csv'
+        }
+        return ("application/octet-stream;", csv.encode_exception_report(exceptionReport), headers, '')
