@@ -33,7 +33,8 @@ class GPX(Format):
                     xml.append("""<name>%s</name>""" % escape(feature.properties["name"]))
             else:
                 xml.append("""<name>%s</name>""" % str(feature.id))
-            xml.append("""<ele>%s</ele>""" % feature.properties["ele"])
+            if feature.properties.has_key('ele'):
+                xml.append("""<ele>%s</ele>""" % feature.properties["ele"])
             xml.append("""</wpt>""")
             
         return "\n".join(xml)
