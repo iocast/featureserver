@@ -21,8 +21,12 @@ class OSM(Format):
         import xml.dom.minidom as m
         import types
         doc = m.Document()
+        
         if feature.geometry['type'] == "Point":
-            node = self.create_node(-feature.id, feature.geometry['coordinates'], feature.properties['version'])
+            version = None
+            if feature.properties.has_key('version'):
+                version = feature.properties['version']
+            node = self.create_node(-feature.id, feature.geometry['coordinates'], version)
             for key, value in feature.properties.items():
                 if isinstance(value, types.NoneType):
                     continue
@@ -35,19 +39,23 @@ class OSM(Format):
                 tag.setAttribute("v", value)
                 node.appendChild(tag)
             return node.toxml()
-        elif feature.geometry['type'] == "Line" or feature.geometry['type'] == "Polygon":
+        
+        elif feature.geometry['type'] == "Line" or feature.geometry['type'] == "LineString" or feature.geometry['type'] == "Polygon":
             xml = ""
             i = 0
             way = doc.createElement("way")
             way.setAttribute("id", str(-feature.id))
             coords = None
-            if feature.geometry['type'] == "Line":
+            if feature.geometry['type'] == "Line" or feature.geometry['type'] == "LineString":
                 coords = feature.geometry['coordinates']
             else:    
                 coords = feature.geometry['coordinates'][0]
             for coord in coords:
                 i+=1
-                xml += self.create_node("-%s000000%s" % (feature.id, i), coord, feature.properties['version']).toxml()
+                version = None
+                if feature.properties.has_key('version'):
+                    version = feature.properties['version']
+                xml += self.create_node("-%s000000%s" % (feature.id, i), coord, version).toxml()
                 nd = doc.createElement("nd")
                 nd.setAttribute("ref", "-%s000000%s" % (feature.id, i))
                 way.appendChild(nd)
@@ -64,13 +72,15 @@ class OSM(Format):
                 way.appendChild(tag)
             xml += way.toxml()
             return xml    
-        return ""   
+        return ""
+        
+        
     def create_node(self, id, geom, version):
         import xml.dom.minidom as m
         doc = m.Document()
         node = doc.createElement("node")
         node.setAttribute("id", str(id)) 
-        node.setAttribute("lat", "%s" % geom[1]) 
+        node.setAttribute("lat", "%s" % geom[1])
         node.setAttribute("lon", "%s" % geom[0])
         if version is None:
             node.setAttribute("version", "0")

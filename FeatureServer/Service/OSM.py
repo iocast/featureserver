@@ -11,5 +11,6 @@ class OSM(Request):
         osm = vectorformats.Formats.OSM.OSM()
         
         results = osm.encode(result)
-        return "application/xml", results, None, 'utf-8'
+        
+        return ("application/xml", results, None, 'utf-8')
         
