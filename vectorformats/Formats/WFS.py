@@ -6,7 +6,7 @@ from xml.sax.saxutils import escape
 class WFS(Format):
     """WFS-like GML writer."""
     layername = "layer"
-    namespaces = {'fs' : 'http://example.com/featureserver',
+    namespaces = {'fs' : 'http://featureserver.org/fs',
                   'wfs' : 'http://www.opengis.net/wfs',
                   'ogc' : 'http://www.opengis.net/ogc',
                   'xsd' : 'http://www.w3.org/2001/XMLSchema',
@@ -15,7 +15,7 @@ class WFS(Format):
     
     def encode(self, features, **kwargs):
         results = ["""<?xml version="1.0" ?><wfs:FeatureCollection
-   xmlns:fs="http://example.com/featureserver"
+   xmlns:fs="http://featureserver.org/fs"
    xmlns:wfs="http://www.opengis.net/wfs"
    xmlns:gml="http://www.opengis.net/gml"
    xmlns:ogc="http://www.opengis.net/ogc"

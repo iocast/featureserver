@@ -14,7 +14,7 @@ class Transaction(object):
     
     tree = None
     namespaces = {'gml' : 'http://www.opengis.net/gml',
-                  'fs' : 'http://example.com/featureserve'}
+                  'fs' : 'http://featureserver.org/fs'}
     
     def getActions(self):
         return self.tree

@@ -40,7 +40,7 @@ class TransactionTest(unittest.TestCase):
 <wfs:Transaction
        version="1.1.0"
        service="WFS"
-       xmlns="http://example.com/featureserver"
+       xmlns="http://featureserver.org/fs"
        xmlns:gml="http://www.opengis.net/gml"
        xmlns:ogc="http://www.opengis.net/ogc"
        xmlns:wfs="http://www.opengis.net/wfs"
@@ -70,8 +70,8 @@ class TransactionTest(unittest.TestCase):
     </wfs:Insert>
 </wfs:Transaction>    
             """
-        solution = [" INSERT INTO osm_point ( \"way\" , \"name\" , \"operator\" , \"highway\" ) VALUES ( ST_GeomFromGML('<gml:Point xmlns:gml=\"http://www.opengis.net/gml\" xmlns=\"http://example.com/featureserver\" xmlns:ogc=\"http://www.opengis.net/ogc\" xmlns:wfs=\"http://www.opengis.net/wfs\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" srsName=\"EPSG:4326\"> <gml:coordinates decimal=\".\" cs=\",\" ts=\" \">8.53438799881,47.3187879949</gml:coordinates> </gml:Point> ') , 'honky1' , 'ABC' , 'bus_stop' ); ",
-                    " INSERT INTO osm_point ( \"way\" , \"highway\" ) VALUES ( ST_GeomFromGML('<gml:Point xmlns:gml=\"http://www.opengis.net/gml\" xmlns=\"http://example.com/featureserver\" xmlns:ogc=\"http://www.opengis.net/ogc\" xmlns:wfs=\"http://www.opengis.net/wfs\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" srsName=\"EPSG:4326\"> <gml:coordinates decimal=\".\" cs=\",\" ts=\" \">8.53438799881,47.3187879949</gml:coordinates> </gml:Point> ') , 'bus_stop' ); "]
+        solution = [" INSERT INTO osm_point ( \"way\" , \"name\" , \"operator\" , \"highway\" ) VALUES ( ST_GeomFromGML('<gml:Point xmlns:gml=\"http://www.opengis.net/gml\" xmlns=\"http://featureserver.org/fs\" xmlns:ogc=\"http://www.opengis.net/ogc\" xmlns:wfs=\"http://www.opengis.net/wfs\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" srsName=\"EPSG:4326\"> <gml:coordinates decimal=\".\" cs=\",\" ts=\" \">8.53438799881,47.3187879949</gml:coordinates> </gml:Point> ') , 'honky1' , 'ABC' , 'bus_stop' ); ",
+                    " INSERT INTO osm_point ( \"way\" , \"highway\" ) VALUES ( ST_GeomFromGML('<gml:Point xmlns:gml=\"http://www.opengis.net/gml\" xmlns=\"http://featureserver.org/fs\" xmlns:ogc=\"http://www.opengis.net/ogc\" xmlns:wfs=\"http://www.opengis.net/wfs\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" srsName=\"EPSG:4326\"> <gml:coordinates decimal=\".\" cs=\",\" ts=\" \">8.53438799881,47.3187879949</gml:coordinates> </gml:Point> ') , 'bus_stop' ); "]
         result = []
         
         transaction = Transaction()
@@ -88,7 +88,7 @@ class TransactionTest(unittest.TestCase):
 <wfs:Transaction
        version="1.1.0"
        service="WFS"
-       xmlns="http://example.com/featureserver"
+       xmlns="http://featureserver.org/fs"
        xmlns:gml="http://www.opengis.net/gml"
        xmlns:ogc="http://www.opengis.net/ogc"
        xmlns:wfs="http://www.opengis.net/wfs"
@@ -125,8 +125,8 @@ class TransactionTest(unittest.TestCase):
         </ogc:Filter>
     </wfs:Update>
 </wfs:Transaction> """         
-        solution = [" UPDATE osm_point SET \"way\" = ST_GeomFromGML('<gml:Point xmlns:gml=\"http://www.opengis.net/gml\" xmlns:feature=\"http://opengeo.org\" xmlns=\"http://example.com/featureserver\" xmlns:ogc=\"http://www.opengis.net/ogc\" xmlns:wfs=\"http://www.opengis.net/wfs\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" srsName=\"EPSG:4326\"> <gml:coordinates decimal=\".\" cs=\",\" ts=\" \">8.53438799881,47.3187879949</gml:coordinates> </gml:Point> ') , \"Description\" = 'abc' WHERE \"osm_id\" = '1'; ",
-                    " UPDATE osm_point SET \"way\" = ST_GeomFromGML('<gml:Point xmlns:gml=\"http://www.opengis.net/gml\" xmlns:feature=\"http://opengeo.org\" xmlns=\"http://example.com/featureserver\" xmlns:ogc=\"http://www.opengis.net/ogc\" xmlns:wfs=\"http://www.opengis.net/wfs\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" srsName=\"EPSG:4326\"> <gml:coordinates decimal=\".\" cs=\",\" ts=\" \">8.53438799881,47.3187879949</gml:coordinates> </gml:Point> ') WHERE \"osm_id\" = '2'; "]
+        solution = [" UPDATE osm_point SET \"way\" = ST_GeomFromGML('<gml:Point xmlns:gml=\"http://www.opengis.net/gml\" xmlns:feature=\"http://opengeo.org\" xmlns=\"http://featureserver.org/fs\" xmlns:ogc=\"http://www.opengis.net/ogc\" xmlns:wfs=\"http://www.opengis.net/wfs\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" srsName=\"EPSG:4326\"> <gml:coordinates decimal=\".\" cs=\",\" ts=\" \">8.53438799881,47.3187879949</gml:coordinates> </gml:Point> ') , \"Description\" = 'abc' WHERE \"osm_id\" = '1'; ",
+                    " UPDATE osm_point SET \"way\" = ST_GeomFromGML('<gml:Point xmlns:gml=\"http://www.opengis.net/gml\" xmlns:feature=\"http://opengeo.org\" xmlns=\"http://featureserver.org/fs\" xmlns:ogc=\"http://www.opengis.net/ogc\" xmlns:wfs=\"http://www.opengis.net/wfs\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" srsName=\"EPSG:4326\"> <gml:coordinates decimal=\".\" cs=\",\" ts=\" \">8.53438799881,47.3187879949</gml:coordinates> </gml:Point> ') WHERE \"osm_id\" = '2'; "]
         result = []
 
         transaction = Transaction()
@@ -143,7 +143,7 @@ class TransactionTest(unittest.TestCase):
 <wfs:Transaction
        version="1.1.0"
        service="WFS"
-       xmlns="http://example.com/featureserver"
+       xmlns="http://featureserver.org/fs"
        xmlns:gml="http://www.opengis.net/gml"
        xmlns:ogc="http://www.opengis.net/ogc"
        xmlns:wfs="http://www.opengis.net/wfs"

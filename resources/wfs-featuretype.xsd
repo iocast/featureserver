@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <schema
-	targetNamespace="http://example.com/featureserver"
-	xmlns:fs="http://example.com/featureserver"
+	targetNamespace="http://featureserver.org/fs"
+	xmlns:fs="http://featureserver.org/fs"
 	xmlns="http://www.w3.org/2001/XMLSchema"
 	xmlns:gml="http://www.opengis.net/gml"
 	elementFormDefault="qualified"
