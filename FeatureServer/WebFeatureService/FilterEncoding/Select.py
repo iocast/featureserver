@@ -17,5 +17,8 @@ class Select(object):
     
     def render(self, datasource):
         return self.filter.render(datasource)
+
+    def getAttributes(self):
+        return self.filter.getAttributes()
         
         

@@ -11,7 +11,9 @@ from lxml import objectify
 
 class FilterEncoding (object):
     
+    xml = ""
     tree = None
+    dom = None
     namespaces = {'gml' : 'http://www.opengis.net/gml'}
 
     
@@ -34,9 +36,9 @@ class FilterEncoding (object):
         nsFilter = '<Filter'
         for key, value in self.namespaces.iteritems():
             nsFilter += ' xmlns:' + key + '="' + value + '"'
-        xml = xml.replace('<Filter', nsFilter)
+        self.xml = xml.replace('<Filter', nsFilter)
         
-        self.dom = etree.XML(xml, parser=self.parser)
+        self.dom = etree.XML(self.xml, parser=self.parser)
     
     def parse(self, node = None, operator = None):
         if node == None:
@@ -100,7 +102,12 @@ class FilterEncoding (object):
         
         if node.type != 'LogicalOperator':
             node.createStatement(datasource)
-    
+
+    def getAttributes(self):
+        from FilterAttributes import FilterAttributes
+        filter = FilterAttributes(self.dom)
+        return filter.render()
+
     def __str__(self):
         return etree.tostring(self.dom, pretty_print = True)
         

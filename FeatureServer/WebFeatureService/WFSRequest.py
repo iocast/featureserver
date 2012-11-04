@@ -47,7 +47,7 @@ class WFSRequest(object):
 
         self.filter.parse()
         return self.filter.render(datasource)
-        
+    
     def getActions(self):
         '''
         Returns all WFS-T transactions

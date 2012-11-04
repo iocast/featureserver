@@ -94,8 +94,7 @@ class Server (object):
                 except Exception, E:
                     pass 
             else:     
-                datasources[section] = cls.loadFromSection(
-                                        config, section, 'DataSource')
+                datasources[section] = cls.loadFromSection(config, section, 'DataSource')
 
         return cls(datasources, metadata, processes)
     load = classmethod(_load)

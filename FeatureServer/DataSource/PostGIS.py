@@ -42,7 +42,7 @@ class PostGIS (DataSource):
                         'ilike': 'ilike', 'like':'like',
                         'gte': '>=', 'lte': '<='}
      
-    def __init__(self, name, srid = 4326, srid_out = 4326, fid = "gid", geometry = "the_geom", order = "", attribute_cols = '*', writable = True, encoding = "utf-8", hstore = 'false', hstore_attr = "", **args):
+    def __init__(self, name, srid = 4326, srid_out = 4326, fid = "gid", geometry = "the_geom", fe_attributes = 'true', order = "", attribute_cols = '*', writable = True, encoding = "utf-8", hstore = 'false', hstore_attr = "", **args):
         DataSource.__init__(self, name, **args)
         self.table          = args["layer"]
         self.fid_col        = fid
@@ -55,6 +55,11 @@ class PostGIS (DataSource):
         self.dsn            = args["dsn"]
         self.writable       = writable
         self.attribute_cols = attribute_cols
+        
+        self.fe_attributes = True
+        if fe_attributes.lower() == 'false':
+            self.fe_attributes  = False
+
         if hstore.lower() == 'true':
             self.hstore = True
             self.hstoreAttribute = hstore_attr
@@ -216,13 +221,11 @@ class PostGIS (DataSource):
             if hasattr(self, 'ele'):
                 sql += "%s as ele, " % self.ele
             
-            sql += "\"%s\", %s" % (self.fid_col, self.attribute_cols)
-
-            if hasattr(self, "additional_cols"):
-                cols = self.additional_cols.split(';')
-                additional_col = ",".join(cols)
-                sql += ", %s" % additional_col
+            sql += "\"%s\"" % self.fid_col
             
+            if len(self.attribute_cols) > 0:
+                sql += ", %s" % self.attribute_cols
+
             sql += " FROM \"%s\" WHERE %s = %%(%s)s" % (self.table, self.fid_col, self.fid_col)
             
             #sql = "SELECT AsText(Transform(%s, %d)) as fs_text_geom, %s as ele, %s as version, \"%s, %s FROM \"%s\" WHERE %s = %%(%s)s" % (
@@ -250,12 +253,21 @@ class PostGIS (DataSource):
                 sql += "%s as ele, " % self.ele
             if hasattr(self, 'version'):
                 sql += "%s as version, " % self.version
-            sql += "\"%s\", %s" % (self.fid_col, self.attribute_cols)
+            sql += "\"%s\"" % self.fid_col
+    
+            if len(self.attribute_cols) > 0:
+                sql += ", %s" % self.attribute_cols
             
-            if hasattr(self, "additional_cols"):
-                cols = self.additional_cols.split(';')
-                additional_col = ",".join(cols)
-                sql += ", %s" % additional_col
+            # check OGC FE attributes
+            if self.fe_attributes and action.wfsrequest:
+                fe_cols = action.wfsrequest.getAttributes()
+                ad_cols = self.getColumns()
+                
+                fe_cols = filter(lambda x: x not in ad_cols, fe_cols)
+                
+                if len(fe_cols) > 0:
+                    sql += ", %s" % ",".join(fe_cols)
+
 
             sql += " FROM \"%s\"" % (self.table)
             
@@ -315,6 +327,23 @@ class PostGIS (DataSource):
             if (geom):
                 features.append( Feature( id, geom, self.geom_col, self.srid_out, props ) ) 
         return features
+            
+    def getColumns(self):
+        cols = []
+        
+        if hasattr(self, 'attribute_cols'):
+            cols = self.attribute_cols.split(",")
+                
+        cols.append(self.geom_col)
+        cols.append(self.fid_col)
+                
+        if hasattr(self, 'version'):
+            cols.append(self.version)
+        if hasattr(self, 'ele'):
+            cols.append(self.ele)
+                
+        return cols
+
     
     def getAttributeDescription(self, attribute):
         self.begin()
