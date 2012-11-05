@@ -31,7 +31,7 @@ class SpatialLite (DataSource):
         'ilike': 'ilike', 'like':'like',
         'gte': '>=', 'lte': '<='}
 
-    def __init__(self, name, file, fid = "gid", geometry = "geometry", fe_attributes = 'true', order = "", srid = 4326, srid_out = 4326, writable = True, attribute_cols = "*", **kwargs):
+    def __init__(self, name, file, fid = "gid", geometry = "geometry", fe_attributes = 'true', order = "", srid = 4326, srid_out = 4326, encoding = "utf-8", writable = True, attribute_cols = "*", **kwargs):
         DataSource.__init__(self, name, **kwargs)
         self.file           = file
         self.table          = kwargs["layer"]
@@ -42,6 +42,7 @@ class SpatialLite (DataSource):
         self.writable       = writable
         self.attribute_cols = attribute_cols
         self.order          = order
+        self.encoding       = encoding
 
         self.fe_attributes = True
         if fe_attributes.lower() == 'false':
