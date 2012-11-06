@@ -322,5 +322,29 @@ class SpatialLite (DataSource):
         
     
     def getAttributeDescription(self, attribute):
-        ''' '''
-
+        self.begin()
+        cursor = self._connection.cursor()
+        result = []
+        
+        sql = "PRAGMA table_info(%s)"
+        
+        try:
+            cursor.execute(sql % self.table)
+            result = cursor.fetchall()
+            self.commit()
+        except:
+            pass
+        
+    
+        type = 'string'
+        length = ''
+        
+        if len(result) > 0:
+            for col in result:
+                if col[1] == attribute:
+                    if str(col[2]).lower().startswith('int'):
+                        type = 'integer'
+                        length = ''
+                        break
+    
+        return (type, length)

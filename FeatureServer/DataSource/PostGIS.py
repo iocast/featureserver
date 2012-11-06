@@ -366,6 +366,7 @@ class PostGIS (DataSource):
         try:
             cursor.execute(str(sql)% (self.table, attribute))
             result = [cursor.fetchone()]
+            self.db.commit()
         except:
             pass 
         
@@ -379,5 +380,4 @@ class PostGIS (DataSource):
                     if int((result[0])[1]) == 4:
                         length = ''
         
-        self.db.commit()
         return (type, length)
