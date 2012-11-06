@@ -56,7 +56,7 @@ class KML(Format):
         
         attr_fields = []
         for key, value in feature.properties.items():
-            key = re.sub(r'\W', '_', key)
+            #key = re.sub(r'\W', '_', key)
             if key in ["title", "description", "styleUrl"]: continue
             attr_value = value
             if isinstance(attr_value, str):

@@ -33,7 +33,7 @@ class WFS(Format):
         
         attr_fields = [] 
         for key, value in feature.properties.items():           
-            key = re.sub(r'\W', '_', key)
+            #key = re.sub(r'\W', '_', key)
             attr_value = value
             if hasattr(attr_value,"replace"): 
                 attr_value = attr_value.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
