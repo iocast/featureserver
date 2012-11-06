@@ -225,6 +225,11 @@ class PostGIS (DataSource):
             
             if len(self.attribute_cols) > 0:
                 sql += ", %s" % self.attribute_cols
+            
+            if hasattr(self, "additional_cols"):
+                cols = self.additional_cols.split(';')
+                additional_col = ",".join(cols)
+                sql += ", %s" % additional_col
 
             sql += " FROM \"%s\" WHERE %s = %%(%s)s" % (self.table, self.fid_col, self.fid_col)
             
@@ -267,6 +272,11 @@ class PostGIS (DataSource):
                 
                 if len(fe_cols) > 0:
                     sql += ", %s" % ",".join(fe_cols)
+    
+            if hasattr(self, "additional_cols"):
+                cols = self.additional_cols.split(';')
+                additional_col = ",".join(cols)
+                sql += ", %s" % additional_col
 
 
             sql += " FROM \"%s\"" % (self.table)
