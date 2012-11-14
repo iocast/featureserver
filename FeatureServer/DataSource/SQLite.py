@@ -6,8 +6,8 @@ __version__ = "$Id: SQLite.py 606 2009-04-24 16:25:41Z brentp $"
 import re
 import copy
 from FeatureServer.DataSource import DataSource
-from vectorformats.Feature import Feature
-from vectorformats.Formats import WKT
+from VectorFormats.Feature import Feature
+from VectorFormats.Formats import WKT
 import sys
 
 try:

@@ -1,7 +1,8 @@
 class Format(object):
     """Base Format class. To set properties on your subclasses, you can
        pass them as kwargs to your format constructor."""
-    def __init__(self, *args, **kwargs):
+    def __init__(self, request, *args, **kwargs):
+        self._request = request
         for key, value in kwargs.items():
             setattr(self, key, value)
             
@@ -19,4 +20,8 @@ class Format(object):
         newValue = value.replace("'", "''")
         
         return newValue 
-    
+
+
+    @property
+    def request(self):
+        return self._request

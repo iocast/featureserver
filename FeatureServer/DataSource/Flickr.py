@@ -1,5 +1,5 @@
-from FeatureServer.DataSource import DataSource
-from vectorformats.Feature import Feature
+from DataSource import DataSource
+from VectorFormats.Feature import Feature
 from FeatureServer.Exceptions.NoGeometryException import NoGeometryException
 
 import md5
@@ -87,7 +87,7 @@ class Flickr (DataSource):
         except:
             raise
     
-        return Feature(id=xml.attrib["id"], geometry={'type':"Point", 'coordinates':coordinates}, geometry_attr="geometry", srs=self.srid_out, props=props)
+        return Feature(id=xml.attrib["id"], geometry={'type':"Point", 'coordinates':coordinates}, geometry_attr=self.getGeometry(), srs=self.srid_out, props=props)
 
     def get_node_names(self, xml):
         if self.attributes == "*":
@@ -115,6 +115,11 @@ class Flickr (DataSource):
     def get_url(self, xml):
         return "http://farm%s.static.flickr.com/%s/%s_%s_b.jpg" % (xml.attrib['farm'], xml.attrib['server'], xml.attrib['id'], xml.attrib['secret'])
 
+    
+    def getGeometry(self):
+        return "geometry"
+    def getAttributes(self):
+        return self.attributes
 
 
 

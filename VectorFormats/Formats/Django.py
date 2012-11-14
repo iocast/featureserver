@@ -1,6 +1,6 @@
 import pickle
-from vectorformats.Feature import Feature
-from vectorformats.Formats.Format import Format
+from VectorFormats.Feature import Feature
+from VectorFormats.Formats.Format import Format
 
 class Django(Format):
     """ This class is designed to decode a Django QuerySet object into

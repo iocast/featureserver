@@ -1,5 +1,5 @@
-from FeatureServer.DataSource import DataSource
-from vectorformats.Feature import Feature
+from DataSource import DataSource
+from VectorFormats.Feature import Feature
 from FeatureServer.Exceptions.NoGeometryException import NoGeometryException
 
 import oauth2 as oauth
@@ -116,7 +116,7 @@ class Twitter (DataSource):
                 else:
                     props[attribute] = unicode(str(value), self.encoding)
         
-        return Feature( id=tweet["id"], geometry=geom, geometry_attr="geometry", srs=self.srid_out, props=props )
+        return Feature( id=tweet["id"], geometry=geom, geometry_attr=self.getGeometry(), srs=self.srid_out, props=props )
     
 
     def get_geometry(self, tweet):
@@ -158,6 +158,10 @@ class Twitter (DataSource):
         
         return nodes
 
+    def getGeometry(self):
+        return "geometry"
+    def getAttributes(self):
+        return self.attributes
 
 
 

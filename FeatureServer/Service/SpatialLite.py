@@ -3,21 +3,21 @@ Created on Sep 14, 2012
 
 @author: michel
 '''
-from FeatureServer.Service.Request import Request
+from FeatureServer.Service.Service import Service
 import StringIO
 import os
 import tempfile
-import vectorformats.Formats.SQLite
+import VectorFormats.Formats.SpatialLite
 
-class SQLite(Request):
+class SpatialLite(Service):
     def encode(self, result):
-        sqlite = vectorformats.Formats.SQLite.SQLite(layername=self.datasources[0], datasource=self.service.datasources[self.datasources[0]])
+        spatiallite = vectorformats.Formats.SpatialLite.SpatialLite(layername=self.datasources[0], datasource=self.service.datasources[self.datasources[0]])
         
         try:
             fd, temp_path = tempfile.mkstemp()
             os.close(fd)
             
-            connection = sqlite.encode(result, tmpFile=temp_path)
+            connection = spatiallite.encode(result, tmpFile=temp_path)
         
             output = StringIO.StringIO(open(temp_path).read())
         finally:

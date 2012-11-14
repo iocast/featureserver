@@ -9,8 +9,8 @@
 from FeatureServer.DataSource import DataSource
 from FeatureServer.Service import Action 
 
-from vectorformats.Feature import Feature
-from vectorformats.Formats.WKT import to_wkt, from_wkt
+from VectorFormats.Feature import Feature
+from VectorFormats.Formats.WKT import to_wkt, from_wkt
 
 from google.appengine.ext import db
 

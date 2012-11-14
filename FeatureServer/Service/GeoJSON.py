@@ -3,7 +3,7 @@ __copyright__ = "Copyright (c) 2006-2008 MetaCarta"
 __license__ = "Clear BSD" 
 __version__ = "$Id: GeoJSON.py 483 2008-05-18 10:38:32Z crschmidt $"
 
-from FeatureServer.Service.Request import Request
+from FeatureServer.Service.Service import Service
 from FeatureServer.Service.Action import Action
 from vectorformats.Feature import Feature
 import vectorformats.Formats.GeoJSON 
@@ -13,7 +13,7 @@ try:
 except Exception, E:
     raise Exception("simplejson is required for using the JSON service. (Import failed: %s)" % E)
 
-class GeoJSON(Request):
+class GeoJSON(Service):
     def __init__(self, service):
         Request.__init__(self, service)
         self.callback = None

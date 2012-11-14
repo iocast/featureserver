@@ -5,7 +5,7 @@ Created on Apr 5, 2011
 '''
 import os
 from lxml import etree
-from FeatureServer.WebFeatureService.FilterEncoding.Operator import Operator
+from FeatureServer.Parsers.WebFeatureService.FilterEncoding.Operator import Operator
 
 class SpatialOperator(Operator):
     def __init__(self, node):
@@ -15,9 +15,9 @@ class SpatialOperator(Operator):
     def getValueReference(self): return str(self.node.ValueReference)
     def getLiteral(self): return str(self.node.Literal)
     def createStatement(self, datasource):
-        xslt = etree.parse(os.path.dirname(os.path.abspath(__file__))+"/../../../../resources/filterencoding/spatial_operators.xsl")
+        xslt = etree.parse(os.path.dirname(os.path.abspath(__file__))+"/../../../../../resources/filterencoding/spatial_operators_%s.xsl" % datasource.type)
         transform = etree.XSLT(xslt_input=xslt)
-        result = transform(self.node, datasource="'"+datasource.type+"'", operationType="'"+str(self.node.xpath('local-name()'))+"'", geometryName="'"+datasource.geom_col+"'", srs="'"+str(datasource.srid)+"'")
+        result = transform(self.node, operationType="'"+str(self.node.xpath('local-name()'))+"'", geometryName="'"+datasource.geom_col+"'", srs="'"+str(datasource.srid)+"'")
         
         stmtTxt = ''
         stmtChild = ''

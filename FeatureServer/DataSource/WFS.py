@@ -5,7 +5,7 @@ __version__ = "$Id: WFS.py 467 2008-05-18 06:02:16Z crschmidt $"
 
 from FeatureServer.DataSource import DataSource
 from FeatureServer.DataSource.OGR import OGR
-from vectorformats.Feature import Feature
+from VectorFormats.Feature import Feature
 import urllib
 import tempfile
 import os

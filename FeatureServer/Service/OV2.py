@@ -4,10 +4,10 @@ Created on Jul 30, 2011
 @author: michel
 '''
 
-from FeatureServer.Service.Request import Request
+from FeatureServer.Service.Service import Service
 import vectorformats.Formats.OV2
 
-class OV2(Request):
+class OV2(Service):
     def encode(self, results):
         ov2 = vectorformats.Formats.OV2.OV2(layername=self.datasources[0])
         

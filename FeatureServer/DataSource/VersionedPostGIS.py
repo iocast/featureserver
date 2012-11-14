@@ -4,9 +4,9 @@ __license__ = "Clear BSD"
 __version__ = "$Id: VersionedPostGIS.py 496 2008-05-18 13:01:13Z crschmidt $"
 
 from FeatureServer.DataSource import DataSource
-from vectorformats.Feature import Feature
+from VectorFormats.Feature import Feature
 from FeatureServer.DataSource.PostGIS import PostGIS
-from vectorformats.Formats import WKT
+from VectorFormats.Formats import WKT
 
 try:
     import cPickle

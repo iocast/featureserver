@@ -1,11 +1,10 @@
-from vectorformats.Formats.Format import Format
+from VectorFormats.Formats.Format import Format
 import re, xml.dom.minidom as m
 from lxml import etree
 from xml.sax.saxutils import escape
 
 class WFS(Format):
     """WFS-like GML writer."""
-    layername = "layer"
     namespaces = {'fs' : 'http://featureserver.org/fs',
                   'wfs' : 'http://www.opengis.net/wfs',
                   'ogc' : 'http://www.opengis.net/ogc',
@@ -29,8 +28,6 @@ class WFS(Format):
         return "\n".join(results)        
     
     def encode_feature(self, feature):
-        layername = re.sub(r'\W', '_', self.layername)
-        
         attr_fields = [] 
         for key, value in feature.properties.items():           
             #key = re.sub(r'\W', '_', key)
@@ -42,14 +39,14 @@ class WFS(Format):
             attr_fields.append( "<fs:%s>%s</fs:%s>" % (key, attr_value, key) )
             
         
-        xml = "<gml:featureMember gml:id=\"%s\"><fs:%s fid=\"%s\">" % (str(feature.id), layername, str(feature.id))
+        xml = "<gml:featureMember gml:id=\"%s\"><fs:%s fid=\"%s\">" % (str(feature.id), feature.layer, str(feature.id))
         
         if hasattr(feature, "geometry_attr"):
             xml += "<fs:%s>%s</fs:%s>" % (feature.geometry_attr, self.geometry_to_gml(feature.geometry, feature.srs), feature.geometry_attr)
         else:
             xml += self.geometry_to_gml(feature.geometry, feature.srs)
         
-        xml += "%s</fs:%s></gml:featureMember>" % ("\n".join(attr_fields), layername)  
+        xml += "%s</fs:%s></gml:featureMember>" % ("\n".join(attr_fields), feature.layer)  
         return xml
     
     def geometry_to_gml(self, geometry, srs):
@@ -223,32 +220,32 @@ class WFS(Format):
         
         return result
 
-    def getcapabilities(self):
+    def get_capabilities(self):
         tree = etree.parse("resources/wfs-capabilities.xml")
         root = tree.getroot()
         elements = root.xpath("wfs:Capability/wfs:Request/wfs:GetCapabilities/wfs:DCPType/wfs:HTTP", namespaces = self.namespaces)
         if len(elements) > 0:
             for element in elements:
                 for http in element:
-                    http.set('onlineResource', self.host + '?')
+                    http.set('onlineResource', self.request.host + '?')
 
         elements = root.xpath("wfs:Capability/wfs:Request/wfs:DescribeFeatureType/wfs:DCPType/wfs:HTTP", namespaces = self.namespaces)
         if len(elements) > 0:
             for element in elements:
                 for http in element:
-                    http.set('onlineResource', self.host + '?')
+                    http.set('onlineResource', self.request.host + '?')
 
         elements = root.xpath("wfs:Capability/wfs:Request/wfs:GetFeature/wfs:DCPType/wfs:HTTP", namespaces = self.namespaces)
         if len(elements) > 0:
             for element in elements:
                 for http in element:
-                    http.set('onlineResource', self.host + '?')
+                    http.set('onlineResource', self.request.host + '?')
         
         elements = root.xpath("wfs:Capability/wfs:Request/wfs:Transaction/wfs:DCPType/wfs:HTTP", namespaces = self.namespaces)
         if len(elements) > 0:
             for element in elements:
                 for http in element:
-                    http.set('onlineResource', self.host + '?')
+                    http.set('onlineResource', self.request.host + '?')
 
 
         layers = self.getlayers()
@@ -266,26 +263,26 @@ class WFS(Format):
         operations.append(etree.Element('Query'))
         featureList.append(operations)
 
-        for layer in self.layers:
+        for (typename, layer) in self.request.server.datasources.iteritems():
             type = etree.Element('FeatureType')
             name = etree.Element('Name')
-            name.text = layer
+            name.text = layer.name
             type.append(name)
             
             title = etree.Element('Title')
-            if hasattr(self.datasources[layer], 'title'):
-                title.text = self.datasources[layer].title
+            if hasattr(layer, 'title'):
+                title.text = layer.title
             type.append(title)
 
             abstract = etree.Element('Abstract')
-            if hasattr(self.datasources[layer], 'abstract'):
-                abstract.text = self.datasources[layer].abstract
+            if hasattr(layer, 'abstract'):
+                abstract.text = layer.abstract
             type.append(abstract)
 
             
             srs = etree.Element('SRS')
-            if hasattr(self.datasources[layer], 'srid_out') and self.datasources[layer].srid_out is not None:
-                srs.text = 'EPSG:' + str(self.datasources[layer].srid_out)
+            if hasattr(layer, 'srid_out') and layer.srid_out is not None:
+                srs.text = 'EPSG:' + str(layer.srid_out)
             else:
                 srs.text = 'EPSG:4326'
             type.append(srs)
@@ -296,24 +293,24 @@ class WFS(Format):
             featureOperations.append(etree.Element('Delete'))
             type.append(featureOperations)
             
-            latlong = self.getBBOX(self.datasources[layer])
+            latlong = self.getBBOX(layer)
             type.append(latlong)
             
             featureList.append(type)
             
         return featureList
         
-    def describefeaturetype(self):
+    def describe_feature_type(self):
         tree = etree.parse("resources/wfs-featuretype.xsd")
         root = tree.getroot()
         
-        if len(self.layers) == 1:
+        if len(self.request.datasources) == 1:
             ''' special case when only one datasource is requested --> other xml schema '''
-            root = self.addDataSourceFeatureType(root, self.datasources[self.layers[0]])
+            root = self.addDataSourceFeatureType(root, self.request.server.datasources[self.request.datasources.keys()[0]])
         else:
             ''' loop over all requested datasources '''
-            for layer in self.layers:
-                root = self.addDataSourceImport(root, self.datasources[layer])
+            for typename in self.request.datasources.keys():
+                root = self.addDataSourceImport(root, self.request.server.datasources[typename])
                 #root = self.addDataSourceFeatureType(root, self.datasources[layer])
         
         return etree.tostring(tree, pretty_print=True)
@@ -321,7 +318,7 @@ class WFS(Format):
     def addDataSourceImport(self, root, datasource):
         root.append(
                     etree.Element('import', attrib={'namespace':self.namespaces['fs'],
-                                                    'schemaLocation':self.host+'?request=DescribeFeatureType&typeName='+datasource.name})
+                                                    'schemaLocation':self.request.host+'?service=WFS&request=DescribeFeatureType&typeName='+datasource.name})
                     )
         return root
     
@@ -336,7 +333,7 @@ class WFS(Format):
         extension = etree.Element('extension', attrib={'base':'gml:AbstractFeatureType'})
         sequence = etree.Element('sequence')
         
-        for attribut_col in datasource.attribute_cols.split(','):
+        for attribut_col in datasource.getAttributes().split(','):
             type, length = datasource.getAttributeDescription(attribut_col)
             
             maxLength = etree.Element('maxLength', attrib={'value':str(length)})
@@ -384,18 +381,18 @@ class WFS(Format):
             properties = ['Point', 'Line', 'Polygon']
         for property in properties:
             if property == 'Point':
-                element = etree.Element('element', attrib={'name' : datasource.geom_col,
+                element = etree.Element('element', attrib={'name' : datasource.getGeometry(),
                                                            'type' : 'gml:PointPropertyType',
                                                            'minOccurs' : '0'})
                 sequence.append(element)
             elif property == 'Line':
-                element = etree.Element('element', attrib={'name' : datasource.geom_col,
+                element = etree.Element('element', attrib={'name' : datasource.getGeometry(),
                                                            'type' : 'gml:LineStringPropertyType',
                                                            #'ref' : 'gml:curveProperty',
                                                            'minOccurs' : '0'})
                 sequence.append(element)
             elif property == 'Polygon':
-                element = etree.Element('element', attrib={'name' : datasource.geom_col,
+                element = etree.Element('element', attrib={'name' : datasource.getGeometry(),
                                                            'type' : 'gml:PolygonPropertyType',
                                                            #'substitutionGroup' : 'gml:_Surface',
                                                            'minOccurs' : '0'})

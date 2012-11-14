@@ -3,10 +3,10 @@ __copyright__ = "Copyright (c) 2006-2008 MetaCarta"
 __license__ = "Clear BSD" 
 __version__ = "$Id: KML.py 556 2008-05-21 16:32:45Z crschmidt $"
 
-from FeatureServer.Service.Request import Request
+from FeatureServer.Service.Service import Service
 import vectorformats.Formats.KML
 
-class KML(Request):
+class KML(Service):
     mime_type = "application/vnd.google-earth.kml+xml"
 
     def encode(self, result):

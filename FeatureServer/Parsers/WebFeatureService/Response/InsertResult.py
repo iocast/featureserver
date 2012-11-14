@@ -1,7 +1,7 @@
 '''
 '''
 
-from FeatureServer.WebFeatureService.Response.ActionResult import ActionResult
+from ActionResult import ActionResult
 
 class InsertResult(ActionResult):
     

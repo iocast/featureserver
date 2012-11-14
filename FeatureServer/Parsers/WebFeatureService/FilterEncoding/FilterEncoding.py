@@ -10,6 +10,7 @@ from lxml import etree
 from lxml import objectify
 
 class FilterEncoding (object):
+    ''' parses a single <Filter/> node '''
     
     xml = ""
     tree = None
@@ -37,8 +38,9 @@ class FilterEncoding (object):
         for key, value in self.namespaces.iteritems():
             nsFilter += ' xmlns:' + key + '="' + value + '"'
         self.xml = xml.replace('<Filter', nsFilter)
-        
+
         self.dom = etree.XML(self.xml, parser=self.parser)
+        
     
     def parse(self, node = None, operator = None):
         if node == None:

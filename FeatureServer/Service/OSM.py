@@ -3,10 +3,10 @@ __copyright__ = "Copyright (c) 2006-2008 MetaCarta"
 __license__ = "Clear BSD" 
 __version__ = "$Id: OSM.py 491 2008-05-18 11:28:45Z crschmidt $"
 
-from FeatureServer.Service.Request import Request
+from FeatureServer.Service.Service import Service
 import vectorformats.Formats.OSM
 
-class OSM(Request):
+class OSM(Service):
     def encode(self, result):
         osm = vectorformats.Formats.OSM.OSM()
         

@@ -4,7 +4,7 @@ __license__ = "Clear BSD"
 __version__ = "$Id: Twitter.py 412 2008-01-01 08:15:59Z crschmidt $"
 
 from FeatureServer.DataSource import DataSource
-from vectorformats.Feature import Feature
+from VectorFormats.Feature import Feature
 
 import urllib
 import xml.dom.minidom

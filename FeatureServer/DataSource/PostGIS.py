@@ -87,7 +87,7 @@ class PostGIS (DataSource):
         return feature.properties.keys()
 
     def value_formats (self, feature):
-        values = ["%%(%s)s" % self.geom_col]
+        values = ["%%(%s)s" % self.getGeometry()]
         values = []
         for key, val in feature.properties.items():
             valtype = type(val).__name__
@@ -104,7 +104,7 @@ class PostGIS (DataSource):
         values  = self.value_formats(feature)
         predicates = []
         for pair in zip(columns, values):
-            if pair[0] != self.geom_col:
+            if pair[0] != self.getGeometry():
                 if isinstance(pair[1], dict):
                     # Special Query: pair[0] is 'a', pair[1] is {'type', 'pred', 'value'}
                     # We build a Predicate here, then we replace pair[1] with pair[1] value below
@@ -116,7 +116,7 @@ class PostGIS (DataSource):
                 else:
                     predicates.append("%s = %s" % pair)
         if feature.geometry and feature.geometry.has_key("coordinates"):
-            predicates.append(" %s = SetSRID('%s'::geometry, %s) " % (self.geom_col, WKT.to_wkt(feature.geometry), self.srid))
+            predicates.append(" %s = SetSRID('%s'::geometry, %s) " % (self.getGeometry(), WKT.to_wkt(feature.geometry), self.srid))
         return predicates
 
     def feature_values (self, feature):
@@ -136,7 +136,7 @@ class PostGIS (DataSource):
         self.begin()
         if action.feature != None:
             feature = action.feature
-            columns = ", ".join(self.column_names(feature)+[self.geom_col])
+            columns = ", ".join(self.column_names(feature)+[self.getGeometry()])
             values = ", ".join(self.value_formats(feature)+["SetSRID('%s'::geometry, %s) " % (WKT.to_wkt(feature.geometry), self.srid)])
 
             sql = "INSERT INTO \"%s\" (%s) VALUES (%s)" % (self.table, columns, values)
@@ -214,7 +214,7 @@ class PostGIS (DataSource):
         cursor = self.db.cursor()
 
         if action.id is not None:
-            sql = "SELECT AsText(Transform(%s, %d)) as fs_text_geom, " % (self.geom_col, int(self.srid_out))
+            sql = "SELECT AsText(Transform(%s, %d)) as fs_text_geom, " % (self.getGeometry(), int(self.srid_out))
             
             if hasattr(self, 'version'):
                 sql += "%s as version, " % self.version
@@ -234,7 +234,7 @@ class PostGIS (DataSource):
             sql += " FROM \"%s\" WHERE %s = %%(%s)s" % (self.table, self.fid_col, self.fid_col)
             
             #sql = "SELECT AsText(Transform(%s, %d)) as fs_text_geom, %s as ele, %s as version, \"%s, %s FROM \"%s\" WHERE %s = %%(%s)s" % (
-            #        self.geom_col, int(self.srid_out), self.ele, self.version, self.fid_col, self.attribute_cols, self.table, self.fid_col, self.fid_col )
+            #        self.getGeometry(), int(self.srid_out), self.ele, self.version, self.fid_col, self.attribute_cols, self.table, self.fid_col, self.fid_col )
 
             cursor.execute(str(sql), {self.fid_col: str(action.id)})
 
@@ -252,8 +252,8 @@ class PostGIS (DataSource):
                         attrs[key] = value
             if action.bbox:
                 filters.append( "%s && Transform(SetSRID('BOX3D(%f %f,%f %f)'::box3d, %s), %s) AND intersects(%s, Transform(SetSRID('BOX3D(%f %f,%f %f)'::box3d, %s), %s))" % (
-                                        (self.geom_col,) + tuple(action.bbox) + (self.srid_out,) + (self.srid,) + (self.geom_col,) + (tuple(action.bbox) + (self.srid_out,) + (self.srid,))))
-            sql = "SELECT AsText(Transform(%s, %d)) as fs_text_geom, " % (self.geom_col, int(self.srid_out))
+                                        (self.getGeometry(),) + tuple(action.bbox) + (self.srid_out,) + (self.srid,) + (self.getGeometry(),) + (tuple(action.bbox) + (self.srid_out,) + (self.srid,))))
+            sql = "SELECT AsText(Transform(%s, %d)) as fs_text_geom, " % (self.getGeometry(), int(self.srid_out))
             if hasattr(self, 'ele'):
                 sql += "%s as ele, " % self.ele
             if hasattr(self, 'version'):
@@ -281,7 +281,7 @@ class PostGIS (DataSource):
 
             sql += " FROM \"%s\"" % (self.table)
             
-            #sql = "SELECT AsText(Transform(%s, %d)) as fs_text_geom, %s as ele, %s as version, \"%s\", %s FROM \"%s\"" % (self.geom_col, int(self.srid_out), self.ele, self.version, self.fid_col, self.attribute_cols, self.table)
+            #sql = "SELECT AsText(Transform(%s, %d)) as fs_text_geom, %s as ele, %s as version, \"%s\", %s FROM \"%s\"" % (self.getGeometry(), int(self.srid_out), self.ele, self.version, self.fid_col, self.attribute_cols, self.table)
             if filters:
                 sql += " WHERE " + " AND ".join(filters)
             if action.wfsrequest:
@@ -319,7 +319,7 @@ class PostGIS (DataSource):
             id = props[self.fid_col]
             del props[self.fid_col]
             if self.attribute_cols == '*':
-                del props[self.geom_col]
+                del props[self.getGeometry()]
             del props['fs_text_geom']
             for key, value in props.items():
                 if isinstance(value, str): 
@@ -335,7 +335,7 @@ class PostGIS (DataSource):
                     pass
                     
             if (geom):
-                features.append( Feature( id, geom, self.geom_col, self.srid_out, props ) ) 
+                features.append( Feature( id, geom, self.getGeometry(), self.srid_out, props ) )
         return features
             
     def getColumns(self):
@@ -344,7 +344,7 @@ class PostGIS (DataSource):
         if hasattr(self, 'attribute_cols'):
             cols = self.attribute_cols.split(",")
                 
-        cols.append(self.geom_col)
+        cols.append(self.getGeometry())
         cols.append(self.fid_col)
                 
         if hasattr(self, 'version'):
@@ -354,6 +354,11 @@ class PostGIS (DataSource):
                 
         return cols
 
+    def getGeometry(self):
+        return self.geom_col
+    def getAttributes(self):
+        return self.attribute_cols
+    
     
     def getAttributeDescription(self, attribute):
         self.begin()

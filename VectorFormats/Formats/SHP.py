@@ -4,8 +4,8 @@ Created on May 18, 2011
 @author: michel
 '''
 
-from vectorformats.Formats.Format import Format
-import vectorformats.lib.shapefile as shapefile 
+from VectorFormats.Formats.Format import Format
+import VectorFormats.lib.shapefile as shapefile 
 import StringIO
 
 class SHP(Format):

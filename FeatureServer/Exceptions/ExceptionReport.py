@@ -5,11 +5,21 @@ Created on October 15, 2012
 '''
 
 class ExceptionReport():
-    index = 0
-    exceptions = []
+    
+    def __init__(self):
+        self.index = 0
+        self.exceptions = []
     
     def add(self, exception):
         self.exceptions.append(exception)
+    
+    def extend(self, exceptions):
+        self.exceptions.extend(exceptions)
+    
+    def has_exceptions(self):
+        if len(self.exceptions) > 0:
+            return True
+        return False
     
     def __len__(self):
         return len(self.exceptions)

@@ -1,5 +1,5 @@
-from vectorformats.Feature import Feature
-from vectorformats.Formats.Format import Format
+from VectorFormats.Feature import Feature
+from VectorFormats.Formats.Format import Format
 import simplejson
 try:
     import osgeo.ogr as ogr

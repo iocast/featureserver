@@ -9,13 +9,14 @@ import time
 import os
 import traceback
 import ConfigParser
-from web_request.handlers import wsgi, mod_python, cgi
+from WebRequest.handlers import wsgi, mod_python, cgi
+from WebRequest.Request import Request
 from lxml import etree
 import cgi as cgimod
 
-from FeatureServer.WebFeatureService.Response.TransactionResponse import TransactionResponse
-from FeatureServer.WebFeatureService.Response.TransactionSummary import TransactionSummary
-from FeatureServer.WebFeatureService.Response.ActionResult import ActionResult
+from FeatureServer.Parsers.WebFeatureService.Response.TransactionResponse import TransactionResponse
+from FeatureServer.Parsers.WebFeatureService.Response.TransactionSummary import TransactionSummary
+from FeatureServer.Parsers.WebFeatureService.Response.ActionResult import ActionResult
 
 from FeatureServer.Workspace.FileHandler import FileHandler
 
@@ -26,7 +27,7 @@ from FeatureServer.Exceptions.LayerNotFoundException import LayerNotFoundExcepti
 
 
 import FeatureServer.Processing 
-from web_request.response import Response
+from WebRequest.Response import Response
 
 # First, check explicit FS_CONFIG env var
 if 'FS_CONFIG' in os.environ:
@@ -59,7 +60,42 @@ class Server (object):
     def __init__ (self, datasources, metadata = {}, processes = {}):
         self.datasources   = datasources
         self.metadata      = metadata
-        self.processes     = processes 
+        self.processes     = processes
+    
+    @property
+    def datasources(self):
+        return self._datasources
+    @datasources.setter
+    def datasources(self, datasources):
+        self._datasources = datasources
+    
+    @property
+    def metadata(self):
+        return self._metadata
+    @metadata.setter
+    def metadata(self, metadata):
+        self._metadata = metadata
+    @property
+    def metadata_service(self):
+        if 'default_service' in self._metadata:
+            return self._metadata['default_service']
+    @property
+    def metadata_exception(self):
+        if 'default_exception' in self._metadata:
+            return self._metadata['default_exception']
+    @property
+    def log(self):
+        if 'error_log' in self._metadata:
+            return self._metadata['error_log']
+
+    @property
+    def processes(self):
+        return self._processes
+    @processes.setter
+    def processes(self, processes):
+        self._processes = processes
+
+    
     
     def _loadFromSection (cls, config, section, module_type, **objargs):
         type  = config.get(section, "type")
@@ -100,209 +136,127 @@ class Server (object):
     load = classmethod(_load)
 
 
-    def dispatchRequest (self, base_path="", path_info="/", params={}, request_method = "GET", post_data = None,  accepts = ""):
+    def dispatchRequest (self, request):
         """Read in request data, and return a (content-type, response string) tuple. May
            raise an exception, which should be returned as a 500 error to the user."""
-        response_code = "200 OK"
-        host = base_path
-        request = None
-        content_types = {
-          'application/vnd.google-earth.kml+xml': 'KML',
-          'application/json': 'GeoJSON',
-          'text/javascript': 'GeoJSON',
-          'application/rss+xml': 'GeoRSS',
-          'text/html': 'HTML',
-          'osm': 'OSM',
-          'gml': 'WFS',
-          'wfs': 'WFS',
-          'kml': 'KML',
-          'json': 'GeoJSON',
-          'georss': 'GeoRSS',
-          'atom': 'GeoRSS',
-          'html': 'HTML',
-          'geojson':'GeoJSON',
-          'shp': 'SHP',
-          'csv': 'CSV',
-          'gpx': 'GPX',
-          'ov2': 'OV2',
-          'sqlite': 'SQLite',
-          'dxf' : 'DXF'
-        }
+        report = ExceptionReport()
+        service = None
+        request.identify_type()
         
-        exceptionReport = ExceptionReport()
+        #try:
+            # parse request and extend exception report
+        report.extend(request.parse(self))
+        from pprint import pprint
+        print type(request)
+        pprint(vars(request))
+        #except Exception as e:
+            # fatal error occured during parsing request
+            #report.add(e)
+            #return self.respond_report(report=report, service=service)
         
-        path = path_info.split("/")
         
-        found = False
+        #============================================================================#
+        # (reflection) dynamic load of format class e.g. WFS, KML, etc.              #
+        # for supported format see package 'Service'                                 #
+        #   ---------- 1       ----------- 1       -----------           -------     #
+        #   | Server | ------- | Request | ------- | Service | <|------- | WFS |     #
+        #   ----------         -----------         -----------           -------     #
+        #============================================================================#
+        service_module = __import__("Service.%s" % request.service, globals(), locals(), request.service)
+        service_cls = getattr(service_module, request.service)
+        service = service_cls(request)
         
-        format = ""
+        if report.has_exceptions():
+            return self.respond_report(report=report, service=service)
         
-        if params.has_key("format"):
-            format = params['format']
-            if format.lower() in content_types:
-                format = content_types[format.lower()]
-                found = True
-        
-        if not found and len(path) > 1:
-            path_pieces = path[-1].split(".")
-            if len(path_pieces) > 1:
-                format = path_pieces[-1]
-                if format.lower() in content_types:
-                    format = content_types[format.lower()]
-                    found = True
-        
-        if not found and not params.has_key("service") and post_data:
-            try:
-                dom = etree.XML(post_data)
-                params['service'] = dom.get('service')
-            except etree.ParseError: pass
-
-        if not found and not params.has_key("version") and post_data:
-            try:
-                dom = etree.XML(post_data)
-                params['version'] = dom.get('version')
-            except etree.ParseError: pass
-            
-        if not found and not params.has_key("typename") and post_data:
-            try:
-                dom = etree.XML(post_data)
-                for key, value in cgimod.parse_qsl(post_data, keep_blank_values=True):
-                    if key.lower() == 'typename':
-                        params['typename'] = value
-            except etree.ParseError: pass
-
-        if not found and params.has_key("service"):
-            format = params['service']
-            if format.lower() in content_types:
-                format = content_types[format.lower()]
-                found = True
-        
-        if not found and accepts:
-            if accepts.lower() in content_types:
-                format = content_types[accepts.lower()]
-                found = True
-        
-        if not found and not format:
-            if self.metadata.has_key("default_service"):
-                format = self.metadata['default_service']
-            else:    
-                format = "WFS"
-        
-                
-        #===============================================================================
-        # (reflection) dynamic load of format class e.g. WFS, KML, etc.
-        # for supported format see package 'Service'
-        #       -----------           -------
-        #       | Request | <|------- | WFS |
-        #       -----------           -------
-        #===============================================================================
-        service_module = __import__("Service.%s" % format, globals(), locals(), format)
-        service = getattr(service_module, format)
-        request = service(self)
-        
+        # list of class Feature
         response = []
         
-        try:
-            request.parse(params, path_info, host, post_data, request_method)
-            
-            # short circuit datasource where the first action is a metadata request. 
-            if len(request.actions) and request.actions[0].method == "metadata": 
-                return request.encode_metadata(request.actions[0])
-
-            # short circuit datasource where a OGC WFS request is set
-            # processing by service
-            if len(request.actions) > 0 and hasattr(request.actions[0], 'request') and request.actions[0].request is not None:
-                version = '1.0.0'
-                if hasattr(request.actions[0], 'version') and len(request.actions[0].version) > 0:
-                    version = request.actions[0].version
-                
-                if request.actions[0].request.lower() == "getcapabilities":
-                    return getattr(request, request.actions[0].request.lower())(version)
-                elif request.actions[0].request.lower() == "describefeaturetype":
-                    return getattr(request, request.actions[0].request.lower())(version)
-
-            datasource = self.datasources[request.datasources[0]]
-
-            if request_method != "GET" and hasattr(datasource, 'processes'):
-                raise Exception("You can't post data to a processed layer.")
+        # handle special action on the service such as:
+        #   - GetCapabilities
+        #   - DescribeFeatureType
+        for action in request.actions:
+            # if datasource is empty, try to find the method on the service object
+            if action.datasource is None:
+                return getattr(service, action.method.lower())()
 
         
+        transactionResponse = TransactionResponse()
+        transactionResponse.setSummary(TransactionSummary())
+        
+        # handle normal actions on the datasource
+        for (typename, actions) in request.datasources.iteritems():
+            datasource = self.datasources[typename]
+
+            datasource.begin()
+            
             try:
-                datasource.begin()
-
-                if len(request.actions) > 0 and hasattr(request.actions[0], 'request') and request.actions[0].request is not None:
-                    if request.actions[0].request.lower() == "getfeature":
-                        ''' '''
-
-                try:
-                    transactionResponse = TransactionResponse()
-                    transactionResponse.setSummary(TransactionSummary())
                     
-                    for action in request.actions:
-                        method = getattr(datasource, action.method)
-                        try:
-                            result = method(action)
-                            if isinstance(result, ActionResult):
-                                transactionResponse.addResult(result)
-                            elif result is not None:
-                                response += result
-                        except InvalidValueException as e:
-                            exceptionReport.add(e)
+                for action in actions:
+                    method = getattr(datasource, action.method)
+                    try:
+                        result = method(action)
+                        if isinstance(result, ActionResult):
+                            transactionResponse.addResult(result)
+                        elif result is not None:
+                            response += result
+                    except InvalidValueException as e:
+                        exceptionReport.add(e)
+                        
+                    datasource.commit()
+            except:
+                # TODO: rollback for all datasources
+                datasource.rollback()
+                raise
+            
+        return self.respond_service(service, response)
     
-                        datasource.commit()
-                except:
-                    datasource.rollback()
-                    raise
 
-                if hasattr(datasource, 'processes'):
-                    for process in datasource.processes.split(","):
-                        if not self.processes.has_key(process):
-                            raise Exception("Process %s configured incorrectly. Possible processes: \n\n%s" % (process, ",".join(self.processes.keys() )))
-                        response = self.processes[process].dispatch(features=response, params=params)
-                if transactionResponse.summary.totalDeleted > 0 or transactionResponse.summary.totalInserted > 0 or transactionResponse.summary.totalUpdated > 0 or transactionResponse.summary.totalReplaced > 0:
-                    response = transactionResponse
-
-            except ConnectionException as e:
-                exceptionReport.add(e)
-    
-        except LayerNotFoundException as e:
-            exceptionReport.add(e)
-
-        if len(exceptionReport) > 0:
-            if self.metadata.has_key("default_exception"):
-                service_module = __import__("Service.%s" % self.metadata['default_exception'], globals(), locals(), self.metadata['default_exception'])
-                service = getattr(service_module, self.metadata['default_exception'])
-                default_exception = service(self)
+    def respond_report(self, report, service):
+        try:
+            service_module = __import__("Service.%s" % self.metadata_exception, globals(), locals(), self.metadata_exception)
+            service = getattr(service_module, self.metadata_exception)
+            default_exception = service(self)
                 
-                if hasattr(default_exception, "default_exception"):
-                    mime, data, headers, encoding = default_exception.encode_exception_report(exceptionReport)
-                else:
-                    raise Exception("Defined service of key 'default_exception' does not support encoding exception reports. Please use a supported service or disable this key.")
+            if hasattr(default_exception, "default_exception"):
+                mime, data, headers, encoding = default_exception.encode_exception_report(report)
+                return self.respond(mime=mime, data=data, headers=headers, encoding=encoding)
             else:
-                # check if service supports exception encoding
-                if hasattr(request, "encode_exception_report"):
-                    mime, data, headers, encoding = request.encode_exception_report(exceptionReport)
-                else:
+                raise Exception("Defined service of key 'default_exception' does not support encoding exception reports. Please use a supported service or disable this key.")
+        except:
+            # check if service supports exception encoding
+            if service is not None and hasattr(service, "encode_exception_report"):
+                mime, data, headers, encoding = service.encode_exception_report(report)
+                return self.respond(mime=mime, data=data, headers=headers, encoding=encoding)
+            else:
+                try:
                     # get default service and instantiate
-                    service_module = __import__("Service.%s" % self.metadata['default_service'], globals(), locals(), self.metadata['default_service'])
-                    service = getattr(service_module, self.metadata['default_service'])
+                    service_module = __import__("Service.%s" % self.metadata_service, globals(), locals(), self.metadata_service)
+                    service = getattr(service_module, self.metadata_service)
                     default_service = service(self)
                 
                     if hasattr(default_service, "encode_exception_report"):
-                        mime, data, headers, encoding = default_service.encode_exception_report(exceptionReport)
+                        mime, data, headers, encoding = default_service.encode_exception_report(report)
+                        return respond(mime=mime, data=data, headers=headers, encoding=encoding)
                     else:
                         # load WFS for exception handling
                         from FeatureServer.Service.WFS import WFS
                         wfs_service = WFS(self)
-                        mime, data, headers, encoding = wfs_service.encode_exception_report(exceptionReport)
+                        mime, data, headers, encoding = wfs_service.encode_exception_report(report)
+                        return respons(mime=mime, data=data, headers=headers, encoding=encoding)
+                except: raise
+                    #raise Exception("Required key 'default_service' in the configuration file is not set. Please define a default service.")
 
+
+    def respond_service(self, service, response):
+        mime, data, headers, encoding = service.encode(response)
+        return self.respond(mime = mime, data = data, headers = headers, encoding = encoding)
+
+    def respond(self, mime, data, headers, encoding, response_code="200 OK"):
+        return Response(data=data, content_type=mime, headers=headers, status_code=response_code, encoding=encoding)
         
-        else:
-            mime, data, headers, encoding = request.encode(response)
-
-        return Response(data=data, content_type=mime, headers=headers, status_code=response_code, encoding=encoding)     
-
-    def dispatchWorkspaceRequest (self, base_path="", path_info="/", params={}, request_method = "GET", post_data = None,  accepts = ""):        
+    
+    def dispatchWorkspaceRequest (self, request):
         handler = FileHandler('workspace.db')
         handler.removeExpired()
         
@@ -348,7 +302,7 @@ class Server (object):
                             if post_data == None:
                                 params['filter'] = data[3]
                     
-                    return self.dispatchRequest(base_path, path_info, params, request_method, post_data, accepts)
+                    return self.dispatchRequest(Request(base_path=base_path, path_info=path_info, params=params, request_method=request_method, post_data=post_data, acccepts=accepts))
         
         # check workspace by id
         elif params.has_key('skey'):

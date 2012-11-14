@@ -3,22 +3,28 @@ Created on Dec 10, 2011
 
 @author: michel
 '''
-from FeatureServer.WebFeatureService.FilterEncoding.FilterEncoding import FilterEncoding
+from FilterEncoding import FilterEncoding
+from WebRequest.Actions.Select import Select as SelectRequest
 
-class Select(object):
-    
-    data = ""
-    filter = None
+class Select(SelectRequest):
+    ''' implements the interface of the a select action (guide through all the request from WebRequest.Actions.Select'''
+    filter      = None
+    properties  = []
 
-    def __init__(self, data):
-        self.data = data
-        self.filter = FilterEncoding(self.data)
+    def __init__(self, datasource, data, properties = []):
+        ''' data represents a <ogc:Filter/> '''
+        SelectRequest.__init__(self, datasource=datasource)
+        self.data   = data
+        self.filter = FilterEncoding(data)
+        self.properties = properties
+        
         self.filter.parse();
     
-    def render(self, datasource):
-        return self.filter.render(datasource)
+    def get_statement(self):
+        return self.filter.render(self.datasource)
 
-    def getAttributes(self):
-        return self.filter.getAttributes()
+    def get_attributes(self):
+        return self.properties
+        #return self.filter.getAttributes()
         
         

@@ -1,11 +1,13 @@
 import StringIO
 
 class Response(object): 
-    status_code = 200
+
+    status_code = "200 OK"
     extra_headers = None
     content_type = "text/plain"
     data = ""
     encoding = 'utf-8'
+    
     def __init__(self, data="", content_type=None, headers = None, status_code=None, encoding='utf-8'):
         self.data = data
         self.content_type = content_type

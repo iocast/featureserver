@@ -8,34 +8,6 @@ import os
 import warnings
 import time
 
-class DataSource (object):
-    """Base datasource class. Datasources override the insert, update, 
-       and delete methods to support those actions, and can optionally
-       use begin, commit, and rollback methods to perform locking."""
-    
-    def __init__(self, name, **kwargs):
-        self.name = name
-        for key, val in kwargs.iteritems():
-            setattr(self, key, val)
-    def execute (self, feature, response=None):
-        raise NotImplementedError
-    def insert (self, feature, response=None):
-        raise NotImplementedError
-    def update (self, feature, response=None):
-        raise NotImplementedError
-    def delete (self, feature, response=None):
-        raise NotImplementedError
-    def select (self, params):
-        pass
-    def begin (self):
-        pass
-    def commit (self):
-        pass
-    def rollback (self):
-        pass
-    def getBBOX(self):
-        return '0 0 0 0'
-    def getAttributeDescription(self, name): pass
 
 class Lock (object):
     """Locking method used in several DataSources which do not have

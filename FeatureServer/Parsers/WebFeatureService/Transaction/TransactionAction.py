@@ -3,28 +3,47 @@ Created on Oct 16, 2011
 
 @author: michel
 '''
-import re
+import os, re
+from lxml import etree
+from copy import deepcopy
+
+from FeatureServer.Parsers.WebFeatureService.FilterEncoding.FilterEncoding import FilterEncoding
 
 class TransactionAction(object):
-
-    def __init__(self, node):
+    ''' represents a <wfs:Insert/>, <wfs:Update/> or <wfs:Delete/> '''
+        
+    def __init__(self, node, **kwargs):
+        super(TransactionAction, self).__init__(**kwargs)
         self.children = []
         self.index = 0
         self.stmt = None
         self.type = ''
         self.node = node
-        
-
-    def setStatement(self, stmt):
+    
+    
+    def set_statement(self, stmt):
         self.stmt = stmt
     
-    def getStatement(self, datasource = None):
-        if self.stmt == None and datasource != None:
-            self.createStatement(datasource)
+    def get_statement(self):
+        if self.stmt == None:
+            self.create_statement()
         return self.stmt
     
-    def createStatement(self, datasource): pass
+    def create_statement(self): pass
     
+    def get_filter(self):
+        ''' returns the filter as string in the datasource format '''
+        filters = self.node.xpath("//*[local-name() = 'Filter']")
+        if len(filters) == 0:
+            return None
+        
+        filter_node = deepcopy(filters[0])
+
+        filter_encoding = FilterEncoding(etree.tostring(filter_node))
+        filter_encoding.parse()
+                
+        return filter_encoding.render(self.datasource)
+
     def __len__(self):
         return len(self.children)
 

@@ -1,6 +1,6 @@
-from vectorformats.Feature import Feature
-from vectorformats.Formats.Format import Format
-from vectorformats.Formats.WKT import to_wkt, from_wkt
+from VectorFormats.Feature import Feature
+from VectorFormats.Formats.Format import Format
+from VectorFormats.Formats.WKT import to_wkt, from_wkt
 
 import csv
 import StringIO

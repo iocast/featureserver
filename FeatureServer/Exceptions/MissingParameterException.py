@@ -8,12 +8,12 @@ from FeatureServer.Exceptions.BaseException import BaseException
 
 class MissingParameterException(BaseException):
     
-    argument=""
-    message="Argument '%s' is missing in layer '%s'."
+    parameter=""
+    message="Required parameter '%s' is missing."
     
-    def __init__(self, locator, layer, argument, code="", message="", dump = ""):
-        self.argument = argument
-        self.message = self.message % (self.argument, layer)
+    def __init__(self, locator, parameter, layer="", code="", message="", dump = ""):
+        self.parameter = parameter
+        self.message = self.message % self.parameter
         if len(message) > 0:
             self.message = message
-        BaseException.__init__(self, self.message, self.code, locator, layer, dump)
+        BaseException.__init__(self, self.message, code, locator, layer, dump)

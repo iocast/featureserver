@@ -2,11 +2,11 @@
 
 # BSD Licensed, Copyright (c) 2006-2008 MetaCarta, Inc.
 
-import sys, os, traceback
+import sys, os, traceback, urllib, StringIO
 import cgi as cgimod
-from web_request.response import Response
-import urllib
-import StringIO
+
+from WebRequest.Response import Response
+from WebRequest.Request import Request
 
 
 class ApplicationException(Exception): 
@@ -58,13 +58,13 @@ def mod_python (dispatch_function, apache_request):
          #if post_data:
              #for key, value in cgimod.parse_qsl(post_data, keep_blank_values=True):
                  #params[key.lower()] = value
-        returned_data = dispatch_function( 
+        returned_data = dispatch_function( Request(
           base_path = base_path, 
           path_info = apache_request.path_info, 
           params = params, 
           request_method = request_method, 
           post_data = post_data, 
-          accepts = accepts )
+          accepts = accepts ))
         
         if isinstance(returned_data, list) or isinstance(returned_data, tuple): 
             format, data = returned_data[0:2]
@@ -138,15 +138,15 @@ def wsgi (dispatch_function, environ, start_response):
             for key, value in cgimod.parse_qsl(environ['QUERY_STRING'], keep_blank_values=True):
                 params[key.lower()] = value
         
-        returned_data = dispatch_function( 
+        returned_data = dispatch_function( Request(
           base_path = base_path, 
           path_info = path_info, 
           params = params, 
           request_method = request_method, 
           post_data = post_data, 
-          accepts = accepts )
-        
-        if isinstance(returned_data, list) or isinstance(returned_data, tuple): 
+          accepts = accepts ))
+    
+        if isinstance(returned_data, list) or isinstance(returned_data, tuple):
 
             format, data = returned_data[0:2]
             headers = {'Content-Type': format}
@@ -221,13 +221,13 @@ def cgi (dispatch_function):
 
         base_path += os.environ["SCRIPT_NAME"]
         
-        returned_data = dispatch_function( 
+        returned_data = dispatch_function( Request(
           base_path = base_path, 
           path_info = path_info, 
           params = params, 
           request_method = request_method, 
           post_data = post_data, 
-          accepts = accepts )
+          accepts = accepts ))
         
         if isinstance(returned_data, list) or isinstance(returned_data, tuple): 
             format, data = returned_data[0:2]

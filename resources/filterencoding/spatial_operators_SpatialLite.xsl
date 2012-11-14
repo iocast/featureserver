@@ -20,51 +20,121 @@
 	<xsl:template match="*[local-name(.)='Equals']">
 		<xsl:param name="geometryName" />
 		<xsl:param name="srs" />
+        
+        <xsl:if test="//*[local-name() = 'ValueReference']">
+            <Statement>Equals(<xsl:value-of select="//*[local-name() = 'ValueReference']" />, GeomFromGML('<xsl:copy-of select="//*[local-name() = 'Literal']/*" />'))</Statement>
+        </xsl:if>
+        <xsl:if test="not(//*[local-name() = 'ValueReference'])">
+            <Statement>Equals(<xsl:value-of select="//*[local-name() = 'PropertyName']" />, GeomFromGML('<xsl:copy-of select="//*[local-name() = 'Literal']/*" />'))</Statement>
+        </xsl:if>
 	</xsl:template>
 	
 	<xsl:template match="*[local-name(.)='Disjoint']">
 		<xsl:param name="geometryName" />
 		<xsl:param name="srs" />
+        
+        <xsl:if test="//*[local-name() = 'ValueReference']">
+            <Statement>Disjoint(<xsl:value-of select="//*[local-name() = 'ValueReference']" />, GeomFromGML('<xsl:value-of select="//*[local-name() = 'Literal']" />'))</Statement>
+        </xsl:if>
+        <xsl:if test="not(//*[local-name() = 'ValueReference'])">
+            <Statement>Disjoint(<xsl:value-of select="//*[local-name() = 'PropertyName']" />, GeomFromGML('<xsl:value-of select="//*[local-name() = 'Literal']" />'))</Statement>
+        </xsl:if>
     </xsl:template>
 
 	<xsl:template match="*[local-name(.)='Touches']">
 		<xsl:param name="geometryName" />
 		<xsl:param name="srs" />
+        
+        <xsl:if test="//*[local-name() = 'ValueReference']">
+            <Statement>Touches(<xsl:value-of select="//*[local-name() = 'ValueReference']" />, GeomFromGML('<xsl:value-of select="//*[local-name() = 'Literal']" />'))</Statement>
+        </xsl:if>
+        <xsl:if test="not(//*[local-name() = 'ValueReference'])">
+            <Statement>Touches(<xsl:value-of select="//*[local-name() = 'PropertyName']" />, GeomFromGML('<xsl:value-of select="//*[local-name() = 'Literal']" />'))</Statement>
+        </xsl:if>
 	</xsl:template>
 
 	<xsl:template match="*[local-name(.)='Within']">
 		<xsl:param name="geometryName" />
 		<xsl:param name="srs" />
+        
+        <xsl:if test="//*[local-name() = 'ValueReference']">
+            <Statement>Within(<xsl:value-of select="//*[local-name() = 'ValueReference']" />, GeomFromGML('<xsl:value-of select="//*[local-name() = 'Literal']" />'))</Statement>
+        </xsl:if>
+        <xsl:if test="not(//*[local-name() = 'ValueReference'])">
+            <Statement>Within(<xsl:value-of select="//*[local-name() = 'PropertyName']" />, GeomFromGML('<xsl:value-of select="//*[local-name() = 'Literal']" />'))</Statement>
+        </xsl:if>
 	</xsl:template>
 
 	<xsl:template match="*[local-name(.)='Overlaps']">
 		<xsl:param name="geometryName" />
 		<xsl:param name="srs" />
+        
+        <xsl:if test="//*[local-name() = 'ValueReference']">
+            <Statement>Overlaps(<xsl:value-of select="//*[local-name() = 'ValueReference']" />, GeomFromGML('<xsl:value-of select="//*[local-name() = 'Literal']" />'))</Statement>
+        </xsl:if>
+        <xsl:if test="not(//*[local-name() = 'ValueReference'])">
+            <Statement>Overlaps(<xsl:value-of select="//*[local-name() = 'PropertyName']" />, GeomFromGML('<xsl:value-of select="//*[local-name() = 'Literal']" />'))</Statement>
+        </xsl:if>
 	</xsl:template>
 
 	<xsl:template match="*[local-name(.)='Crosses']">
 		<xsl:param name="geometryName" />
 		<xsl:param name="srs" />
+        
+        <xsl:if test="//*[local-name() = 'ValueReference']">
+            <Statement>Crosses(<xsl:value-of select="//*[local-name() = 'ValueReference']" />, GeomFromGML('<xsl:value-of select="//*[local-name() = 'Literal']" />'))</Statement>
+        </xsl:if>
+        <xsl:if test="not(//*[local-name() = 'ValueReference'])">
+            <Statement>Crosses(<xsl:value-of select="//*[local-name() = 'PropertyName']" />, GeomFromGML('<xsl:value-of select="//*[local-name() = 'Literal']" />'))</Statement>
+        </xsl:if>
 	</xsl:template>
 
 	<xsl:template match="*[local-name(.)='Intersects']">
 		<xsl:param name="geometryName" />
 		<xsl:param name="srs" />
+        
+        <xsl:if test="//*[local-name() = 'ValueReference']">
+            <Statement>Intersects(<xsl:value-of select="//*[local-name() = 'ValueReference']" />, GeomFromGML('<xsl:value-of select="//*[local-name() = 'Literal']" />'))</Statement>
+        </xsl:if>
+        <xsl:if test="not(//*[local-name() = 'ValueReference'])">
+            <Statement>Intersects(<xsl:value-of select="//*[local-name() = 'PropertyName']" />, GeomFromGML('<xsl:value-of select="//*[local-name() = 'Literal']" />'))</Statement>
+        </xsl:if>
 	</xsl:template>
 
 	<xsl:template match="*[local-name(.)='Contains']">
 		<xsl:param name="geometryName" />
 		<xsl:param name="srs" />
+        
+        <xsl:if test="//*[local-name() = 'ValueReference']">
+            <Statement>Contains(<xsl:value-of select="//*[local-name() = 'ValueReference']" />, GeomFromGML('<xsl:value-of select="//*[local-name() = 'Literal']" />'))</Statement>
+        </xsl:if>
+        <xsl:if test="not(//*[local-name() = 'ValueReference'])">
+            <Statement>Contains(<xsl:value-of select="//*[local-name() = 'PropertyName']" />, GeomFromGML('<xsl:value-of select="//*[local-name() = 'Literal']" />'))</Statement>
+        </xsl:if>
 	</xsl:template>
 
 	<xsl:template match="*[local-name(.)='DWithin']">
 		<xsl:param name="geometryName" />
 		<xsl:param name="srs" />
+        
+        <xsl:if test="//*[local-name() = 'ValueReference']">
+            <Statement>PtDistWithin(<xsl:value-of select="//*[local-name() = 'ValueReference']" />, GeomFromGML('<xsl:value-of select="//*[local-name() = 'Literal']" />'), <xsl:value-of select="//Distance"/>)</Statement>
+        </xsl:if>
+        <xsl:if test="not(//*[local-name() = 'ValueReference'])">
+            <Statement>PtDistWithin(<xsl:value-of select="//*[local-name() = 'PropertyName']" />, GeomFromGML('<xsl:value-of select="//*[local-name() = 'Literal']" />'), <xsl:value-of select="//Distance"/>)</Statement>
+        </xsl:if>
 	</xsl:template>
 
 	<xsl:template match="*[local-name(.)='Beyond']">
 		<xsl:param name="geometryName" />
 		<xsl:param name="srs" />
+        
+        <xsl:if test="//*[local-name() = 'ValueReference']">
+            <Statement>NOT PtDistWithin(<xsl:value-of select="//*[local-name() = 'ValueReference']" />, GeomFromGML('<xsl:value-of select="//*[local-name() = 'Literal']" />'), <xsl:value-of select="//Distance"/>)</Statement>
+        </xsl:if>
+        <xsl:if test="not(//*[local-name() = 'ValueReference'])">
+            <Statement>NOT PtDistWithin(<xsl:value-of select="//*[local-name() = 'PropertyName']" />, GeomFromGML('<xsl:value-of select="//*[local-name() = 'Literal']" />'), <xsl:value-of select="//Distance"/>)</Statement>
+        </xsl:if>
 	</xsl:template>
 
 	<xsl:template match="*[local-name(.)='BBOX']">

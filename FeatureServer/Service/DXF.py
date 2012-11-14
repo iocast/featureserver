@@ -1,13 +1,13 @@
 '''
 @author: Michel Ott
 '''
-from FeatureServer.Service.Request import Request
+from FeatureServer.Service.Service import Service
 import StringIO
 import os
 import tempfile
 import vectorformats.Formats.DXF
 
-class DXF(Request):
+class DXF(Service):
     def encode(self, result):
         dxf = vectorformats.Formats.DXF.DXF(layername=self.datasources[0], datasource=self.service.datasources[self.datasources[0]])
         

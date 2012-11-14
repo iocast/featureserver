@@ -3,7 +3,7 @@ __copyright__ = "Copyright (c) 2006-2008 MetaCarta"
 __license__ = "Clear BSD" 
 __version__ = "$Id: OSM.py 599 2009-04-02 21:35:26Z crschmidt $"
 
-from vectorformats.Formats.Format import Format
+from VectorFormats.Formats.Format import Format
 
 class OSM(Format):
     """OSM 0.5 writing."""

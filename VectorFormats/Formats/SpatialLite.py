@@ -4,11 +4,11 @@ Created on Sep 14, 2012
 @author: michel
 '''
 
-from vectorformats.Formats.Format import Format
-from vectorformats.Formats import WKT
+from VectorFormats.Formats.Format import Format
+from VectorFormats.Formats import WKT
 from pyspatialite import dbapi2 as db
 
-class SQLite(Format):
+class SpatialLite(Format):
     
     _connection = None
     _cursor = None

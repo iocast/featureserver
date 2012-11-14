@@ -14,4 +14,4 @@ class LayerNotFoundException(BaseException):
         self.message = self.message % (layer, ", ".join(layers))
         if len(message) > 0:
             self.message = message
-        BaseException.__init__(self, self.message, self.code, locator, layer, dump)
+        BaseException.__init__(self, self.message, code, locator, layer, dump)

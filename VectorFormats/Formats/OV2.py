@@ -4,7 +4,7 @@ Created on Jul 30, 2011
 @author: michel
 '''
 
-from vectorformats.Formats.Format import Format
+from VectorFormats.Formats.Format import Format
 import StringIO
 from struct import pack
 import types

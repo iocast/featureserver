@@ -1,5 +1,5 @@
 
-from vectorformats.Formats.Format import Format
+from VectorFormats.Formats.Format import Format
 import StringIO
 from dxfwrite import DXFEngine as dxf
 

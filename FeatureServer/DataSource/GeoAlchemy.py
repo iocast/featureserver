@@ -1,6 +1,6 @@
 from FeatureServer.DataSource import DataSource
-from vectorformats.Feature import Feature
-from vectorformats.Formats import WKT
+from VectorFormats.Feature import Feature
+from VectorFormats.Formats import WKT
 from sqlalchemy import create_engine, and_, func
 from sqlalchemy.orm import sessionmaker
 

@@ -5,7 +5,7 @@ __version__ = "$Id: OGR.py 617 2009-10-06 18:10:49Z jlivni $"
 
 from FeatureServer.DataSource import DataSource
 from FeatureServer.DataSource import Lock
-from vectorformats.Feature import Feature
+from VectorFormats.Feature import Feature
 
 try:
     from osgeo import ogr

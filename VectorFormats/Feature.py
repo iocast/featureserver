@@ -10,9 +10,10 @@ class Feature (object):
     {'type': 'Point', 'coordinates': [2.0, 0.0]}
     """
     
-    def __init__ (self, id = None, geometry = None, geometry_attr=None, srs=None, props = None):
+    def __init__ (self, layer, id = None, geometry = None, geometry_attr=None, srs=None, props = None):
         self.id             = id
-        self.geometry       = geometry 
+        self.layer          = layer
+        self.geometry       = geometry
         self.properties     = props or {}
         self.bbox           = None
         self.geometry_attr  = geometry_attr
