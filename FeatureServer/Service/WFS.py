@@ -58,13 +58,13 @@ class WFS(Service):
     def find_operation(self):
         # check POST data
         if self.request.post_xml is not None:
-            if len(self.post_xml.xpath("/*[local-name() = 'GetCapabilities']")) > 0:
+            if len(self.request.post_xml.xpath("/*[local-name() = 'GetCapabilities']")) > 0:
                 self._operation = "GetCapabilities"
-            elif len(self.post_xml.xpath("/*[local-name() = 'DescribeFeatureType']")) > 0:
+            elif len(self.request.post_xml.xpath("/*[local-name() = 'DescribeFeatureType']")) > 0:
                 self._operation = "DescribeFeatureType"
-            elif len(self.post_xml.xpath("/*[local-name() = 'Transaction']")) > 0:
+            elif len(self.request.post_xml.xpath("/*[local-name() = 'Transaction']")) > 0:
                 self._operation = "Transaction"
-            elif len(self.post_xml.xpath("/*[local-name() = 'GetFeature']")) > 0:
+            elif len(self.request.post_xml.xpath("/*[local-name() = 'GetFeature']")) > 0:
                 self._operation = "GetFeature"
         
         # check GET params
@@ -103,7 +103,7 @@ class WFS(Service):
     def find_output_format(self):
         # check POST data
         if self.request.post_xml is not None:
-            if 'outputFormat' in self.post_xml.attrib:
+            if 'outputFormat' in self.request.post_xml.attrib:
                 self.output_format = self.supported_formats[self.request.post_xml.attrib['outputformat'].lower()]
                 return
         

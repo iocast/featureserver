@@ -192,14 +192,17 @@ class Server (object):
                     elif result is not None:
                         response += result
             
+            # TODO: only commit if connection is open
             # commit all changes
             for typename in request.service.datasources.keys():
                 self.datasources[typename].commit()
         except Exception as e:
+            # TODO: only rollback if connection is open
             # call rollback on every requested datasource
-            for typename in request.service.datasource.keys():
+            for typename in request.service.datasources.keys():
                 self.datasources[typename].rollback()
-            exceptionReport.add(e)
+            report.add(e)
+            raise e
             
         return self.respond_service(request.service, response)
     

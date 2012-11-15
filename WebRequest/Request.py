@@ -42,8 +42,6 @@ class Request(object):
     
 
     def parse_post_data(self):
-        parser = objectify.makeparser(remove_blank_text=True, ns_clean=True)
-        self._post_xml = etree.XML(self.post_data, parser=parser)
         try:
             parser = objectify.makeparser(remove_blank_text=True, ns_clean=True)
             self._post_xml = etree.XML(self.post_data, parser=parser)
@@ -77,10 +75,10 @@ class Request(object):
     @property
     def service(self):
         return self._service
-                
+
     @property
     def post_xml(self):
-        self._post_xml
+        return self._post_xml
 
     @property
     def host(self):

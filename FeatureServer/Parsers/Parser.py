@@ -2,12 +2,12 @@
 
 class Parser(object):
     
-    def __init__(self, request):
-        self._request = request
+    def __init__(self, service):
+        self._service = service
     
     @property
-    def request(self):
-        return self._request
+    def service(self):
+        return self._service
     
     def parse(self): pass
     def get_actions(self): pass
