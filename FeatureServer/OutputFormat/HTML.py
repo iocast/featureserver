@@ -1,7 +1,7 @@
-from FeatureServer.Service.Service import Service
+from OutputFormat import OutputFormat
 import vectorformats.Formats.HTML
 
-class HTML (Service):    
+class HTML (OutputFormat):
     #def encode_metadata(self, action):
     #    layers = self.service.datasources
     #    if self.service.metadata.has_key("metadata_template"):

@@ -76,9 +76,9 @@ class Server (object):
     def metadata(self, metadata):
         self._metadata = metadata
     @property
-    def metadata_service(self):
-        if 'default_service' in self._metadata:
-            return self._metadata['default_service']
+    def metadata_output(self):
+        if 'default_output' in self._metadata:
+            return self._metadata['default_output']
     @property
     def metadata_exception(self):
         if 'default_exception' in self._metadata:
@@ -141,33 +141,25 @@ class Server (object):
            raise an exception, which should be returned as a 500 error to the user."""
         report = ExceptionReport()
         service = None
-        request.identify_type()
         
         #try:
             # parse request and extend exception report
-        report.extend(request.parse(self))
+        request.parse(self)
+        #report.extend(request.parse(self))
+        
+        # testing
         from pprint import pprint
-        print type(request)
-        pprint(vars(request))
+        #print type(request)
+        #pprint(vars(request))
+        
         #except Exception as e:
             # fatal error occured during parsing request
             #report.add(e)
             #return self.respond_report(report=report, service=service)
         
-        
-        #============================================================================#
-        # (reflection) dynamic load of format class e.g. WFS, KML, etc.              #
-        # for supported format see package 'Service'                                 #
-        #   ---------- 1       ----------- 1       -----------           -------     #
-        #   | Server | ------- | Request | ------- | Service | <|------- | WFS |     #
-        #   ----------         -----------         -----------           -------     #
-        #============================================================================#
-        service_module = __import__("Service.%s" % request.service, globals(), locals(), request.service)
-        service_cls = getattr(service_module, request.service)
-        service = service_cls(request)
-        
+                
         if report.has_exceptions():
-            return self.respond_report(report=report, service=service)
+            return self.respond_report(report=report, service=request.service)
         
         # list of class Feature
         response = []
@@ -175,48 +167,50 @@ class Server (object):
         # handle special action on the service such as:
         #   - GetCapabilities
         #   - DescribeFeatureType
-        for action in request.actions:
+        for action in request.service.actions:
             # if datasource is empty, try to find the method on the service object
             if action.datasource is None:
-                return getattr(service, action.method.lower())()
+                return getattr(request.service.output, action.method.lower())()
 
         
         transactionResponse = TransactionResponse()
         transactionResponse.setSummary(TransactionSummary())
         
-        # handle normal actions on the datasource
-        for (typename, actions) in request.datasources.iteritems():
-            datasource = self.datasources[typename]
-
-            datasource.begin()
-            
-            try:
-                    
+        try:
+            # handle normal actions on the datasource
+            for (typename, actions) in request.service.datasources.iteritems():
+                datasource = self.datasources[typename]
+                
+                datasource.begin()
+                
                 for action in actions:
                     method = getattr(datasource, action.method)
-                    try:
-                        result = method(action)
-                        if isinstance(result, ActionResult):
-                            transactionResponse.addResult(result)
-                        elif result is not None:
-                            response += result
-                    except InvalidValueException as e:
-                        exceptionReport.add(e)
-                        
-                    datasource.commit()
-            except:
-                # TODO: rollback for all datasources
-                datasource.rollback()
-                raise
-            
-        return self.respond_service(service, response)
-    
 
+                    result = method(action)
+                    if isinstance(result, ActionResult):
+                        transactionResponse.addResult(result)
+                    elif result is not None:
+                        response += result
+            
+            # commit all changes
+            for typename in request.service.datasources.keys():
+                self.datasources[typename].commit()
+        except Exception as e:
+            # call rollback on every requested datasource
+            for typename in request.service.datasource.keys():
+                self.datasources[typename].rollback()
+            exceptionReport.add(e)
+            
+        return self.respond_service(request.service, response)
+    
+    
+    # TODO: should it be service -> default_exception -> default_output -> WFS
+    #                    default_exception -> servcie -> default_output -> WFS
     def respond_report(self, report, service):
         try:
-            service_module = __import__("Service.%s" % self.metadata_exception, globals(), locals(), self.metadata_exception)
-            service = getattr(service_module, self.metadata_exception)
-            default_exception = service(self)
+            output_module = __import__("OutputFormat.%s" % self.metadata_exception, globals(), locals(), self.metadata_exception)
+            output = getattr(output_module, self.metadata_exception)
+            default_exception = output(self)
                 
             if hasattr(default_exception, "default_exception"):
                 mime, data, headers, encoding = default_exception.encode_exception_report(report)
@@ -225,31 +219,31 @@ class Server (object):
                 raise Exception("Defined service of key 'default_exception' does not support encoding exception reports. Please use a supported service or disable this key.")
         except:
             # check if service supports exception encoding
-            if service is not None and hasattr(service, "encode_exception_report"):
-                mime, data, headers, encoding = service.encode_exception_report(report)
+            if service is not None and servcie.output is not None and hasattr(service.output, "encode_exception_report"):
+                mime, data, headers, encoding = service.output.encode_exception_report(report)
                 return self.respond(mime=mime, data=data, headers=headers, encoding=encoding)
             else:
                 try:
                     # get default service and instantiate
-                    service_module = __import__("Service.%s" % self.metadata_service, globals(), locals(), self.metadata_service)
-                    service = getattr(service_module, self.metadata_service)
-                    default_service = service(self)
+                    output_module = __import__("OutputFormat.%s" % self.metadata_output, globals(), locals(), self.metadata_output)
+                    output = getattr(output_module, self.metadata_output)
+                    default_output = output(self)
                 
-                    if hasattr(default_service, "encode_exception_report"):
-                        mime, data, headers, encoding = default_service.encode_exception_report(report)
+                    if hasattr(default_output, "encode_exception_report"):
+                        mime, data, headers, encoding = default_output.encode_exception_report(report)
                         return respond(mime=mime, data=data, headers=headers, encoding=encoding)
                     else:
                         # load WFS for exception handling
-                        from FeatureServer.Service.WFS import WFS
-                        wfs_service = WFS(self)
-                        mime, data, headers, encoding = wfs_service.encode_exception_report(report)
+                        from FeatureServer.OutputFormat.WFS import WFS
+                        wfs_output = WFS(self)
+                        mime, data, headers, encoding = wfs_output.encode_exception_report(report)
                         return respons(mime=mime, data=data, headers=headers, encoding=encoding)
                 except: raise
-                    #raise Exception("Required key 'default_service' in the configuration file is not set. Please define a default service.")
+                    #raise Exception("Required key 'default_output' in the configuration file is not set. Please define a default output.")
 
 
     def respond_service(self, service, response):
-        mime, data, headers, encoding = service.encode(response)
+        mime, data, headers, encoding = service.output.encode(response)
         return self.respond(mime = mime, data = data, headers = headers, encoding = encoding)
 
     def respond(self, mime, data, headers, encoding, response_code="200 OK"):

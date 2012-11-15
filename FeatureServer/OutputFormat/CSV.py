@@ -1,13 +1,8 @@
-__author__  = "MetaCarta"
-__copyright__ = "Copyright (c) 2006-2008 MetaCarta"
-__license__ = "Clear BSD" 
-__version__ = "$Id: WFS.py 485 2008-05-18 10:51:09Z crschmidt $"
-
-from FeatureServer.Service.Service import Service
+from OutputFormat import OutputFormat
 import vectorformats.Formats.CSV
 
 
-class CSV(Service):
+class CSV(OutputFormat):
     def encode(self, results):
         csv = vectorformats.Formats.CSV.CSV(layername=self.datasources[0])
 

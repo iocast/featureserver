@@ -3,13 +3,13 @@ Created on May 18, 2011
 
 @author: michel
 '''
-from FeatureServer.Service.Service import Service
+from OutputFormat import OutputFormat
 import vectorformats.Formats.SHP
 import zipfile
 import StringIO
 from lxml import etree
 
-class SHP(Service):
+class SHP(OutputFormat):
     def encode(self, result):
         shp = vectorformats.Formats.SHP.SHP(layername=self.datasources[0], datasource=self.service.datasources[self.datasources[0]])
         (shpBuffer, shxBuffer, dbfBuffer, prjBuffer)  = shp.encode(result)

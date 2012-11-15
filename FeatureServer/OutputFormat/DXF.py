@@ -1,32 +1,30 @@
 '''
-Created on Sep 14, 2012
-
-@author: michel
+@author: Michel Ott
 '''
-from FeatureServer.Service.Service import Service
+from OutputFormat import OutputFormat
 import StringIO
 import os
 import tempfile
-import VectorFormats.Formats.SpatialLite
+import vectorformats.Formats.DXF
 
-class SpatialLite(Service):
+class DXF(OutputFormat):
     def encode(self, result):
-        spatiallite = vectorformats.Formats.SpatialLite.SpatialLite(layername=self.datasources[0], datasource=self.service.datasources[self.datasources[0]])
+        dxf = vectorformats.Formats.DXF.DXF(layername=self.datasources[0], datasource=self.service.datasources[self.datasources[0]])
         
         try:
             fd, temp_path = tempfile.mkstemp()
             os.close(fd)
             
-            connection = spatiallite.encode(result, tmpFile=temp_path)
-        
+            drawing = dxf.encode(result, tmpFile=temp_path)
+            
             output = StringIO.StringIO(open(temp_path).read())
         finally:
             os.remove(temp_path)
-            
+        
         
         headers = {
             'Accept': '*/*',
-            'Content-Disposition' : 'attachment; filename=poidownload.sqlite3',
+            'Content-Disposition' : 'attachment; filename=poidownload.dxf',
             'Content-Transfer-Encoding' : 'binary'
         }
         

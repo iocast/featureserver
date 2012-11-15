@@ -4,10 +4,10 @@ Created on Jul 30, 2011
 @author: michel
 '''
 
-from FeatureServer.Service.Service import Service
+from OutputFormat import OutputFormat
 import vectorformats.Formats.GPX
 
-class GPX(Service):
+class GPX(OutputFormat):
     def encode(self, results):
         gpx = vectorformats.Formats.GPX.GPX(layername=self.datasources[0])
         

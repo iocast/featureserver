@@ -18,29 +18,12 @@ class WFSParser(Parser):
     def __init__(self, request):
         Parser.__init__(self, request)
     
+    # testing
     def test(self):
         ''' '''
-        parser = objectify.makeparser(remove_blank_text=True, ns_clean=True)
-        dom = etree.XML(self.request.post_data, parser=parser)
-            
-        if len(dom.xpath("/*[local-name() = 'GetFeature']")) > 0:
-            print "POST Query"
-            queries = dom.xpath("/*[local-name() = 'GetFeature']/*[local-name() = 'Query']")
-                
-            for query in queries:
-                self.actions.append(self.parse_filter(datasource=self.request.server.datasources[query.attrib['typeName']], dom=deepcopy(query.xpath("./*[local-name() = 'Filter']")[0]), properties=self.parse_query_property_names(deepcopy(query))))
-            
-        elif len(dom.xpath("/*[local-name() = 'Transaction']")) > 0:
-            print "POST Transaction"
-            # Transaction is only in POST mode possible
-            # TODO: raise exception if request.type is not 'transaction'
-                
-            # WFS transaction can only be handled as a whole
-            self.actions.extend(self.parse_transaction(dom))
-
-
 
     def parse(self):
+        # testing
         self.test()
         
         try:

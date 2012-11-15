@@ -227,25 +227,25 @@ class WFS(Format):
         if len(elements) > 0:
             for element in elements:
                 for http in element:
-                    http.set('onlineResource', self.request.host + '?')
+                    http.set('onlineResource', self.service.request.host + '?')
 
         elements = root.xpath("wfs:Capability/wfs:Request/wfs:DescribeFeatureType/wfs:DCPType/wfs:HTTP", namespaces = self.namespaces)
         if len(elements) > 0:
             for element in elements:
                 for http in element:
-                    http.set('onlineResource', self.request.host + '?')
+                    http.set('onlineResource', self.service.request.host + '?')
 
         elements = root.xpath("wfs:Capability/wfs:Request/wfs:GetFeature/wfs:DCPType/wfs:HTTP", namespaces = self.namespaces)
         if len(elements) > 0:
             for element in elements:
                 for http in element:
-                    http.set('onlineResource', self.request.host + '?')
+                    http.set('onlineResource', self.service.request.host + '?')
         
         elements = root.xpath("wfs:Capability/wfs:Request/wfs:Transaction/wfs:DCPType/wfs:HTTP", namespaces = self.namespaces)
         if len(elements) > 0:
             for element in elements:
                 for http in element:
-                    http.set('onlineResource', self.request.host + '?')
+                    http.set('onlineResource', self.service.request.host + '?')
 
 
         layers = self.getlayers()
@@ -263,7 +263,7 @@ class WFS(Format):
         operations.append(etree.Element('Query'))
         featureList.append(operations)
 
-        for (typename, layer) in self.request.server.datasources.iteritems():
+        for (typename, layer) in self.service.request.server.datasources.iteritems():
             type = etree.Element('FeatureType')
             name = etree.Element('Name')
             name.text = layer.name
@@ -304,13 +304,13 @@ class WFS(Format):
         tree = etree.parse("resources/wfs-featuretype.xsd")
         root = tree.getroot()
         
-        if len(self.request.datasources) == 1:
+        if len(self.service.datasources) == 1:
             ''' special case when only one datasource is requested --> other xml schema '''
-            root = self.addDataSourceFeatureType(root, self.request.server.datasources[self.request.datasources.keys()[0]])
+            root = self.addDataSourceFeatureType(root, self.service.request.server.datasources[self.service.datasources.keys()[0]])
         else:
             ''' loop over all requested datasources '''
-            for typename in self.request.datasources.keys():
-                root = self.addDataSourceImport(root, self.request.server.datasources[typename])
+            for typename in self.service.datasources.keys():
+                root = self.addDataSourceImport(root, self.service.request.server.datasources[typename])
                 #root = self.addDataSourceFeatureType(root, self.datasources[layer])
         
         return etree.tostring(tree, pretty_print=True)
@@ -318,7 +318,7 @@ class WFS(Format):
     def addDataSourceImport(self, root, datasource):
         root.append(
                     etree.Element('import', attrib={'namespace':self.namespaces['fs'],
-                                                    'schemaLocation':self.request.host+'?service=WFS&request=DescribeFeatureType&typeName='+datasource.name})
+                                                    'schemaLocation':self.service.request.host+'?service=WFS&request=DescribeFeatureType&typeName='+datasource.name})
                     )
         return root
     

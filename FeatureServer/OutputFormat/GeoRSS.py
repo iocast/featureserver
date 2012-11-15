@@ -1,12 +1,7 @@
-__author__  = "MetaCarta"
-__copyright__ = "Copyright (c) 2006-2008 MetaCarta"
-__license__ = "Clear BSD" 
-__version__ = "$Id: GeoRSS.py 482 2008-05-18 10:36:44Z crschmidt $"
-
-from FeatureServer.Service.Service import Service
+from OutputFormat import OutputFormat
 import vectorformats.Formats.GeoRSS
 
-class GeoRSS(Service):
+class GeoRSS(OutputFormat):
     def encode_metadata(self, action):
         layers = self.service.datasources
         layer_text = []

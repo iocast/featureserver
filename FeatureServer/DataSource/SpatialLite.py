@@ -115,12 +115,8 @@ class SpatialLite (DataSource):
         self.close()
 
     def insert(self, action):
-        self.begin()
-        
         sql = action.get_statement()
-        print sql
-        return
-            
+        
         cursor = self._connection.cursor()
         cursor.execute(str(sql))
             
@@ -131,11 +127,8 @@ class SpatialLite (DataSource):
             
 
     def update(self, action):
-        self.begin()
-
         sql = action.get_statement()
-        print sql
-        return
+        
         cursor = self._connection.cursor()
         cursor.execute(str(sql))
             
@@ -143,11 +136,8 @@ class SpatialLite (DataSource):
 
 
     def delete(self, action):
-        self.begin()
-
         sql = action.get_statement()
-        print sql
-        return
+        
         cursor = self._connection.cursor()
         cursor.execute(str(sql))
         
@@ -155,7 +145,6 @@ class SpatialLite (DataSource):
         
 
     def select(self, action):
-        self.begin()
         cursor = self._connection.cursor()
         
         sql = "SELECT AsText(Transform(%s, %d)) as fs_text_geom, " % (self.getGeometry(), int(self.srid_out))
@@ -194,9 +183,6 @@ class SpatialLite (DataSource):
         if action.get_statement() is not None:
             sql += " WHERE " + action.get_statement()
     
-        print sql
-        return []
-        
         cursor.execute(str(sql))
         result = cursor.fetchall()
 
@@ -265,9 +251,7 @@ class SpatialLite (DataSource):
             cursor.execute(sql % self.table)
             result = cursor.fetchall()
             self.commit()
-        except:
-            pass
-        
+        except: pass
     
         type = 'string'
         length = ''
