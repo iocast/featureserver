@@ -1,9 +1,10 @@
 <pre style="border: 0px; padding: 0px;">
- ___         _                ___                      
-| __|__ __ _| |_ _  _ _ _ ___/ __| ___ _ ___ _____ _ _ 
-| _/ -_) _` |  _| || | '_/ -_)__ \/ -_) '_\ V / -_) '_|
-|_|\___\__,_|\__|\_,_|_| \___|___/\___|_|  \_/\___|_|  
+ ___         _                ___                        ___   __  
+| __|__ __ _| |_ _  _ _ _ ___/ __| ___ _ ___ _____ _ _  |_  ) /  \ 
+| _/ -_) _` |  _| || | '_/ -_)__ \/ -_) '_\ V / -_) '_|  / / | () |
+|_|\___\__,_|\__|\_,_|_| \___|___/\___|_|  \_/\___|_|   /___(_)__/
 </pre>
+<!-- stop, standard, smslant, small -->
 <a href="http://featureserver.org" target="_new">FeatureServer</a> is an implementation of a RESTful Geographic Feature Service. Using standard HTTP methods, you can fetch a representation of a feature or a collection of features, add new data to the service, or delete data from the service. Use it as an aggregator -- post your GeoRSS feeds to it, and then browse them using WFS. Use it as a translator: use the OGR DataSource to load a shapefile and open it in Google Earth.
 
 DataSource (Storage)
@@ -11,8 +12,7 @@ DataSource (Storage)
 <table>
     <thead>
         <tr>
-            <th>Datasource</th>
-            <th>Description</th>
+            <th>Data source</th><th>Description</th>
         </tr>
     </thead>
     <tbody>
@@ -59,12 +59,12 @@ DataSource (Storage)
     </tbody>
 </table>
 
-Service (Input/Output)
-----------------------
+OutputFormats
+-------------
 <table>
     <thead>
         <tr>
-            <th>Service</th><th>Description</th>
+            <th>Output format</th><th>Description</th>
         </tr>
     </thead>
     <tbody>
@@ -103,6 +103,21 @@ Service (Input/Output)
         </tr>
         <tr>
             <td>SQLite/SpatiaLite</td><td>SpatiaLite is an open source library intended to extend the SQLite core to support fully fledged Spatial SQL capabilities.</td>
+        </tr>
+    </tbody>
+</table>
+
+Services
+--------
+<table>
+    <thead>
+        <tr>
+            <th>Output format</th><th>Description</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>CSV</td><td>The Web Feature Service (WFS) represents a change in the way geographic information is created, modified and exchanged on the Internet. Rather than sharing geographic information at the file level using File Transfer Protocol (FTP), for example, the WFS offers direct fine-grained access to geographic information at the feature and feature property level. Web feature services allow clients to only retrieve or modify the data they are seeking, rather than retrieving a file that contains the data they are seeking and possibly much more. That data can then be used for a wide variety of purposes, including purposes other than their producers' intended ones.</td>
         </tr>
     </tbody>
 </table>
