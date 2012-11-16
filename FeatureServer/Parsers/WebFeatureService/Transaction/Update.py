@@ -11,8 +11,8 @@ from WebRequest.Actions.Update import Update as UpdateResult
 
 class Update(TransactionAction, UpdateResult):
     
-    def __init__(self, datasource, node):
-        super(Update, self).__init__(datasource=datasource, node=node)
+    def __init__(self, datasource, node, transaction):
+        super(Update, self).__init__(datasource=datasource, node=node, transaction=transaction)
         self.type = 'update'
         
     def create_statement(self):
@@ -26,12 +26,11 @@ class Update(TransactionAction, UpdateResult):
         transform = etree.XSLT(xslt)
         
         result = transform(self.node,
-                           datasource="'"+self.datasource.type+"'",
-                           transactionType="'"+self.type+"'",
-                           geometryAttribute="'"+self.datasource.geom_col+"'",
-                           geometryData="'"+geomData+"'",
-                           tableName="'"+self.datasource.layer+"'",
-                           tableId="'"+self.datasource.fid_col+"'")
+                           version              = "'" + str(self.transaction.service.version) + "'",
+                           transactionType      = "'" + self.type + "'",
+                           geometryAttribute    = "'" + self.datasource.geom_col + "'",
+                           geometryData         = "'" + geomData + "'",
+                           tableName            = "'" + self.datasource.layer + "'" )
 
         elements = result.xpath("//Statement")
         if len(elements) > 0:

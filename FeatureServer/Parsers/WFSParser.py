@@ -96,7 +96,7 @@ class WFSParser(Parser):
     
     def parse_transaction(self, dom):
         ''' parses the whole <wfs:Transaction/> and returns a list of actions '''
-        transaction = Transaction(self.service.request.server.datasources)
+        transaction = Transaction(self.service)
         transaction.parse(etree.tostring(dom))
         return transaction.getActions()
         

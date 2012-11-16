@@ -3,34 +3,35 @@
 	xmlns:regexp="http://exslt.org/regular-expressions" 
 	xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 	
+    <xsl:param name="version" />
 	<xsl:param name="transactionType" />
 	<xsl:param name="geometryAttribute" />
 	<xsl:param name="geometryData" />
 	<xsl:param name="tableName" />
-	<xsl:param name="tableId" />
 	
 	<xsl:template match="/">
 		<Statements>
 		<xsl:choose>
 			<xsl:when test="$transactionType='insert'">
 				<xsl:call-template name="Insert">
-					<xsl:with-param name="geometryAttribute" select="$geometryAttribute" />
+                    <xsl:with-param name="version" select="$version" />
+                    <xsl:with-param name="geometryAttribute" select="$geometryAttribute" />
 					<xsl:with-param name="geometryData" select="$geometryData" />
 					<xsl:with-param name="tableName" select="$tableName" />
 				</xsl:call-template>
 			</xsl:when>
 			<xsl:when test="$transactionType='update'">
 				<xsl:call-template name="Update">
+                    <xsl:with-param name="version" select="$version" />
 					<xsl:with-param name="geometryAttribute" select="$geometryAttribute" />
 					<xsl:with-param name="geometryData" select="$geometryData" />
 					<xsl:with-param name="tableName" select="$tableName" />
-					<xsl:with-param name="tableId" select="$tableId" />
 				</xsl:call-template>
 			</xsl:when>
 			<xsl:when test="$transactionType='delete'">
 				<xsl:call-template name="Delete">
+                    <xsl:with-param name="version" select="$version" />
 					<xsl:with-param name="tableName" select="$tableName" />
-					<xsl:with-param name="tableId" select="$tableId" />
 				</xsl:call-template>
 			</xsl:when>
 		</xsl:choose>
@@ -38,9 +39,11 @@
 	</xsl:template>
 	
 	<xsl:template name="Insert">
+		<xsl:param name="version"/>
 		<xsl:param name="geometryAttribute"/>
 		<xsl:param name="geometryData"/>
 		<xsl:param name="tableName"/>
+
         <Statement>
             INSERT INTO <xsl:value-of select="$tableName"/> (
             <xsl:for-each select="child::*">
@@ -70,10 +73,11 @@
 	</xsl:template>
 	
 	<xsl:template name="Update">
+		<xsl:param name="version"/>
 		<xsl:param name="geometryAttribute"/>
 		<xsl:param name="geometryData"/>
 		<xsl:param name="tableName"/>
-		<xsl:param name="tableId" />
+        
         <Statement>
             UPDATE <xsl:value-of select="$tableName"/> SET
             <xsl:for-each select="child::*">
@@ -97,9 +101,9 @@
 	</xsl:template>
 	
 	<xsl:template name="Delete">
+		<xsl:param name="version"/>
 		<xsl:param name="tableName"/>
-		<xsl:param name="tableId" />
-		
+        
 		<xsl:variable name="total" select="count(//*[local-name()='FeatureId'])" />
 		
         <Statement>

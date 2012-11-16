@@ -16,13 +16,16 @@ class Transaction(object):
     namespaces = {'gml' : 'http://www.opengis.net/gml',
                   'fs' : 'http://featureserver.org/fs'}
     
-    def __init__(self, datasources) :
-        self._datasources = datasources
+    def __init__(self, service) :
+        self._service = service
         self._tree = None
 
     @property
-    def datasources(self):
-        return self._datasources
+    def available_datasources(self):
+        return self.service.request.server.datasources
+    @property
+    def service(self):
+        return self._service
     @property
     def tree(self):
         return self._tree
@@ -42,7 +45,7 @@ class Transaction(object):
             node = self.dom
             
         if transaction == None:
-            transaction = TransactionAction(node=node)
+            transaction = TransactionAction(node=node, transaction=self)
         
         transaction_class = None
         
@@ -69,7 +72,7 @@ class Transaction(object):
             raise Exception("Could not find transaction for %s" % transaction)
         
         transaction_func = getattr(transaction_module, transaction)
-        return transaction_func(datasource=self.datasources[typename], node=node)
+        return transaction_func(datasource=self.available_datasources[typename], node=node, transaction=self)
     
     def render(self, datasource, node = None):
         if node == None:

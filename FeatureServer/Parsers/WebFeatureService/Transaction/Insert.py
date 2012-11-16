@@ -11,8 +11,8 @@ from WebRequest.Actions.Insert import Insert as InsertAction
 
 class Insert(TransactionAction, InsertAction):
     
-    def __init__(self, datasource, node):
-        super(Insert, self).__init__(datasource=datasource, node=node)
+    def __init__(self, datasource, node, transaction):
+        super(Insert, self).__init__(datasource=datasource, node=node, transaction=transaction)
         self.type = 'insert'
     
     def create_statement(self):
@@ -24,11 +24,12 @@ class Insert(TransactionAction, InsertAction):
         transform = etree.XSLT(xslt)
         
         result = transform(self.node,
-                           datasource="'"+self.datasource.type+"'",
-                           transactionType="'"+self.type+"'",
-                           geometryAttribute="'"+self.datasource.geom_col+"'",
-                           geometryData="'"+geomData+"'",
-                           tableName="'"+self.datasource.layer+"'")
+                           version              = "'" + str(self.transaction.service.version) + "'",
+                           transactionType      = "'" + self.type + "'",
+                           geometryAttribute    = "'" + self.datasource.geom_col + "'",
+                           geometryData         = "'" + geomData + "'",
+                           tableName            = "'" + self.datasource.layer + "'" )
+
         elements = result.xpath("//Statement")
         if len(elements) > 0:
             pattern = re.compile(r'\s+')

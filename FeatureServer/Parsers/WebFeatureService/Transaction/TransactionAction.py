@@ -12,13 +12,14 @@ from FeatureServer.Parsers.WebFeatureService.FilterEncoding.FilterEncoding impor
 class TransactionAction(object):
     ''' represents a <wfs:Insert/>, <wfs:Update/> or <wfs:Delete/> '''
         
-    def __init__(self, node, **kwargs):
+    def __init__(self, node, transaction, **kwargs):
         super(TransactionAction, self).__init__(**kwargs)
         self.children = []
         self.index = 0
         self.stmt = None
         self.type = ''
         self.node = node
+        self.transaction = transaction
     
     
     def set_statement(self, stmt):

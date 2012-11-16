@@ -11,8 +11,8 @@ from WebRequest.Actions.Delete import Delete as DeleteAction
 
 class Delete(TransactionAction, DeleteAction):
     
-    def __init__(self, datasource, node):
-        super(Delete, self).__init__(datasource=datasource, node=node)
+    def __init__(self, datasource, node, transaction):
+        super(Delete, self).__init__(datasource=datasource, node=node, transaction=transaction)
         self.type = 'delete'
         
     def create_statement(self):
@@ -20,10 +20,10 @@ class Delete(TransactionAction, DeleteAction):
         transform = etree.XSLT(xslt)
         
         result = transform(self.node,
-                           datasource="'"+self.datasource.type+"'",
-                           transactionType="'"+self.type+"'",
-                           tableName="'"+self.datasource.layer+"'",
-                           tableId="'"+self.datasource.fid_col+"'")
+                           version          = "'" + str(self.transaction.service.version) + "'",
+                           transactionType  = "'" + self.type + "'",
+                           tableName        = "'" + self.datasource.layer + "'" )
+
         elements = result.xpath("//Statement")
         if len(elements) > 0:
             pattern = re.compile(r'\s+')
