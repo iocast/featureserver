@@ -15,6 +15,8 @@ from FeatureServer.Parsers.WebFeatureService.Response.UpdateResult import Update
 from FeatureServer.Parsers.WebFeatureService.Response.DeleteResult import DeleteResult
 from FeatureServer.Parsers.WebFeatureService.Response.ReplaceResult import ReplaceResult
 
+from FeatureServer.Exceptions.SyntaxException import SyntaxException
+
 
 from pyspatialite import dbapi2 as db
 
@@ -118,8 +120,11 @@ class SpatialLite (DataSource):
         sql = action.get_statement()
         
         cursor = self._connection.cursor()
-        cursor.execute(str(sql))
-            
+        try:
+            cursor.execute(str(sql))
+        except Exception as e:
+            raise SyntaxException(locator = self.__class__.__name__, dump = str(e))
+        
         cursor.execute("SELECT last_insert_rowid()")
         action.id =  cursor.fetchone()[0]
             
@@ -130,8 +135,11 @@ class SpatialLite (DataSource):
         sql = action.get_statement()
         
         cursor = self._connection.cursor()
-        cursor.execute(str(sql))
-            
+        try:
+            cursor.execute(str(sql))
+        except Exception as e:
+            raise SyntaxException(locator = self.__class__.__name__, dump = str(e))
+        
         return UpdateResult(action.id, "")
 
 
@@ -139,7 +147,11 @@ class SpatialLite (DataSource):
         sql = action.get_statement()
         
         cursor = self._connection.cursor()
-        cursor.execute(str(sql))
+
+        try:
+            cursor.execute(str(sql))
+        except Exception as e:
+            raise SyntaxException(locator = self.__class__.__name__, dump = str(e))
         
         return DeleteResult(action.id, "")
         
@@ -183,7 +195,11 @@ class SpatialLite (DataSource):
         if action.get_statement() is not None:
             sql += " WHERE " + action.get_statement()
     
-        cursor.execute(str(sql))
+        try:
+            cursor.execute(str(sql))
+        except Exception as e:
+            raise SyntaxException(locator = self.__class__.__name__, dump = str(e))
+
         result = cursor.fetchall()
 
                 
