@@ -64,7 +64,7 @@ OutputFormats
 <table>
     <thead>
         <tr>
-            <th>Output format</th><th>Description</th>
+            <th>Service</th><th>Description</th>
         </tr>
     </thead>
     <tbody>
