@@ -139,42 +139,33 @@ class Server (object):
     def dispatchRequest (self, request):
         """Read in request data, and return a (content-type, response string) tuple. May
            raise an exception, which should be returned as a 500 error to the user."""
-        report = ExceptionReport()
+        exceptions = ExceptionReport()
         service = None
         
-        #try:
+        try:
             # parse request and extend exception report
-        request.parse(self)
-        #report.extend(request.parse(self))
-        
-        # testing
-        from pprint import pprint
-        #print type(request)
-        #pprint(vars(request))
-        
-        #except Exception as e:
+            exceptions.extend(request.parse(self))
+        except Exception as e:
             # fatal error occured during parsing request
-            #report.add(e)
-            #return self.respond_report(report=report, service=service)
+            exceptions.add(e)
+            return self.respond_report(report=exceptions, service=service)
         
                 
-        if report.has_exceptions():
-            return self.respond_report(report=report, service=request.service)
+        if exceptions.has_exceptions():
+            return self.respond_report(report=exceptions, service=request.service)
         
         # list of class Feature
         response = []
         
-        # handle special action on the service such as:
-        #   - GetCapabilities
-        #   - DescribeFeatureType
+        # handle special action on the output format such as:
+        #   - GetCapabilities or DescribeFeatureType
         for action in request.service.actions:
             # if datasource is empty, try to find the method on the service object
-            if action.datasource is None:
-                return getattr(request.service.output, action.method.lower())()
+            return getattr(request.service.output, action.method.lower())()
 
         
-        transactionResponse = TransactionResponse()
-        transactionResponse.setSummary(TransactionSummary())
+        transactions = TransactionResponse()
+        transactions.setSummary(TransactionSummary())
         
         try:
             # handle normal actions on the datasource
@@ -187,8 +178,9 @@ class Server (object):
                     method = getattr(datasource, action.method)
 
                     result = method(action)
+                    
                     if isinstance(result, ActionResult):
-                        transactionResponse.addResult(result)
+                        transactions.addResult(result)
                     elif result is not None:
                         response += result
             
@@ -201,10 +193,15 @@ class Server (object):
             # call rollback on every requested datasource
             for typename in request.service.datasources.keys():
                 self.datasources[typename].rollback()
-            report.add(e)
-            raise e
-            
-        return self.respond_service(request.service, response)
+            exceptions.add(e)
+
+        if exceptions.has_exceptions():
+            return self.respond_report(report=exceptions, servcie=request.service)
+
+        if transactions.summary.totalDeleted > 0 or transactions.summary.totalInserted > 0 or transactions.summary.totalUpdated > 0 or transactions.summary.totalReplaced > 0:
+            response = transactions
+
+        return self.respond_service(response=response, service=request.service)
     
     
     # TODO: should it be service -> default_exception -> default_output -> WFS
@@ -245,7 +242,7 @@ class Server (object):
                     #raise Exception("Required key 'default_output' in the configuration file is not set. Please define a default output.")
 
 
-    def respond_service(self, service, response):
+    def respond_service(self, response, service):
         mime, data, headers, encoding = service.output.encode(response)
         return self.respond(mime = mime, data = data, headers = headers, encoding = encoding)
 

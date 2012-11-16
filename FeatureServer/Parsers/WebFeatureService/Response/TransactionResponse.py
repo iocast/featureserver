@@ -12,12 +12,13 @@ from ReplaceResult import ReplaceResult
 
 class TransactionResponse(object):
     
-    summary = None
-    insertResults = []
-    updateResults = []
-    replaceResults = []
-    deleteResults = []
-    version = '2.0.0'
+    def __init__(self):
+        self.summary = None
+        self.insertResults = []
+        self.updateResults = []
+        self.replaceResults = []
+        self.deleteResults = []
+        self.version = '2.0.0'
     
     def setSummary(self, summary):
         self.summary = summary

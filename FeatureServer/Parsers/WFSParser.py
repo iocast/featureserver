@@ -13,10 +13,9 @@ from copy import deepcopy
 
 class WFSParser(Parser):
     
-    actions = []
-    
     def __init__(self, service):
         Parser.__init__(self, service)
+        self.actions = []
     
     # testing
     def test(self):

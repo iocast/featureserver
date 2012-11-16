@@ -3,6 +3,7 @@ from WFS import WFS
 from FeatureServer.Exceptions.MissingParameterException import MissingParameterException
 
 class WFS_V1(WFS):
+    ''' implements WFS version 1.1.0 specification '''
 
     def find_typenames(self):
         # check POST data
@@ -37,4 +38,4 @@ class WFS_V1(WFS):
             self.datasources.update({key : [] for key in self.request.params['typename'].split(",")})
             return
 
-        raise MissingParameterException(locator = "Service/" + self.__class__.__name__, parameter = "typeName")
+        return [ MissingParameterException(locator = "Service/" + self.__class__.__name__, parameter = "typeName") ]

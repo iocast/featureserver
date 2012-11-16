@@ -22,6 +22,7 @@ class Request(object):
 
 
     def parse(self, server):
+        exceptions = []
         self._server = server
         
         # parsing POST data
@@ -35,10 +36,12 @@ class Request(object):
             service_cls = getattr(service_module, service_name)
             self._service = service_cls(self)
         except Exception as e:
-            raise ServiceNotFoundException(locator = self.__class__.__name__, service = service_name)
+            exceptions.add(ServiceNotFoundException(locator = self.__class__.__name__, service = service_name))
 
         # do service specific parsing
-        self.service.parse()
+        exceptions.extend(self.service.parse())
+
+        return exceptions
     
 
     def parse_post_data(self):

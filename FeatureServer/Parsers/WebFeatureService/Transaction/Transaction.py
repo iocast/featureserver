@@ -13,15 +13,19 @@ from TransactionAction import TransactionAction
 class Transaction(object):
     ''' parses the whole transaction '''
     
-    tree = None
     namespaces = {'gml' : 'http://www.opengis.net/gml',
                   'fs' : 'http://featureserver.org/fs'}
     
     def __init__(self, datasources) :
         self._datasources = datasources
+        self._tree = None
+
     @property
     def datasources(self):
         return self._datasources
+    @property
+    def tree(self):
+        return self._tree
 
     def getActions(self):
         return self.tree
@@ -54,7 +58,7 @@ class Transaction(object):
                 transaction.appendChild(transaction_class)
             
                     
-        self.tree = transaction
+        self._tree = transaction
             
     def getTransactionInstance(self, transaction, typename, node):
         print ">>> transaction: " + typename

@@ -22,7 +22,7 @@ class Update(TransactionAction, UpdateResult):
         geomData = ''
         if len(geom) > 0:
             geomData = etree.tostring(geom[0], pretty_print=True)
-        xslt = etree.parse(os.path.dirname(os.path.abspath(__file__))+"/../../../../resources/transaction/transactions.xsl")
+        xslt = etree.parse(os.path.dirname(os.path.abspath(__file__))+"/../../../../resources/transaction/transactions_%s.xsl" % self.datasource.type)
         transform = etree.XSLT(xslt)
         
         result = transform(self.node,

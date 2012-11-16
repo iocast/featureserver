@@ -1,14 +1,8 @@
-import StringIO
+from StringIO import StringIO
 
 class Response(object): 
 
-    status_code = "200 OK"
-    extra_headers = None
-    content_type = "text/plain"
-    data = ""
-    encoding = 'utf-8'
-    
-    def __init__(self, data="", content_type=None, headers = None, status_code=None, encoding='utf-8'):
+    def __init__(self, data="", content_type="text/plain", headers = None, status_code="200 OK", encoding='utf-8'):
         self.data = data
         self.content_type = content_type
         self.extra_headers = headers
@@ -16,7 +10,7 @@ class Response(object):
         self.encoding = encoding
     
     def getData(self):
-        if isinstance(self.data, StringIO.StringIO):
+        if isinstance(self.data, StringIO):
             return self.data.getvalue()
         if len(self.encoding) > 0:
             return self.data.encode(self.encoding)
