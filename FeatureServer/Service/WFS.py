@@ -3,11 +3,14 @@ from Service import Service
 
 from FeatureServer.Exceptions.MissingParameterException import MissingParameterException
 from FeatureServer.Exceptions.LayerNotFoundException import LayerNotFoundException
+from FeatureServer.Exceptions.VersionNotSupportedException import VersionNotSupportedException
 
 from WebRequest.Actions.Action import Action
 from FeatureServer.Parsers.WFSParser import WFSParser
 
 class WFS(Service):
+    
+    _supported_versions = ["1.1.0", "2.0.0  "]
 
     def __init__(self, request):
         super(WFS, self).__init__(request)
@@ -35,6 +38,9 @@ class WFS(Service):
         if self.operation != "GetCapabilities":
             # 'version' is mandatory
             self.find_version()
+            
+            if self.version not in self.supported_versions:
+                exceptions.append(VersionNotSupportedException(locator = self.__class__.__name__, version = self.version, supported_versions = self.supported_versions))
     
             if self.version[:1] == "1":
                 from WFS_V1 import WFS_V1
@@ -48,7 +54,6 @@ class WFS(Service):
         
         # 'ouputFormat' is optional because set by configuration file
         self.find_output_format()
-    
     
         self.create_actions()
     
@@ -96,7 +101,7 @@ class WFS(Service):
         exceptions = []
         for typename in self.datasources.keys():
             if not self.request.server.datasources.has_key(typename):
-                exceptions.append(LayerNotFoundException(locator = self.__class__.__name__, layer = typename, layers = self.request.server.datasources.keys()))
+                exceptions.append(LayerNotFoundException(locator = self.__class__.__name__, layer = typename, supported_layers = self.request.server.datasources.keys()))
     
         return exceptions
 
@@ -150,6 +155,9 @@ class WFS(Service):
     @property
     def name(self):
         return self._service
+    @property
+    def supported_versions(self):
+        return self._supported_versions
     @property
     def actions(self):
         return self._actions

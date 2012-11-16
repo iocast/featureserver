@@ -31,12 +31,13 @@ class Request(object):
 
         # determine requested service
         service_name = self.find_service_name()
+        
         try:
             service_module = __import__("FeatureServer.Service.%s" % service_name, globals(), locals(), service_name)
             service_cls = getattr(service_module, service_name)
             self._service = service_cls(self)
         except Exception as e:
-            exceptions.add(ServiceNotFoundException(locator = self.__class__.__name__, service = service_name))
+            exceptions.append(ServiceNotFoundException(locator = self.__class__.__name__, service = service_name))
 
         # do service specific parsing
         exceptions.extend(self.service.parse())
