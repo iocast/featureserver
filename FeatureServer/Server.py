@@ -152,7 +152,7 @@ class Server (object):
         
                 
         if exceptions.has_exceptions():
-            return self.respond_report(report=exceptions, service=request.service)
+            return self.respond_report(report=exceptions, service=request.service, status_code="400 Bad request")
         
         # list of class Feature
         response = []
@@ -196,7 +196,7 @@ class Server (object):
             exceptions.add(e)
 
         if exceptions.has_exceptions():
-            return self.respond_report(report=exceptions, servcie=request.service)
+            return self.respond_report(report=exceptions, service=request.service)
 
         if transactions.summary.totalDeleted > 0 or transactions.summary.totalInserted > 0 or transactions.summary.totalUpdated > 0 or transactions.summary.totalReplaced > 0:
             response = transactions
@@ -206,7 +206,7 @@ class Server (object):
     
     # TODO: should it be service -> default_exception -> default_output -> WFS
     #                    default_exception -> servcie -> default_output -> WFS
-    def respond_report(self, report, service):
+    def respond_report(self, report, service, status_code="500 Internal Error"):
         try:
             output_module = __import__("OutputFormat.%s" % self.metadata_exception, globals(), locals(), self.metadata_exception)
             output = getattr(output_module, self.metadata_exception)
@@ -214,14 +214,14 @@ class Server (object):
                 
             if hasattr(default_exception, "default_exception"):
                 mime, data, headers, encoding = default_exception.encode_exception_report(report)
-                return self.respond(mime=mime, data=data, headers=headers, encoding=encoding)
+                return self.respond(mime=mime, data=data, headers=headers, encoding=encoding, status_code=status_code)
             else:
                 raise Exception("Defined service of key 'default_exception' does not support encoding exception reports. Please use a supported service or disable this key.")
         except:
             # check if service supports exception encoding
-            if service is not None and servcie.output is not None and hasattr(service.output, "encode_exception_report"):
+            if service is not None and service.output is not None and hasattr(service.output, "encode_exception_report"):
                 mime, data, headers, encoding = service.output.encode_exception_report(report)
-                return self.respond(mime=mime, data=data, headers=headers, encoding=encoding)
+                return self.respond(mime=mime, data=data, headers=headers, encoding=encoding, status_code=status_code)
             else:
                 try:
                     # get default service and instantiate
@@ -231,13 +231,13 @@ class Server (object):
                 
                     if hasattr(default_output, "encode_exception_report"):
                         mime, data, headers, encoding = default_output.encode_exception_report(report)
-                        return respond(mime=mime, data=data, headers=headers, encoding=encoding)
+                        return respond(mime=mime, data=data, headers=headers, encoding=encoding, status_code=status_code)
                     else:
                         # load WFS for exception handling
                         from FeatureServer.OutputFormat.WFS import WFS
                         wfs_output = WFS(self)
                         mime, data, headers, encoding = wfs_output.encode_exception_report(report)
-                        return respons(mime=mime, data=data, headers=headers, encoding=encoding)
+                        return respons(mime=mime, data=data, headers=headers, encoding=encoding, status_code=status_code)
                 except: raise
                     #raise Exception("Required key 'default_output' in the configuration file is not set. Please define a default output.")
 
@@ -246,8 +246,8 @@ class Server (object):
         mime, data, headers, encoding = service.output.encode(response)
         return self.respond(mime = mime, data = data, headers = headers, encoding = encoding)
 
-    def respond(self, mime, data, headers, encoding, response_code="200 OK"):
-        return Response(data=data, content_type=mime, headers=headers, status_code=response_code, encoding=encoding)
+    def respond(self, mime, data, headers, encoding, status_code="200 OK"):
+        return Response(data=data, content_type=mime, headers=headers, status_code=status_code, encoding=encoding)
         
     
     def dispatchWorkspaceRequest (self, request):
