@@ -27,7 +27,7 @@ class Operator(object):
     def setStatement(self, stmt):
         self.stmt = stmt
         
-    def createStatement(self, datasource): pass
+    def createStatement(self, datasource, service): pass
     
     def appendChild(self, node):
         self.children.append(node)

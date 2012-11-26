@@ -36,12 +36,15 @@ class Request(object):
             service_module = __import__("FeatureServer.Service.%s" % service_name, globals(), locals(), service_name)
             service_cls = getattr(service_module, service_name)
             self._service = service_cls(self)
+            
         except Exception as e:
             exceptions.append(ServiceNotFoundException(locator = self.__class__.__name__, service = service_name))
+    
+        if self.service:
+            # do service specific parsing
+            exceptions.extend(self.service.parse())
 
-        # do service specific parsing
-        exceptions.extend(self.service.parse())
-
+        
         return exceptions
     
 

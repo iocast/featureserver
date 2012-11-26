@@ -15,14 +15,15 @@ class ComparisonOperator(Operator):
     def getValueReference(self): return str(self.node.ValueReference)
     def getPropertyName(self): return str(self.node.PropertyName)
     def getLiteral(self): return str(self.node.Literal)
-    def createStatement(self, datasource):
+    def createStatement(self, datasource, service):
         xslt = etree.parse(os.path.dirname(os.path.abspath(__file__))+"/../../../../../resources/filterencoding/comparison_operators_%s.xsl" % datasource.type)
         transform = etree.XSLT(xslt)
         
+        # TODO: data source need to get parameters as **kwargs
         if hasattr(datasource, 'hstore'):
-            result = transform(self.node, operationType="'"+str(self.node.xpath('local-name()'))+"'", hstore="'"+str(datasource.hstore).lower()+"'", hstoreAttribute="'"+datasource.hstoreAttribute+"'")
+            result = transform(self.node, hstoreAttribute="'" + str(datasource.hstore) + "'")
         else:
-            result = transform(self.node, operationType="'"+str(self.node.xpath('local-name()'))+"'")
+            result = transform(self.node)
 
         elements = result.xpath("//Statement")
         if len(elements) > 0:

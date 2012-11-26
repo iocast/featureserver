@@ -141,11 +141,15 @@ class Server (object):
            raise an exception, which should be returned as a 500 error to the user."""
         exceptions = ExceptionReport()
         service = None
+        # testing
+        request.parse(self)
+
         
         try:
             # parse request and extend exception report
             exceptions.extend(request.parse(self))
         except Exception as e:
+            # TODO: handle fatal error correctly
             # fatal error occured during parsing request
             exceptions.add(e)
             return self.respond_report(report=exceptions, service=service)
@@ -191,6 +195,7 @@ class Server (object):
         except Exception as e:
             # TODO: only rollback if connection is open
             # call rollback on every requested datasource
+            raise e
             for typename in request.service.datasources.keys():
                 self.datasources[typename].rollback()
             exceptions.add(e)
@@ -231,13 +236,13 @@ class Server (object):
                 
                     if hasattr(default_output, "encode_exception_report"):
                         mime, data, headers, encoding = default_output.encode_exception_report(report)
-                        return respond(mime=mime, data=data, headers=headers, encoding=encoding, status_code=status_code)
+                        return self.respond(mime=mime, data=data, headers=headers, encoding=encoding, status_code=status_code)
                     else:
                         # load WFS for exception handling
                         from FeatureServer.OutputFormat.WFS import WFS
                         wfs_output = WFS(self)
                         mime, data, headers, encoding = wfs_output.encode_exception_report(report)
-                        return respons(mime=mime, data=data, headers=headers, encoding=encoding, status_code=status_code)
+                        return self.respond(mime=mime, data=data, headers=headers, encoding=encoding, status_code=status_code)
                 except: raise
                     #raise Exception("Required key 'default_output' in the configuration file is not set. Please define a default output.")
 

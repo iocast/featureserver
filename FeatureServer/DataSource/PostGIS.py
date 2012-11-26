@@ -5,14 +5,14 @@ __version__ = "$Id: PostGIS.py 615 2009-09-23 00:47:48Z jlivni $"
 
 from psycopg2 import errorcodes
 
-from FeatureServer.DataSource import DataSource
-from vectorformats.Feature import Feature
-from vectorformats.Formats import WKT
+from DataSource import DataSource
+from VectorFormats.Feature import Feature
+from VectorFormats.Formats import WKT
 
-from FeatureServer.WebFeatureService.Response.InsertResult import InsertResult
-from FeatureServer.WebFeatureService.Response.UpdateResult import UpdateResult
-from FeatureServer.WebFeatureService.Response.DeleteResult import DeleteResult
-from FeatureServer.WebFeatureService.Response.ReplaceResult import ReplaceResult
+from FeatureServer.Parsers.WebFeatureService.Response.InsertResult import InsertResult
+from FeatureServer.Parsers.WebFeatureService.Response.UpdateResult import UpdateResult
+from FeatureServer.Parsers.WebFeatureService.Response.DeleteResult import DeleteResult
+from FeatureServer.Parsers.WebFeatureService.Response.ReplaceResult import ReplaceResult
 
 from FeatureServer.Exceptions.WebFeatureService.InvalidValueException import InvalidValueException
 from FeatureServer.Exceptions.ConnectionException import ConnectionException
@@ -42,9 +42,9 @@ class PostGIS (DataSource):
                         'ilike': 'ilike', 'like':'like',
                         'gte': '>=', 'lte': '<='}
      
-    def __init__(self, name, srid = 4326, srid_out = 4326, fid = "gid", geometry = "the_geom", fe_attributes = 'true', order = "", attribute_cols = '*', writable = True, encoding = "utf-8", hstore = 'false', hstore_attr = "", **args):
-        DataSource.__init__(self, name, **args)
-        self.table          = args["layer"]
+    def __init__(self, name, srid = 4326, srid_out = 4326, fid = "gid", geometry = "the_geom", fe_attributes = 'true', order = "", attribute_cols = '*', writable = True, encoding = "utf-8", **kwargs):
+        super(PostGIS, self).__init__(name, **kwargs)
+        self.table          = kwargs["layer"]
         self.fid_col        = fid
         self.encoding       = encoding
         self.geom_col       = geometry
@@ -52,20 +52,13 @@ class PostGIS (DataSource):
         self.srid           = srid
         self.srid_out       = srid_out
         self.db             = None
-        self.dsn            = args["dsn"]
+        self.dsn            = kwargs["dsn"]
         self.writable       = writable
         self.attribute_cols = attribute_cols
         
         self.fe_attributes = True
         if fe_attributes.lower() == 'false':
             self.fe_attributes  = False
-
-        if hstore.lower() == 'true':
-            self.hstore = True
-            self.hstoreAttribute = hstore_attr
-        else:
-            self.hstore = False
-            self.hstoreAttribute = "";
 
     def begin (self):
         try:

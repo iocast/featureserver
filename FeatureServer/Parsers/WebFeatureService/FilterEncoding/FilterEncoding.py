@@ -77,33 +77,33 @@ class FilterEncoding (object):
         operator_func = getattr(operator_module, node.xpath('local-name()'))
         return operator_func(node)
 
-    def render(self, datasource, node = None):
+    def render(self, datasource, service, node = None):
         if node == None:
             node = self.tree
         
-        self.create(datasource, node)
-        return self.assemble(datasource=datasource, node=node)
+        self.create(datasource=datasource, node=node, service=service)
+        return self.assemble(datasource=datasource, node=node, service=service)
             
-    def assemble(self, datasource, node, sql = ''):
+    def assemble(self, datasource, node, service, sql = ''):
         
         #node.children.reverse()
         
         for child in node:
-            sql += self.assemble(datasource, child, sql)
+            sql += self.assemble(datasource, child, service, sql)
             
         # assemble statement
         if node.type == 'LogicalOperator':
-            node.createStatement(datasource, node.children)
+            node.createStatement(datasource=datasource, operatorList=node.children, service=service)
             sql = node.getStatement()
             return sql
         return node.getStatement()
     
-    def create(self, datasource, node):
+    def create(self, datasource, node, service):
         for child in node:
-            self.create(datasource, child)
+            self.create(datasource, child, service)
         
         if node.type != 'LogicalOperator':
-            node.createStatement(datasource)
+            node.createStatement(datasource=datasource, service=service)
 
     def getAttributes(self):
         from FilterAttributes import FilterAttributes

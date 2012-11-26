@@ -14,10 +14,10 @@ class FilterAttributes(object):
     def __init__(self, node):
         self.node = node
     
-    def render(self):
+    def render(self, service):
         xslt = etree.parse(os.path.dirname(os.path.abspath(__file__))+"/../../../resources/filterencoding/filter_attributes.xsl")
         transform = etree.XSLT(xslt)
-        result = transform(self.node)
+        result = transform(self.node, version = "'" + str(service.version) + "'")
         
         elements = result.xpath("//Attributes")
         if len(elements) > 0:

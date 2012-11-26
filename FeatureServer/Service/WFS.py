@@ -38,19 +38,19 @@ class WFS(Service):
         # do mandatory parameter checks for all operations except "GetCapabilities"
         if self.operation != "GetCapabilities":
             # 'version' is mandatory
-            self.find_version()
-            
-            if self.version not in self.supported_versions:
-                exceptions.append(VersionNotSupportedException(locator = self.__class__.__name__, version = self.version, supported_versions = self.supported_versions))
-    
-            if self.version[:1] == "1":
-                from WFS_V1 import WFS_V1
-                self.__class__ = WFS_V1
-            elif self.version[:1] == "2":
-                from WFS_V2 import WFS_V2
-                self.__class__ = WFS_V2
-            
             try:
+                self.find_version()
+            
+                if self.version not in self.supported_versions:
+                    exceptions.append(VersionNotSupportedException(locator = self.__class__.__name__, version = self.version, supported_versions = self.supported_versions))
+    
+                if self.version[:1] == "1":
+                    from WFS_V1 import WFS_V1
+                    self.__class__ = WFS_V1
+                elif self.version[:1] == "2":
+                    from WFS_V2 import WFS_V2
+                    self.__class__ = WFS_V2
+            
                 self.find_typenames()
                 exceptions.extend(self.check_typenames())
             except Exception as e:
@@ -59,7 +59,8 @@ class WFS(Service):
         # 'ouputFormat' is optional because set by configuration file
         self.find_output_format()
     
-        self.create_actions()
+        if len(exceptions) == 0:
+            self.create_actions()
     
         return exceptions
     

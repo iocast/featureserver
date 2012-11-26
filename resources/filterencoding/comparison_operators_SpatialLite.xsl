@@ -3,7 +3,7 @@
 	xmlns:regexp="http://exslt.org/regular-expressions" 
 	xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 	
-	<xsl:param name="operationType" />
+    <xsl:param name="version" />
 	
 	<xsl:template match="/">
 		<Statements>

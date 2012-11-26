@@ -14,10 +14,10 @@ class SpatialOperator(Operator):
     
     def getValueReference(self): return str(self.node.ValueReference)
     def getLiteral(self): return str(self.node.Literal)
-    def createStatement(self, datasource):
+    def createStatement(self, datasource, service):
         xslt = etree.parse(os.path.dirname(os.path.abspath(__file__))+"/../../../../../resources/filterencoding/spatial_operators_%s.xsl" % datasource.type)
         transform = etree.XSLT(xslt_input=xslt)
-        result = transform(self.node, operationType="'"+str(self.node.xpath('local-name()'))+"'", geometryName="'"+datasource.geom_col+"'", srs="'"+str(datasource.srid)+"'")
+        result = transform(self.node, geometryName="'"+datasource.geom_col+"'", srs="'"+str(datasource.srid)+"'")
         
         stmtTxt = ''
         stmtChild = ''

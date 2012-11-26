@@ -12,12 +12,14 @@ class LogicalOperator(Operator):
         super(LogicalOperator, self).__init__(node)
         self.type = 'LogicalOperator'
         
-    def createStatement(self, datasource, operatorList):
+    def createStatement(self, datasource, operatorList, service):
         logical = self.addOperators(operatorList)
                 
         xslt = etree.parse(os.path.dirname(os.path.abspath(__file__))+"/../../../../../resources/filterencoding/logical_operators_%s.xsl" % datasource.type)
         transform = etree.XSLT(xslt)
-        result = transform(logical, operationType="'"+str(self.node.xpath('local-name()'))+"'")
+        
+        result = transform(logical)
+        
         elements = result.xpath("//Statement")
         if len(elements) > 0:
             self.setStatement(str(elements[0].text).strip())
