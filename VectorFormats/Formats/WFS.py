@@ -118,9 +118,9 @@ class WFS(Format):
         <ExceptionReport xmlns="http://www.opengis.net/ows/1.1"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://www.opengis.net/ows/1.1 owsExceptionReport.xsd"
-        version="1.0.0"
+        version="%s"
         xml:lang="en">
-        """]
+        """ % self.service.version]
         for exception in exceptionReport:
             results.append("<Exception exceptionCode=\"%s\" locator=\"%s\" layer=\"%s\"><ExceptionText>%s</ExceptionText><ExceptionDump>%s</ExceptionDump></Exception>" % (exception.code, exception.locator, exception.layer, exception.message, exception.dump))
         results.append("""</ExceptionReport>""")
