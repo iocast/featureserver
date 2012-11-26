@@ -1,10 +1,12 @@
 
 from WFS import WFS
 from FeatureServer.Exceptions.MissingParameterException import MissingParameterException
+from FeatureServer.Parsers.WFS_V2_Parser import WFS_V2_Parser
 
 class WFS_V2(WFS):
     ''' implements WFS version 2.0.0 specification '''
     
+    # TODO: check if attrib exists on node
     def find_typenames(self):
         # check POST data
         if self.request.post_xml is not None:
@@ -19,7 +21,7 @@ class WFS_V2(WFS):
             typenames = self.request.post_xml.xpath("/*[local-name() = 'GetFeature']/*[local-name() = 'Query']")
             if len(typenames) > 0:
                 for typename in typenames:
-                    self.datasources.update({key : [] for key in typename.split(" ")})
+                    self.datasources.update({key : [] for key in typename.attrib['typeNames'].split(" ")})
                 return
             
             # find typenames in <wfs:Transaction/>
@@ -38,5 +40,8 @@ class WFS_V2(WFS):
             self.datasources.update({key : [] for key in self.request.params['typenames'].split(",")})
             return
         
-        return [ MissingParameterException(locator = "Service/" + self.__class__.__name__, parameter = "typeNames") ]
+        raise MissingParameterException(locator = "Service/" + self.__class__.__name__, parameter = "typeNames")
 
+    def create_parser(self):
+        return WFS_V2_Parser(self)
+    

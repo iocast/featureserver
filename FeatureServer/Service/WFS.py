@@ -6,11 +6,10 @@ from FeatureServer.Exceptions.LayerNotFoundException import LayerNotFoundExcepti
 from FeatureServer.Exceptions.VersionNotSupportedException import VersionNotSupportedException
 
 from WebRequest.Actions.Action import Action
-from FeatureServer.Parsers.WFSParser import WFSParser
 
 class WFS(Service):
     
-    _supported_versions = ["1.1.0", "2.0.0  "]
+    _supported_versions = ["1.1.0", "2.0.0"]
 
     def __init__(self, request):
         super(WFS, self).__init__(request)
@@ -25,7 +24,9 @@ class WFS(Service):
         self._operation     = ""
     
     
+ 
     def find_typenames(self): pass
+    def create_parser(self): pass
     
 
     def parse(self):
@@ -48,9 +49,12 @@ class WFS(Service):
             elif self.version[:1] == "2":
                 from WFS_V2 import WFS_V2
                 self.__class__ = WFS_V2
-    
-            self.find_typenames()
-            exceptions.extend(self.check_typenames())
+            
+            try:
+                self.find_typenames()
+                exceptions.extend(self.check_typenames())
+            except Exception as e:
+                exceptions.append(e)
         
         # 'ouputFormat' is optional because set by configuration file
         self.find_output_format()
@@ -143,7 +147,7 @@ class WFS(Service):
             self.actions.append(Action(method="describe_feature_type", datasource=None))
             return
         
-        parser = WFSParser(self)
+        parser = self.create_parser()
         parser.parse()
     
         actions = parser.get_actions()
