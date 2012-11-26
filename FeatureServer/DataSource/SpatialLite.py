@@ -33,7 +33,7 @@ class SpatialLite (DataSource):
         'ilike': 'ilike', 'like':'like',
         'gte': '>=', 'lte': '<='}
 
-    def __init__(self, name, file, fid = "gid", geometry = "geometry", fe_attributes = 'true', order = "", srid = 4326, srid_out = 4326, encoding = "utf-8", writable = True, attribute_cols = "*", **kwargs):
+    def __init__(self, name, file, fid = "gid", geometry = "the_geom", fe_attributes = 'true', order = "", srid = 4326, srid_out = 4326, encoding = "utf-8", writable = True, attribute_cols = "*", **kwargs):
         DataSource.__init__(self, name, **kwargs)
         self.file           = file
         self.table          = kwargs["layer"]
@@ -45,6 +45,8 @@ class SpatialLite (DataSource):
         self.attribute_cols = attribute_cols
         self.order          = order
         self.encoding       = encoding
+        
+        self._connection    = None
 
         self.fe_attributes = True
         if fe_attributes.lower() == 'false':
@@ -104,7 +106,8 @@ class SpatialLite (DataSource):
         self._connection = db.connect(self.file, check_same_thread = False)
     
     def close(self):
-        self._connection.close()
+        if self._connection:
+            self._connection.close()
 
     def commit(self):
         if self.writable:
@@ -112,7 +115,7 @@ class SpatialLite (DataSource):
         self.close()
 
     def rollback(self):
-        if self.writable:
+        if self.writable and self._connection:
             self._connection.rollback()
         self.close()
 
@@ -194,7 +197,10 @@ class SpatialLite (DataSource):
         
         if action.get_statement() is not None:
             sql += " WHERE " + action.get_statement()
-    
+        
+        if self.order:
+            sql += " ORDER BY " + self.order
+        
         try:
             cursor.execute(str(sql))
         except Exception as e:
