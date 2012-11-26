@@ -32,8 +32,9 @@ class WFS_V2(WFS):
             #    - <wfs:Update typeName=""/>
             #    - <wfs:Delete typeName=""/>
             nodes = self.request.post_xml.xpath("/*[local-name() = 'Transaction']/*[local-name() = 'Update' or local-name() = 'Delete']")
-            self.datasources.update({ str(node.attrib['typeName']) : [] for node in nodes })
-            return
+            if len(nodes) > 0:
+                self.datasources.update({ str(node.attrib['typeName']) : [] for node in nodes })
+                return
         
         # check GET data
         if self.request.params.has_key('typenames'):
