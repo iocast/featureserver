@@ -183,7 +183,7 @@
         <xsl:variable name="upper1" select="regexp:replace(string($upper), string(' '), 'g', ',')"/>
         <xsl:variable name="srs1" select="regexp:replace(string($srsName), '.*:(?!.*:)', 'g', '')"/>
         
-        <Statement>ST_Intersects("<xsl:value-of select="$geometry" />", Transform(ST_MakeEnvelope(<xsl:value-of select="$lower1" />,<xsl:value-of select="$upper1"/>, <xsl:value-of select="$srs1"/>), <xsl:value-of select="$srs" />))</Statement>
+        <Statement>ST_Intersects("<xsl:value-of select="$geometry" />", ST_Transform(ST_MakeEnvelope(<xsl:value-of select="$lower1" />,<xsl:value-of select="$upper1"/>, <xsl:value-of select="$srs1"/>), <xsl:value-of select="$srs" />))</Statement>
 	</xsl:template>
     
 </xsl:stylesheet>
