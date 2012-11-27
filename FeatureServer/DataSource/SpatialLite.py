@@ -176,7 +176,7 @@ class SpatialLite (DataSource):
         if len(self.attribute_cols) > 0:
             sql += ", %s" % self.attribute_cols
             
-        if hasattr(self, "additional_cols"):
+        if hasattr(self, "additional_cols") and len(self.additional_cols) > 0:
             cols = self.additional_cols.split(';')
             additional_col = ",".join(cols)
             sql += ", %s" % additional_col
@@ -236,7 +236,7 @@ class SpatialLite (DataSource):
                     pass
 
             if (geom):
-                features.append( Feature( action.layer, id, geom, self.getGeometry(), self.srid_out, props ) )
+                features.append( Feature( layer=action.layer, id=id, geometry=geom, geometry_attr=self.getGeometry(), srs=self.srid_out, props=props ) )
         
         return features
     
