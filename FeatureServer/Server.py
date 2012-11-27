@@ -141,9 +141,6 @@ class Server (object):
            raise an exception, which should be returned as a 500 error to the user."""
         exceptions = ExceptionReport()
         service = None
-        # testing
-        request.parse(self)
-
         
         try:
             # parse request and extend exception report
@@ -154,10 +151,9 @@ class Server (object):
             exceptions.add(e)
             return self.respond_report(report=exceptions, service=service)
         
-                
         if exceptions.has_exceptions():
             return self.respond_report(report=exceptions, service=request.service, status_code="400 Bad request")
-        
+    
         # list of class Feature
         response = []
         
@@ -195,7 +191,6 @@ class Server (object):
         except Exception as e:
             # TODO: only rollback if connection is open
             # call rollback on every requested datasource
-            raise e
             for typename in request.service.datasources.keys():
                 self.datasources[typename].rollback()
             exceptions.add(e)
