@@ -21,7 +21,7 @@ class ComparisonOperator(Operator):
         
         # TODO: data source need to get parameters as **kwargs
         if hasattr(datasource, 'hstore'):
-            result = transform(self.node, hstoreAttribute="'" + str(datasource.hstore) + "'")
+            result = transform(self.node, hstoreAttribute="'" + str(datasource.hstore_attr) + "'")
         else:
             result = transform(self.node)
 
