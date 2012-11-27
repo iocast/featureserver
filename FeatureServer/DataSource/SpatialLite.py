@@ -205,7 +205,7 @@ class SpatialLite (DataSource):
         try:
             cursor.execute(str(sql))
         except Exception as e:
-            raise SyntaxException(locator = self.__class__.__name__, dump = str(e))
+            raise SyntaxException(locator = self.__class__.__name__, layer=self.layer, dump = str(e))
 
         result = cursor.fetchall()
 
