@@ -20,15 +20,15 @@ class WFS_V2_Parser(WFSParser):
             
             if len(dom.xpath("/*[local-name() = 'GetFeature']")) > 0:
                 print "POST Query"
-                queries = dom.xpath("/*[local-name() = 'GetFeature']/*[local-name() = 'Query']")
+                queries = dom.xpath("/*[local-name() = 'GetFeature']/*[local-name() = 'Query'][@typeNames]")
                 
                 for query in queries:
                     typenames = query.attrib['typeNames'].split(" ")
                     if len(typenames) == 1:
-                        self.actions.append(self.parse_filter(datasource=self.service.request.server.datasources[typnames[0]], dom=deepcopy(query.xpath("./*[local-name() = 'Filter']")[0]), properties=self.parse_query_property_names(deepcopy(query))))
+                        self.actions.append(self.parse_filter(datasource=self.service.request.server.datasources[typenames[0]], dom=deepcopy(query.xpath("./*[local-name() = 'Filter']")[0]), properties=self.parse_query_property_names(deepcopy(query))))
                     elif len(typenames) > 1:
-                        ''' '''
                         #TODO: join query
+                        print("join query")
         
             
             elif len(dom.xpath("/*[local-name() = 'Transaction']")) > 0:

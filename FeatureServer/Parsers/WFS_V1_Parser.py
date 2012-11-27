@@ -21,7 +21,7 @@ class WFS_V1_Parser(WFSParser):
             
             if len(dom.xpath("/*[local-name() = 'GetFeature']")) > 0:
                 print "POST Query"
-                queries = dom.xpath("/*[local-name() = 'GetFeature']/*[local-name() = 'Query']")
+                queries = dom.xpath("/*[local-name() = 'GetFeature']/*[local-name() = 'Query'][@typeName]")
                 
                 for query in queries:
                     self.actions.append(self.parse_filter(datasource=self.service.request.server.datasources[query.attrib['typeName']], dom=deepcopy(query.xpath("./*[local-name() = 'Filter']")[0]), properties=self.parse_query_property_names(deepcopy(query))))
