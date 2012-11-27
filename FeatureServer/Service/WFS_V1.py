@@ -19,7 +19,7 @@ class WFS_V1(WFS):
                 return
             
             # check if child nodes <wfs:Query typeName=""/> exists
-            typenames = self.request.post_xml.xpath("/*[local-name() = 'GetFeature']/*[local-name() = 'Query']")
+            typenames = self.request.post_xml.xpath("/*[local-name() = 'GetFeature']/*[local-name() = 'Query'][@typeName]")
             if len(typenames) > 0:
                 for typename in typenames:
                     self.datasources.update({typename.attrib['typeName'] : []})

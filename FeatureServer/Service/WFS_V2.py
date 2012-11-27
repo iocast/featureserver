@@ -8,6 +8,7 @@ class WFS_V2(WFS):
     
     # TODO: check if attrib exists on node
     def find_typenames(self):
+        
         # check POST data
         if self.request.post_xml is not None:
             # check if child nodes <wfs:TypeName> exists of <wfs:DescribeFeatureType/>
@@ -18,7 +19,7 @@ class WFS_V2(WFS):
                 return
             
             # check if child nodes <wfs:Query typeNames=""/> exists, which is a space seperated list
-            typenames = self.request.post_xml.xpath("/*[local-name() = 'GetFeature']/*[local-name() = 'Query']")
+            typenames = self.request.post_xml.xpath("/*[local-name() = 'GetFeature']/*[local-name() = 'Query'][@typeNames]")
             if len(typenames) > 0:
                 for typename in typenames:
                     self.datasources.update({key : [] for key in typename.attrib['typeNames'].split(" ")})
