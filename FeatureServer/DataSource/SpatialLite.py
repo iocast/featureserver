@@ -183,14 +183,15 @@ class SpatialLite (DataSource):
                 
                 
         # add attributes from parser
-        if action.get_attributes() is not None and len(action.get_attributes()) > 0:
-            fe_cols = action.get_attributes()
-            ad_cols = self.getColumns()
-            # removes attributes that already are defined in the configuration file
-            fe_cols = filter(lambda x: x not in ad_cols, fe_cols)
+        if self.fe_attributes:
+            if action.get_attributes() is not None and len(action.get_attributes()) > 0:
+                fe_cols = action.get_attributes()
+                ad_cols = self.getColumns()
+                # removes attributes that already are defined in the configuration file
+                fe_cols = filter(lambda x: x not in ad_cols, fe_cols)
             
-            if len(fe_cols) > 0:
-                sql += ", %s" % ",".join(fe_cols)
+                if len(fe_cols) > 0:
+                    sql += ", %s" % ",".join(fe_cols)
 
         sql += " FROM \"%s\"" % (self.table)
         
