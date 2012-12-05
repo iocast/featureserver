@@ -16,14 +16,12 @@ class WFS_V1(WFS):
             if len(typenames) > 0:
                 for typename in typenames:
                     self.datasources.update({str(typename.text) : []})
-                return
             
             # check if child nodes <wfs:Query typeName=""/> exists
             typenames = self.request.post_xml.xpath("/*[local-name() = 'GetFeature']/*[local-name() = 'Query'][@typeName]")
             if len(typenames) > 0:
                 for typename in typenames:
                     self.datasources.update({typename.attrib['typeName'] : []})
-                return
             
             # find typenames in <wfs:Transaction/>
             #    - <wfs:Insert><typeName/></wfs:Insert> (typenames are named child nodes)
@@ -35,14 +33,13 @@ class WFS_V1(WFS):
             nodes = self.request.post_xml.xpath("/*[local-name() = 'Transaction']/*[local-name() = 'Update' or local-name() = 'Delete']")
             if len(nodes) > 0:
                 self.datasources.update({ str(node.attrib['typeName']) : [] for node in nodes })
-                return
         
         # check GET data
         if self.request.params.has_key('typename'):
             self.datasources.update({key : [] for key in self.request.params['typename'].split(",")})
-            return
         
-        raise MissingParameterException(locator = "Service/" + self.__class__.__name__, parameter = "typeName")
+        if len(self.datasources) == 0:
+            raise MissingParameterException(locator = "Service/" + self.__class__.__name__, parameter = "typeName")
 
     def create_parser(self):
         return WFS_V1_Parser(self)

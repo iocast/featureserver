@@ -16,15 +16,13 @@ class WFS_V2(WFS):
             if len(typenames) > 0:
                 for typename in typenames:
                     self.datasources.update({str(typename.text) : []})
-                return
             
             # check if child nodes <wfs:Query typeNames=""/> exists, which is a space seperated list
             typenames = self.request.post_xml.xpath("/*[local-name() = 'GetFeature']/*[local-name() = 'Query'][@typeNames]")
             if len(typenames) > 0:
                 for typename in typenames:
                     self.datasources.update({key : [] for key in typename.attrib['typeNames'].split(" ")})
-                return
-            
+    
             # find typenames in <wfs:Transaction/>
             #    - <wfs:Insert><typeName/></wfs:Insert> (typenames are named child nodes)
             inserts = self.request.post_xml.xpath("/*[local-name() = 'Transaction']/*[local-name() = 'Insert']")
@@ -35,14 +33,13 @@ class WFS_V2(WFS):
             nodes = self.request.post_xml.xpath("/*[local-name() = 'Transaction']/*[local-name() = 'Update' or local-name() = 'Delete']")
             if len(nodes) > 0:
                 self.datasources.update({ str(node.attrib['typeName']) : [] for node in nodes })
-                return
-        
+                
         # check GET data
         if self.request.params.has_key('typenames'):
             self.datasources.update({key : [] for key in self.request.params['typenames'].split(",")})
-            return
         
-        raise MissingParameterException(locator = "Service/" + self.__class__.__name__, parameter = "typeNames")
+        if len(self.datasources) == 0:
+            raise MissingParameterException(locator = "Service/" + self.__class__.__name__, parameter = "typeNames")
 
     def create_parser(self):
         return WFS_V2_Parser(self)
