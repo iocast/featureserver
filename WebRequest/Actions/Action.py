@@ -15,6 +15,10 @@ class Action (object):
     def get_attributes(self):
         ''' returns a list of attributes '''
         pass
+    
+    def get_ids(self):
+        ''' returns a list of ids of features to be modified '''
+        pass
 
     @property
     def method(self):
