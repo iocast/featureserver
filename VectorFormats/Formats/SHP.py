@@ -63,7 +63,7 @@ class SHP(Format):
         records = {}
         # TODO: same amount as above
         for key, property in feature.properties.iteritems():
-            key = self.getFormatedAttributName(key)
+            key = self.service.datasources[feature.layer].getFormatedAttributName(key)
             if property == None:
                 records[key] = ' '
             else:
