@@ -34,7 +34,7 @@ class SpatialLite(Format):
         return self._connection
     
     def create_table(self, feature):
-        sql = "CREATE TABLE featureserver (fid text, "
+        sql = "CREATE TABLE featureserver (fid text PRIMARY KEY, "
         
         for key, value in feature.properties.items():
             if key != "geometry":
@@ -80,7 +80,7 @@ class SpatialLite(Format):
         sql += ") VALUES ('%s', " % self.escapeSQL(str(feature.id).encode('utf-8'))
         
         for key, value in feature.properties.items():
-            #key = self.getFormatedAttributName(key)
+            #key = self.service.datasources[feature.layer].getFormatedAttributName(key)
             if value == None:
                 sql += "null, "
             else:
