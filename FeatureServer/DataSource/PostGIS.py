@@ -67,14 +67,16 @@ class PostGIS (DataSource):
             raise ConnectionException(**{'dump':str(e),'layer':self.name,'locator':'PostGIS','code':e.pgcode})
     
     def commit (self):
-        if self.writable:
-            self.db.commit()
-        self.db.close()
+        if self.db:
+            if self.writable:
+                self.db.commit()
+            self.db.close()
 
     def rollback (self):
-        if self.writable:
-            self.db.rollback()
-        self.db.close()
+        if self.db:
+            if self.writable and self.db:
+                self.db.rollback()
+            self.db.close()
 
     def column_names (self, feature):
         return feature.properties.keys()
@@ -135,35 +137,42 @@ class PostGIS (DataSource):
             raise SyntaxException(locator = self.__class__.__name__, dump = str(e))
         
         cursor.execute("SELECT currval('%s');" % self.id_sequence())
-        action.id =  cursor.fetchone()[0]
+        id = cursor.fetchone()[0]
         
-        return InsertResult(action.id, "")
+        result = InsertResult("")
+        result.add(id)
+        
+        return result
     
     
     def update (self, action):
         sql = action.get_statement()
         
         cursor = self.db.cursor()
-        
         try:
             cursor.execute(str(sql))
         except Exception as e:
             raise SyntaxException(locator = self.__class__.__name__, dump = str(e))
         
-        return UpdateResult(action.id, "")
+        result = UpdateResult("")
+        result.extend(action.get_ids())
+        
+        return result
 
         
     def delete (self, action):
         sql = action.get_statement()
         
         cursor = self.db.cursor()
-        
         try:
             cursor.execute(str(sql))
         except Exception as e:
             raise SyntaxException(locator = self.__class__.__name__, dump = str(e))
-
-        return DeleteResult(action.id, "")
+        
+        result = DeleteResult("")
+        result.extend(action.get_ids())
+        
+        return result
     
         
     def select (self, action):
@@ -208,8 +217,6 @@ class PostGIS (DataSource):
         if self.order:
             sql += " ORDER BY " + self.order
             
-        print(str(sql))
-        
         try:
             cursor.execute(str(sql))
         except Exception as e:

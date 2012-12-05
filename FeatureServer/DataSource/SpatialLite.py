@@ -129,9 +129,12 @@ class SpatialLite (DataSource):
             raise SyntaxException(locator = self.__class__.__name__, dump = str(e))
         
         cursor.execute("SELECT last_insert_rowid()")
-        action.id =  cursor.fetchone()[0]
-            
-        return InsertResult(action.id, "")
+        id =  cursor.fetchone()[0]
+        
+        result = InsertResult("")
+        result.add(id)
+                
+        return result
             
 
     def update(self, action):
@@ -143,7 +146,10 @@ class SpatialLite (DataSource):
         except Exception as e:
             raise SyntaxException(locator = self.__class__.__name__, dump = str(e))
         
-        return UpdateResult(action.id, "")
+        result = UpdateResult("")
+        result.extend(action.get_ids())
+        
+        return result
 
 
     def delete(self, action):
@@ -156,7 +162,10 @@ class SpatialLite (DataSource):
         except Exception as e:
             raise SyntaxException(locator = self.__class__.__name__, dump = str(e))
         
-        return DeleteResult(action.id, "")
+        result = DeleteResult("")
+        result.extend(action.get_ids())
+        
+        return result
         
 
     def select(self, action):
