@@ -6,21 +6,11 @@ class Format(object):
         for key, value in kwargs.items():
             setattr(self, key, value)
             
-    def getFormatedAttributName(self, name):
-        attrib_name = name
-        
-        attrib_pos = name.find(' as "')
-        if attrib_pos >= 0:
-            attrib_name = name[attrib_pos+5:-1]
-            
-        return attrib_name
-    
     def escapeSQL(self, value):
         newValue = value
         newValue = value.replace("'", "''")
         
         return newValue 
-
 
     @property
     def service(self):
