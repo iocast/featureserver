@@ -161,31 +161,42 @@ class WFS(Format):
         insertResult = response.getInsertResults()
         result += "<wfs:InsertResults>"
         for insert in insertResult:
-            result += """<wfs:Feature handle="%s">
-                    <ogc:ResourceId fid="%s"/>
-                </wfs:Feature>""" % (str(insert.getHandle()), str(insert.getResourceId()))
-            if len(insert.getHandle()) > 0:
+            result += """<wfs:Feature handle="%s"> """ % (str(insert.handle))
+            for id in insert:
+                if self.service.version[:1] == "1":
+                    result += """<ogc:FeatureId fid="%s"/>""" % str(id)
+                elif self.service.version[:1] == "2":
+                    result += """<ogc:ResourceId rid="%s"/>""" % str(id)
+            result += """</wfs:Feature>"""
+            if len(insert.handle) > 0:
                 failedCount += 1
         result += """</wfs:InsertResults>"""
 
         updateResult = response.getUpdateResults()
         result += "<wfs:UpdateResults>"
         for update in updateResult:
-            result += """<wfs:Feature handle="%s">
-                    <ogc:ResourceId fid="%s"/>
-                </wfs:Feature>""" % (str(update.getHandle()), str(update.getResourceId()))
-            if len(update.getHandle()) > 0:
+            result += """<wfs:Feature handle="%s">""" % str(update.handle)
+            for id in update:
+                if self.service.version[:1] == "1":
+                    result += """<ogc:FeatureId fid="%s"/>""" % str(id)
+                elif self.service.version[:1] == "2":
+                    result += """<ogc:ResourceId rid="%s"/>""" % str(id)
+            result += """</wfs:Feature>"""
+            if len(update.handle) > 0:
                 failedCount += 1
-
         result += """</wfs:UpdateResults>"""
 
         replaceResult = response.getReplaceResults()
         result += "<wfs:ReplaceResults>"
         for replace in replaceResult:
-            result += """<wfs:Feature handle="%s">
-                    <ogc:ResourceId fid="%s"/>
-                </wfs:Feature>""" % (str(replace.getHandle()), str(replace.getResourceId()))
-            if len(replace.getHandle()) > 0:
+            result += """<wfs:Feature handle="%s">""" % str(replace.handle)
+            for id in replace:
+                if self.service.version[:1] == "1":
+                    result += """<ogc:FeatureId fid="%s"/>""" % str(id)
+                elif self.service.version[:1] == "2":
+                    result += """<ogc:ResourceId rid="%s"/>""" % str(id)
+            result += """</wfs:Feature>"""
+            if len(replace.handle) > 0:
                 failedCount += 1
         result += """</wfs:ReplaceResults>"""
         
@@ -193,10 +204,14 @@ class WFS(Format):
         deleteResult = response.getDeleteResults()
         result += "<wfs:DeleteResults>"
         for delete in deleteResult:
-            result += """<wfs:Feature handle="%s">
-                <ogc:ResourceId fid="%s"/>
-                </wfs:Feature>""" % (str(delete.getHandle()), str(delete.getResourceId()))
-            if len(delete.getHandle()) > 0:
+            result += """<wfs:Feature handle="%s">""" % str(delete.handle)
+            for id in delete:
+                if self.service.version[:1] == "1":
+                    result += """<ogc:FeatureId fid="%s"/>""" % str(id)
+                elif self.service.version[:1] == "2":
+                    result += """<ogc:ResourceId rid="%s"/>""" % str(id)
+            result += """</wfs:Feature>"""
+            if len(delete.handle) > 0:
                 failedCount += 1
         result += """</wfs:DeleteResults>"""
 
@@ -257,7 +272,6 @@ class WFS(Format):
         return etree.tostring(tree, pretty_print=True)
     
     def getlayers(self):
-        ''' '''
         featureList = etree.Element('FeatureTypeList')
         operations = etree.Element('Operations')
         operations.append(etree.Element('Query'))
@@ -345,7 +359,7 @@ class WFS(Format):
             attrib_name = attribut_col
             if hasattr(datasource, "hstore"):
                 if datasource.hstore:
-                    attrib_name = self.getFormatedAttributName(attrib_name)
+                    attrib_name = datasource.getFormatedAttributName(attrib_name)
             
             element = etree.Element('element', attrib={'name' : str(attrib_name),
                                                        'minOccurs' : '0'})
