@@ -53,14 +53,17 @@ class FilterEncoding (object):
                 return
             
             operator_class = self.getFilterInstance(child)
-            
+    
             if operator != None:
                 operator.appendChild(operator_class)
             
             if len(child) > 0:
                 self.parse(node=child, operator=operator_class)
             
-                    
+        if operator is not None:
+            self.tree = operator
+            return
+        
         self.tree = operator_class
     
     def getFilterInstance(self, node):

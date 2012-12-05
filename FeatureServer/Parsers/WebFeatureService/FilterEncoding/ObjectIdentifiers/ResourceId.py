@@ -7,4 +7,4 @@ Created on Apr 5, 2011
 from ObjectIdentifier import ObjectIdentifier
 
 class ResourceId(ObjectIdentifier):
-    ''' '''
+    ''' WFS 2.0.0 '''

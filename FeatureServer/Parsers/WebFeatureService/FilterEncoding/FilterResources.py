@@ -1,5 +1,5 @@
 '''
-Created on Nov 3, 2012
+Created on Nov 29, 2012
     
 @author: michel
 '''
@@ -7,7 +7,7 @@ Created on Nov 3, 2012
 import os
 from lxml import etree
 
-class FilterAttributes(object):
+class FilterResources(object):
     
     node = None
     
@@ -15,11 +15,11 @@ class FilterAttributes(object):
         self.node = node
     
     def render(self, service):
-        xslt = etree.parse(os.path.dirname(os.path.abspath(__file__))+"/../../../../resources/filterencoding/filter_attributes.xsl")
+        xslt = etree.parse(os.path.dirname(os.path.abspath(__file__))+"/../../../../resources/filterencoding/filter_resources.xsl")
         transform = etree.XSLT(xslt)
         result = transform(self.node, version = "'" + str(service.version) + "'")
         
-        elements = result.xpath("//Attributes")
+        elements = result.xpath("//Resources")
         if len(elements) > 0:
             str_list =  elements[0].text.strip().split(',')
             str_list = filter(None, str_list)

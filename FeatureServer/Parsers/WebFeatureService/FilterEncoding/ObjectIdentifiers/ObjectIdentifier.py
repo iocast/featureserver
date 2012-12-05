@@ -18,6 +18,7 @@ class ObjectIdentifier(Operator):
         transform = etree.XSLT(xslt)
         result = transform(self.node, attributeIdName="'"+datasource.fid_col+"'")
         elements = result.xpath("//Statement")
+        
         if len(elements) > 0:
             self.setStatement(str(elements[0]))
             return
