@@ -141,7 +141,7 @@ class Request (object):
                             ''' '''
 
                     elif key in queryable or key.upper() in queryable:
-                        if type:
+                        if type and hasattr(ds, 'query_action_types'):
                             if type in ds.query_action_types:
                                 action.attributes[key+'__'+type] = {'column': key, 'type': type, 'value':value}
                             else:
