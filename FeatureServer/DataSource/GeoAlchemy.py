@@ -1,12 +1,12 @@
 from FeatureServer.DataSource import DataSource
 from VectorFormats.Feature import Feature
 from VectorFormats.Formats import WKT
-from sqlalchemy import create_engine, and_, func
+from sqlalchemy import create_engine, func
+from sqlalchemy.sql import expression, visitors, operators
 from sqlalchemy.orm import sessionmaker
 
 import copy
 import datetime
-import operator
 
 try:
     import decimal
@@ -154,10 +154,9 @@ class GeoAlchemy (DataSource):
                 query = self.session.query(cls)
             if action.attributes:
                 query = query.filter(
-                    and_(
-                        *[self.feature_predicate(v['column'],
-				                v['type'], v['value'])
-				                for k, v in action.attributes.iteritems()]
+                    expression.and_(
+                        *[self.feature_predicate(getattr(cls, v['column']), v['type'], v['value'])
+                          for k, v in action.attributes.iteritems()]
                     )
                 )
             if action.bbox:
