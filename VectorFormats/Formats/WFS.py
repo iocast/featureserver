@@ -114,13 +114,15 @@ class WFS(Format):
     
     
     def encode_exception_report(self, exceptionReport):
+        version = str(self.service.version) if hasattr(self.service, 'version') else '1.0.0'
+        
         results = ["""<?xml version="1.0" encoding="UTF-8"?>
         <ExceptionReport xmlns="http://www.opengis.net/ows/1.1"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://www.opengis.net/ows/1.1 owsExceptionReport.xsd"
         version="%s"
         xml:lang="en">
-        """ % self.service.version]
+        """ % version]
         for exception in exceptionReport:
             results.append("<Exception exceptionCode=\"%s\" locator=\"%s\" layer=\"%s\"><ExceptionText>%s</ExceptionText><ExceptionDump>%s</ExceptionDump></Exception>" % (exception.code, exception.locator, exception.layer, exception.message, exception.dump))
         results.append("""</ExceptionReport>""")
