@@ -1,12 +1,12 @@
 from FeatureServer.DataSource import DataSource
 from vectorformats.Feature import Feature
 from vectorformats.Formats import WKT
-from sqlalchemy import create_engine, and_, func
+from sqlalchemy import create_engine, func
+from sqlalchemy.sql import expression, visitors, operators
 from sqlalchemy.orm import sessionmaker
 
 import copy
 import datetime
-import operator
 
 try:
     import decimal
@@ -21,12 +21,12 @@ class GeoAlchemy (DataSource):
     query_action_types = ['eq', 'ne', 'lt', 'gt', 'ilike', 'like', 'gte', 'lte']
 
     query_operators = {
-        'eq': operator.eq,
-        'ne': operator.ne,
-        'lt': operator.lt,
-        'gt': operator.gt,
-        'lte': operator.le,
-        'gte': operator.ge,
+        'eq': operators.eq,
+        'ne': operators.ne,
+        'lt': operators.lt,
+        'gt': operators.gt,
+        'lte': operators.le,
+        'gte': operators.ge
     }
 
     def __init__(self, name, srid=4326, srid_out=4326, fid="gid", geometry="the_geom",
@@ -55,7 +55,7 @@ class GeoAlchemy (DataSource):
             self.engine = create_engine(self.dburi, echo=self.sql_echo)
             self.session = sessionmaker(bind=self.engine)()
 
-    def feature_predicate(self, key,operator_name,value):
+    def feature_predicate(self, key, operator_name, value):
         if operator_name == 'like':
             return key.like('%'+value+'%')
         elif operator_name == 'ilike':
@@ -154,10 +154,9 @@ class GeoAlchemy (DataSource):
                 query = self.session.query(cls)
             if action.attributes:
                 query = query.filter(
-                    and_(
-                        *[self.feature_predicate(v['column'],
-				                v['type'], v['value'])
-				                for k, v in action.attributes.iteritems()]
+                    expression.and_(
+                        *[self.feature_predicate(getattr(cls, v['column']), v['type'], v['value'])
+                          for k, v in action.attributes.iteritems()]
                     )
                 )
             if action.bbox:
@@ -167,7 +166,9 @@ class GeoAlchemy (DataSource):
                     geom_element = getattr(cls, self.geom_col)
                 query = query.filter(geom_element.intersects(
                     self.session.scalar(func.GeomFromText(
-			self.bbox2wkt(action.bbox), self.srid))))
+                        self.bbox2wkt(action.bbox), self.srid)
+                    )
+                ))
             if self.order:
                 query = query.order_by(getattr(cls, self.order))
             if action.maxfeatures:
@@ -176,6 +177,7 @@ class GeoAlchemy (DataSource):
                 query.limit(1000)
             if action.startfeature:
                 query.offset(action.startfeature)
+            
             result = query.all()
 
         features = []

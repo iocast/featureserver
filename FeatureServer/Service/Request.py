@@ -120,9 +120,9 @@ class Request (object):
                 elif params.has_key("queryable"):
                     queryable = params['queryable'].split(",")
                 for key, value in params.items():
-                    type = None
+                    qtype = None
                     if "__" in key:
-                        key, type = key.split("__")
+                        key, qtype = key.split("__")
                     if key == 'bbox':
                         action.bbox = map(float, value.split(","))
                     elif key == "maxfeatures":
@@ -140,15 +140,16 @@ class Request (object):
                         except Exception, E:
                             ''' '''
 
-                    elif key in queryable or key.upper() in queryable:
-                        if type:
-                            if type in ds.query_action_types:
-                                action.attributes[key+'__'+type] = {'column': key, 'type': type, 'value':value}
+                    elif key in queryable or key.upper() in queryable and hasattr(self.service.datasources[ds], 'query_action_types'):
+                        if qtype:
+                            if qtype in self.service.datasources[ds].query_action_types:
+                                action.attributes[key+'__'+qtype] = {'column': key, 'type': qtype, 'value':value}
                             else:
-                                raise ApplicationException("%s, %s, %s\nYou can't use %s on this layer. Available query action types are: \n%s" % (self, self.query_action_types, type,
-                                                                                                                                                   type, ",".join(ds.query_action_types) or "None"))
+                                raise ApplicationException("%s, %s, %s\nYou can't use %s on this layer. Available query action types are: \n%s" % (self, self.query_action_types, qtype,
+                                                                                                                                                   qtype, ",".join(self.service.datasources[ds].query_action_types) or "None"))
                         else:
-                            action.attributes[key] = value
+                            action.attributes[key+'__eq'] = {'column': key, 'type': 'eq', 'value':value}
+                            #action.attributes[key] = value
         
         return action
     
