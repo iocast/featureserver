@@ -1,6 +1,8 @@
-from FeatureServer.DataSource import DataSource
+
+from DataSource import DataSource
 from VectorFormats.Feature import Feature
 from VectorFormats.Formats import WKT
+
 from sqlalchemy import create_engine, func
 from sqlalchemy.sql import expression, visitors, operators
 from sqlalchemy.orm import sessionmaker
@@ -21,12 +23,12 @@ class GeoAlchemy (DataSource):
     query_action_types = ['eq', 'ne', 'lt', 'gt', 'ilike', 'like', 'gte', 'lte']
 
     query_operators = {
-        'eq': operator.eq,
-        'ne': operator.ne,
-        'lt': operator.lt,
-        'gt': operator.gt,
-        'lte': operator.le,
-        'gte': operator.ge,
+        'eq': operators.eq,
+        'ne': operators.ne,
+        'lt': operators.lt,
+        'gt': operators.gt,
+        'lte': operators.le,
+        'gte': operators.ge,
     }
 
     def __init__(self, name, srid=4326, srid_out=4326, fid="gid", geometry="the_geom",
