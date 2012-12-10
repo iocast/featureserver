@@ -5,7 +5,7 @@ from FeatureServer.Exceptions.BaseException import BaseException
 class ServiceNotFoundException(BaseException):
     
     servcie = ""
-    message="Service '%s' not found"
+    message="Service '%s' could not be found."
     
     def __init__(self, locator, service, layer="", code="", message="", dump = ""):
         self.service = service
