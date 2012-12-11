@@ -1,0 +1,30 @@
+<html>
+<head>
+    <title>FeatureServer : Exception Report</title>
+</head>
+<body>
+<h1>FeatureServer : Exception Report</h1>
+<hr noshade="noshade" />
+
+    <table cellpadding="5" border="0">
+        <thead>
+            <tr>
+                <th>exceptionCode</th><th>locator</th><th>layer</th><th>ExceptionText</th><th>ExceptionDump</th>
+            </tr>
+        </thead>
+        <tbody>
+#for $exception in $exception_report
+            <tr>
+                <td>$str(exception.code).encode('utf-8')</td>
+                <td>$exception.locator.encode('utf-8')</td>
+                <td>$exception.layer.encode('utf-8')</td>
+                <td>$exception.message.encode('utf-8')</td>
+                <td>$exception.dump.encode('utf-8')</td>
+            </tr>
+#end for
+        </tbody>
+
+    </table>
+    <hr noshade="noshade" />
+</body>
+</html>
