@@ -1,5 +1,5 @@
 >>> wkt = 'MULTIPOINT (1.0000000000000000 2.0000000000000000, 2.0000000000000000 3.0000000000000000)'
->>> from vectorformats.Formats.WKT import from_wkt, to_wkt
+>>> from FeatureServer.VectorFormats.Formats.WKT import from_wkt, to_wkt
 >>> from_wkt(wkt)
 {'type': 'MultiPoint', 'coordinates': [[1.0, 2.0], [2.0, 3.0]]}
 

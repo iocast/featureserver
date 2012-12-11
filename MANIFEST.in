@@ -1,1 +1,1 @@
-recursive-include src/FeatureServer/assets *
+recursive-include FeatureServer/assets *

@@ -20,17 +20,18 @@ classifiers = [
 # otherwise. 
 extra = { }
 if "--debian" in sys.argv:
-   extra['data_files']=[('/etc', ['src/FeatureServer/assets/config/featureserver.cfg']),
-                        ('~/.featureserver/workspace/', ['src/FeatureServer/assets/config/featureserver.cfg']),
-                        ('~/.featureserver/templates/', ['src/FeatureServer/assets/templates/default-withmap.html',
-                                                         'src/FeatureServer/assets/templates/default.html',
-                                                         'src/FeatureServer/assets/templates/exception_report.html'])]
+   extra['data_files']=[('/etc', ['FeatureServer/assets/config/featureserver.cfg']),
+                        ('~/.featureserver/workspace/', ['FeatureServer/assets/config/workspace.db']),
+                        ('~/.featureserver/templates/', ['FeatureServer/assets/templates/default-withmap.html',
+                                                         'FeatureServer/assets/templates/default.html',
+                                                         'FeatureServer/assets/templates/exception_report.html'])]
    sys.argv.remove("--debian")
 else:
-   extra['data_files']=[('featureserver/config/', ['src/FeatureServer/assets/config/featureserver.cfg', 'src/FeatureServer/assets/config/workspace.db']),
-                        ('featureserver/templates/', ['src/FeatureServer/assets/templates/default-withmap.html',
-                                                      'src/FeatureServer/assets/templates/default.html',
-                                                      'src/FeatureServer/assets/templates/exception_report.html'])]
+   extra['data_files']=[('config/', ['FeatureServer/assets/config/featureserver.cfg',
+                                                   'FeatureServer/assets/config/workspace.db']),
+                        ('templates/', ['FeatureServer/assets/templates/default-withmap.html',
+                                                      'FeatureServer/assets/templates/default.html',
+                                                      'FeatureServer/assets/templates/exception_report.html'])]
 
 setup(name='FeatureServer',
       version='1.15.1',
@@ -42,18 +43,18 @@ setup(name='FeatureServer',
       keywords="GIS XML XSLT",
       license="MIT",
       
-      packages=find_packages('src', exclude=["doc", "tests"]),
-      package_dir = {'':'src'},
-      
+      #packages=find_packages('src', exclude=["doc", "tests"]),
+      #package_dir = {'':'src'},
+      packages=find_packages(exclude=["doc", "tests"]),
       include_package_data=True,
       
-      scripts=['src/featureserver.cgi',
-               'src/featureserver.fcgi',
-               'src/featureserver_install_config.py',
-               'src/featureserver_http_server.py',
-               'src/workspace.cgi',
-               'src/workspace.fcgi',
-               'src/workspace_http_server.py'],
+      scripts=['scripts/featureserver.cgi',
+               'scripts/featureserver.fcgi',
+               'scripts/featureserver_install_config.py',
+               'scripts/featureserver_http_server.py',
+               'scripts/workspace.cgi',
+               'scripts/workspace.fcgi',
+               'scripts/workspace_http_server.py'],
       
       install_requires=['wsgiref>=0.1.2',
                         'dxfwrite>=1.2.0',
