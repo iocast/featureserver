@@ -95,4 +95,36 @@ class GeoJSON(Format):
         for feature in feature_data:
             features.append(self._createFeature(feature))
         
-        return features    
+        return features
+
+
+    def get_capabilities(self):
+        layers = []
+        for (typename, layer) in self.service.request.server.datasources.iteritems():
+            operations = []
+            operations.append({'operation' : 'Insert'})
+            operations.append({'operation' : 'Update'})
+            operations.append({'operation' : 'Delete'})
+        
+            layers.append({
+                          'name' : layer.name,
+                          'title' : layer.title if hasattr(layer, 'title') else "",
+                          'abstract' : layer.abstract if hasattr(layer, 'abstract') else "",
+                          'srs' : 'EPSG:' + str(layer.srid_out)  if hasattr(layer, 'srid_out') and layer.srid_out is not None else "EPSG:4326",
+                          'url': "%s/%s/%s/describe.%s" % (self.service.request.host, self.service.name.lower(), layer.name, self.service.output_format.lower()),
+                          'operations' : operations
+            })
+        
+        result_data = {'Layers' : layers}
+        result = json_dumps(result_data)
+        
+        if self.callback:
+            result = "%s(%s);" % (self.callback, result)
+        
+        return result
+
+
+    def describe_feature_type(self):
+        ''' '''
+
+
