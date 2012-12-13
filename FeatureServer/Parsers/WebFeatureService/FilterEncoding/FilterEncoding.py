@@ -108,10 +108,11 @@ class FilterEncoding (object):
         if node.type != 'LogicalOperator':
             node.createStatement(datasource=datasource, service=service)
 
-    def getAttributes(self):
+    def getAttributes(self, service):
+        ''' returns the attributes of a <ogc:Filter/> node '''
         from FilterAttributes import FilterAttributes
         filter = FilterAttributes(self.dom)
-        return filter.render()
+        return filter.render(service=service)
 
     def __str__(self):
         return etree.tostring(self.dom, pretty_print = True)

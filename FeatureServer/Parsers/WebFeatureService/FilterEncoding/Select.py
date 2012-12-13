@@ -25,6 +25,5 @@ class Select(SelectRequest):
 
     def get_attributes(self):
         return self.properties
-        #return self.filter.getAttributes()
         
         

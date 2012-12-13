@@ -15,7 +15,7 @@ class FilterResources(object):
         self.node = node
     
     def render(self, service):
-        xslt = etree.parse(os.path.dirname(os.path.abspath(__file__))+"/../../../../resources/filterencoding/filter_resources.xsl")
+        xslt = etree.parse(os.path.dirname(os.path.abspath(__file__))+"/../../../assets/transformation/filterencoding/filter_resources.xsl")
         transform = etree.XSLT(xslt)
         result = transform(self.node, version = "'" + str(service.version) + "'")
         

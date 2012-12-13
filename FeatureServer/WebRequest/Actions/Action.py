@@ -11,7 +11,7 @@ class Action (object):
     def get_statement(self):
         ''' returns a statement. E.g. for SQL it is the where clause '''
         pass
-        
+    
     def get_attributes(self):
         ''' returns a list of attributes '''
         pass
@@ -19,7 +19,8 @@ class Action (object):
     def get_ids(self):
         ''' returns a list of ids of features to be modified '''
         pass
-
+    
+    
     @property
     def method(self):
         return self._method
