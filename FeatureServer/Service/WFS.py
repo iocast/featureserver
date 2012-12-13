@@ -10,11 +10,14 @@ from FeatureServer.WebRequest.Actions.Action import Action
 class WFS(Service):
     
     _supported_versions = ["1.1.0", "2.0.0"]
+    _supported_keywords = { "capabilities" : "GetCapabilities",
+                            "describe" : "DescribeFeatureType",
+                            "features" : "GetFeature" }
+    _service            = "WFS"
 
     def __init__(self, request):
         super(WFS, self).__init__(request)
         
-        self._service       = "WFS"
         self._actions        = []
         
         # { typename : list(Service.Action), ... }
@@ -80,6 +83,13 @@ class WFS(Service):
         # check GET params
         if self.request.params.has_key('request'):
             self._operation = self.request.params['request']
+    
+        # check file name
+        if len(self.request.path) > 1:
+            path_pieces = self.request.path[-1].split(".")
+            if len(path_pieces) > 0:
+                if path_pieces[0].lower() in self.supported_keywords.keys():
+                    self._operation = self.supported_keywords[path_pieces[0].lower()]
         
         # not found
         if len(self.operation) == 0:
@@ -163,6 +173,10 @@ class WFS(Service):
     @property
     def supported_versions(self):
         return self._supported_versions
+    @property
+    def supported_keywords(self):
+        return self._supported_keywords
+    
     @property
     def actions(self):
         return self._actions
