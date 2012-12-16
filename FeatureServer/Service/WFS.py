@@ -61,10 +61,9 @@ class WFS(Service):
         
         # 'ouputFormat' is optional because set by configuration file
         self.find_output_format()
-    
         if len(exceptions) == 0:
             self.create_actions()
-    
+        
         return exceptions
     
     
@@ -114,10 +113,11 @@ class WFS(Service):
 
     def check_typenames(self):
         exceptions = []
+        
         for typename in self.datasources.keys():
             if not self.request.server.datasources.has_key(typename):
                 exceptions.append(LayerNotFoundException(locator = self.__class__.__name__, layer = typename, supported_layers = self.request.server.datasources.keys()))
-    
+        
         return exceptions
 
     def find_output_format(self):
@@ -130,7 +130,7 @@ class WFS(Service):
         # check GET params
         if self.request.params.has_key('outputformat'):
             if self.request.params['outputformat'].lower() in self.supported_formats:
-                self.output_format = self.supported_formats[self.output_format.params['outputformat'].lower()]
+                self.output_format = self.supported_formats[self.request.params['outputformat'].lower()]
                 return
         
         # check file extension in URL
@@ -161,12 +161,6 @@ class WFS(Service):
         parser = self.create_parser()
         parser.parse()
     
-        actions = parser.get_actions()
-    
-        for action in actions:
-            self.datasources[action.datasource.name].append(action)
-    
-
     @property
     def name(self):
         return self._service
