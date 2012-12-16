@@ -8,7 +8,9 @@ class Parser(object):
     @property
     def service(self):
         return self._service
+    @property
+    def request(self):
+        return self.service.request
     
     def parse(self): pass
-    def get_actions(self): pass
-
+    
