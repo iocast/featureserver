@@ -10,13 +10,11 @@ class WFSParser(Parser):
     
     def __init__(self, service):
         Parser.__init__(self, service)
-        self.actions = []
     
     def parse(self): pass
-
-    def get_actions(self):
-        return self.actions
-
-
-
-
+    
+    def add_action(self, action):
+        self.service.datasources[action.datasource.name].append(action)
+    def add_actions(self, actions):
+        for action in actions:
+            self.service.datasources[action.datasource.name].append(action)
