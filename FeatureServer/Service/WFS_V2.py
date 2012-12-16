@@ -37,6 +37,11 @@ class WFS_V2(WFS):
         # check GET data
         if self.request.params.has_key('typenames'):
             self.datasources.update({key : [] for key in self.request.params['typenames'].split(",")})
+    
+        # check url after featureserver.org/{service}/{single typename}/features.wfs
+        # request path should be > 2
+        if len(self.request.path) > 2:
+            self.datasources.update({ str(self.request.path[2]) : [] })
         
         if len(self.datasources) == 0:
             raise MissingParameterException(locator = "Service/" + self.__class__.__name__, parameter = "typeNames")
