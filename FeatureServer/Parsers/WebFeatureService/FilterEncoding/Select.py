@@ -12,10 +12,11 @@ class Select(SelectRequest):
     def __init__(self, datasource, data, service, properties = []):
         ''' data represents a <ogc:Filter/> '''
         SelectRequest.__init__(self, datasource=datasource)
+        self.type       = "select"
         
-        self.data   = data
-        self.filter = FilterEncoding(xml = data)
-        self.service = service
+        self.data       = data
+        self.filter     = FilterEncoding(xml = data)
+        self.service    = service
         self.properties = properties
         
         self.filter.parse();
