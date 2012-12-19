@@ -8,6 +8,9 @@ from FeatureServer.Exceptions.VersionNotSupportedException import VersionNotSupp
 from FeatureServer.WebRequest.Actions.Action import Action
 
 class WFS(Service):
+    '''
+        Checks if all required parameters are set as well as paremeter dependencies
+    '''
     
     _supported_versions = ["1.1.0", "2.0.0"]
     _supported_keywords = { "capabilities" : "GetCapabilities",
@@ -25,13 +28,16 @@ class WFS(Service):
         
         self._version       = ""
         self._operation     = ""
+
+        self._sort          = []
+        self._bbox          = []
     
     
  
     def find_typenames(self): pass
     def create_parser(self): pass
-    
 
+    
     def parse(self):
         exceptions = []
         
@@ -56,6 +62,7 @@ class WFS(Service):
             
                 self.find_typenames()
                 exceptions.extend(self.check_typenames())
+            
             except Exception as e:
                 exceptions.append(e)
         
@@ -87,8 +94,14 @@ class WFS(Service):
         if len(self.request.path) > 1:
             path_pieces = self.request.path[-1].split(".")
             if len(path_pieces) > 0:
+                # file name is a keyword
                 if path_pieces[0].lower() in self.supported_keywords.keys():
                     self._operation = self.supported_keywords[path_pieces[0].lower()]
+    
+                # file name is a id
+                else:
+                    self._operation = "GetFeature"
+    
         
         # not found
         if len(self.operation) == 0:
@@ -183,4 +196,4 @@ class WFS(Service):
     @property
     def operation(self):
         return self._operation
-    
+

@@ -27,13 +27,12 @@ from FeatureServer.Exceptions.ConnectionException import ConnectionException
 
 class SpatialLite (DataSource):
     
-    query_action_types = ['lt', 'gt', 'ilike', 'like', 'gte', 'lte']
-    
-    query_action_sql = {'lt': '<', 'gt': '>',
-        'ilike': 'ilike', 'like':'like',
-        'gte': '>=', 'lte': '<='}
+    _query_actions  = { 'eq' : '=', 'neq' : '!=',
+                        'lt': '<', 'gt': '>',
+                        'ilike' : 'ilike', 'like' : 'like',
+                        'gte': '>=', 'lte': '<=' }
 
-    def __init__(self, name, file, fid = "gid", geometry = "the_geom", fe_attributes = 'true', order = "", srid = 4326, srid_out = 4326, encoding = "utf-8", writable = True, attribute_cols = "*", **kwargs):
+    def __init__(self, name, file, fid = "gid", geometry = "the_geom", fe_attributes = 'true', srid = 4326, srid_out = 4326, encoding = "utf-8", writable = True, attribute_cols = "*", **kwargs):
         DataSource.__init__(self, name, **kwargs)
         self.file           = file
         self.table          = kwargs["layer"]
@@ -43,7 +42,6 @@ class SpatialLite (DataSource):
         self.srid_out       = srid_out
         self.writable       = writable
         self.attribute_cols = attribute_cols
-        self.order          = order
         self.encoding       = encoding
         
         self._connection    = None
@@ -51,55 +49,8 @@ class SpatialLite (DataSource):
         self.fe_attributes = True
         if fe_attributes.lower() == 'false':
             self.fe_attributes  = False
-    
 
-    def column_names (self, feature):
-        return feature.properties.keys()
-    
-    def value_formats (self, feature):
-        values = ["%%(%s)s" % self.getGeometry()]
-        values = []
-        for key, val in feature.properties.items():
-            valtype = type(val).__name__
-            if valtype == "dict":
-                val['pred'] = "%%(%s)s" % (key,)
-                values.append(val)
-            else:
-                fmt     = "%%(%s)s" % (key, )
-                values.append(fmt)
-        return values
-    
-    
-    def feature_predicates (self, feature):
-        columns = self.column_names(feature)
-        values  = self.value_formats(feature)
-        predicates = []
-        for pair in zip(columns, values):
-            if pair[0] != self.getGeometry():
-                if isinstance(pair[1], dict):
-                    # Special Query: pair[0] is 'a', pair[1] is {'type', 'pred', 'value'}
-                    # We build a Predicate here, then we replace pair[1] with pair[1] value below
-                    if pair[1].has_key('value'):
-                        predicates.append("%s %s %s" % (pair[1]['column'],
-                                                        self.query_action_sql[pair[1]['type']],
-                                                        pair[1]['pred']))
-                
-                else:
-                    predicates.append("%s = %s" % pair)
-        if feature.geometry and feature.geometry.has_key("coordinates"):
-            predicates.append(" %s = SetSRID('%s'::geometry, %s) " % (self.getGeometry(), WKT.to_wkt(feature.geometry), self.srid))
-        return predicates
-    
-    def feature_values (self, feature):
-        props = copy.deepcopy(feature.properties)
-        for key, val in props.iteritems():
-            if type(val) is unicode:
-                props[key] = val.encode(self.encoding)
-            if type(val)  is dict:
-                props[key] = val['value']
-        return props
 
-    
     def begin(self):
         if not os.path.exists(self.file):
             raise ConnectionException(**{'layer':self.name,'locator':'SpatialLite'})
@@ -120,7 +71,7 @@ class SpatialLite (DataSource):
         self.close()
 
     def insert(self, action):
-        sql = action.get_statement()
+        sql = action.statement
         
         cursor = self._connection.cursor()
         try:
@@ -138,7 +89,7 @@ class SpatialLite (DataSource):
             
 
     def update(self, action):
-        sql = action.get_statement()
+        sql = action.statement
         
         cursor = self._connection.cursor()
         try:
@@ -147,13 +98,13 @@ class SpatialLite (DataSource):
             raise SyntaxException(locator = self.__class__.__name__, dump = str(e))
         
         result = UpdateResult("")
-        result.extend(action.get_ids())
+        result.extend(action.ids)
         
         return result
 
 
     def delete(self, action):
-        sql = action.get_statement()
+        sql = action.statement
         
         cursor = self._connection.cursor()
 
@@ -163,7 +114,7 @@ class SpatialLite (DataSource):
             raise SyntaxException(locator = self.__class__.__name__, dump = str(e))
         
         result = DeleteResult("")
-        result.extend(action.get_ids())
+        result.extend(action.ids)
         
         return result
         
@@ -181,7 +132,7 @@ class SpatialLite (DataSource):
             sql += "%s as ele, " % self.ele
             
         sql += "\"%s\"" % self.fid_col
-            
+        
         if len(self.attribute_cols) > 0:
             sql += ", %s" % self.attribute_cols
             
@@ -189,15 +140,13 @@ class SpatialLite (DataSource):
             cols = self.additional_cols.split(';')
             additional_col = ",".join(cols)
             sql += ", %s" % additional_col
-                
-                
+        
         # add attributes from parser
         if self.fe_attributes:
-            if action.get_attributes() is not None and len(action.get_attributes()) > 0:
-                fe_cols = action.get_attributes()
+            if action.attributes is not None and len(action.attributes) > 0:
                 ad_cols = self.getColumns()
                 # removes attributes that already are defined in the configuration file
-                fe_cols = filter(lambda x: x not in ad_cols, fe_cols)
+                fe_cols = filter(lambda x: x not in ad_cols, action.attributes)
             
                 if len(fe_cols) > 0:
                     sql += ", %s" % ",".join(fe_cols)
@@ -205,11 +154,16 @@ class SpatialLite (DataSource):
         sql += " FROM \"%s\"" % (self.table)
         
         
-        if action.get_statement() is not None:
-            sql += " WHERE " + action.get_statement()
+        if action.statement is not None:
+            sql += " WHERE " + action.statement
         
-        if self.order:
-            sql += " ORDER BY " + self.order
+        
+        if action.constraints.has_key('order_by'):
+            sql += " ORDER BY " + action.constraints['order_by']
+            if action.constraints.has_key('order') and action.constraints['order'].upper() in ['ASC', 'DESC']:
+                sql += " " + action.constraints['order'].upper()
+
+        print sql
         
         try:
             cursor.execute(str(sql))

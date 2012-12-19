@@ -128,7 +128,7 @@ class PostGIS (DataSource):
         return self.table + "_" + self.fid_col + "_seq"
     
     def insert (self, action):
-        sql = action.get_statement()
+        sql = action.statement
         
         cursor = self.db.cursor()
         try:
@@ -146,7 +146,7 @@ class PostGIS (DataSource):
     
     
     def update (self, action):
-        sql = action.get_statement()
+        sql = action.statement
         
         cursor = self.db.cursor()
         try:
@@ -155,13 +155,13 @@ class PostGIS (DataSource):
             raise SyntaxException(locator = self.__class__.__name__, dump = str(e))
         
         result = UpdateResult("")
-        result.extend(action.get_ids())
+        result.extend(action.ids)
         
         return result
 
         
     def delete (self, action):
-        sql = action.get_statement()
+        sql = action.statement
         
         cursor = self.db.cursor()
         try:
@@ -170,7 +170,7 @@ class PostGIS (DataSource):
             raise SyntaxException(locator = self.__class__.__name__, dump = str(e))
         
         result = DeleteResult("")
-        result.extend(action.get_ids())
+        result.extend(action.ids)
         
         return result
     
@@ -199,11 +199,10 @@ class PostGIS (DataSource):
 
         # add attributes from parser
         if self.fe_attributes:
-            if action.get_attributes() is not None and len(action.get_attributes()) > 0:
-                fe_cols = action.get_attributes()
+            if action.attributes is not None and len(action.attributes) > 0:
                 ad_cols = self.getColumns()
                 # removes attributes that already are defined in the configuration file
-                fe_cols = filter(lambda x: x not in ad_cols, fe_cols)
+                fe_cols = filter(lambda x: x not in ad_cols, action.attributes)
     
                 if len(fe_cols) > 0:
                     sql += ", %s" % ",".join(fe_cols)
@@ -211,8 +210,8 @@ class PostGIS (DataSource):
         sql += " FROM \"%s\"" % (self.table)
         
         
-        if action.get_statement() is not None:
-            sql += " WHERE " + action.get_statement()
+        if action.statement is not None:
+            sql += " WHERE " + action.statement
                     
         if self.order:
             sql += " ORDER BY " + self.order

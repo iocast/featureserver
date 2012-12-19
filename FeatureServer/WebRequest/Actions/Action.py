@@ -8,16 +8,34 @@ class Action (object):
         self._datasource     = datasource
     
     
-    def get_statement(self):
-        ''' returns a statement. E.g. for SQL it is the where clause '''
+    @property
+    def statement(self):
+        ''' returns a datasource specific statement. For example for datasources which supports SQL it is the where clause. '''
         pass
     
-    def get_attributes(self):
-        ''' returns a list of attributes '''
+    @property
+    def ids(self):
+        ''' returns a list of feature's ids '''
         pass
     
-    def get_ids(self):
-        ''' returns a list of ids of features to be modified '''
+    @property
+    def attributes(self):
+        ''' returns a unique list of attributes to be queried '''
+        pass
+    
+    @property
+    def constraints(self):
+        ''' returns a dict of constraints
+            the following format is required
+            [
+                <name>__<operator> : {
+                    column : '<name>',
+                    type   : '<operator>',
+                    value  ' '<value>'
+                },
+                ...
+            ]
+        '''
         pass
     
     
@@ -30,5 +48,4 @@ class Action (object):
     @property
     def layer(self):
         return self._datasource.name
-
 

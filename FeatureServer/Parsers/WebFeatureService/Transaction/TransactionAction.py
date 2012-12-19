@@ -15,29 +15,32 @@ class TransactionAction(object):
         
     def __init__(self, node, transaction, **kwargs):
         super(TransactionAction, self).__init__(**kwargs)
-        self.children = []
-        self.index = 0
-        self.stmt = None
-        self.type = ''
-        self.node = node
-        self.transaction = transaction
+        self.children       = []
+        self.index          = 0
+        self.stmt           = None
+        self.type           = ''
+        self.node           = node
+        self.transaction    = transaction
     
-    
-    def set_statement(self, stmt):
-        self.stmt = stmt
-    
-    def get_ids(self):
+    # override
+    @property
+    def ids(self):
         filters = self.node.xpath("//*[local-name() = 'Filter']")
         if len(filters) == 0:
             return None
 
         filter = FilterResources(deepcopy(filters[0]))
         return filter.render(self.transaction.service)
-    
-    def get_statement(self):
+    @property
+    def statement(self):
         if self.stmt == None:
             self.create_statement()
         return self.stmt
+    # end override
+    
+    
+    def set_statement(self, stmt):
+        self.stmt = stmt
     
     def create_statement(self): pass
     
