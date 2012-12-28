@@ -147,6 +147,7 @@ class Server (object):
         except Exception as e:
             # TODO: handle fatal error correctly
             # fatal error occured during parsing request
+            raise e
             exceptions.add(e)
             return self.respond_report(report=exceptions, service=service)
         

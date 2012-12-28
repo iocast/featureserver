@@ -10,3 +10,4 @@ The following users have contributed to the development of FeatureServer.
 | Brent Pedersen
 | Christopher Schmidt
 | Sanjiv Singh
+| Michel Ott

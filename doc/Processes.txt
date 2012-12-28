@@ -99,7 +99,7 @@ __call__ method which accepts two arguments:
 * self
 * list of features
 
-A Feature is an instance of a vectorformats.Feature.Feature object. It has
+A Feature is an instance of a VectorFormats.Feature.Feature object. It has
 an 'id' property, a 'properties' property and a 'geometry' property which
 contains a GeoJSON-like Geometry object in Python. 
 

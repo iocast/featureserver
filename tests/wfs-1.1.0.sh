@@ -7,10 +7,6 @@ END
 
 
 
-/fs/boreholes?format=GeoJSON&queryable=source&source=ODP
-/fs/boreholes?format=GeoJSON&source__ilike=ODP&queryable=source
-
-queryable=(name)(id,name)&name__like=test&id__gt=10&
 
 server='http://localhost:8080/?service=WFS&request=GetFeature&version=1.1.0&typeName=fs_polygon,fs_line&outputFormat=WFS&filter='
 post=''
