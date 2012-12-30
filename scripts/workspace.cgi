@@ -2,7 +2,7 @@
 
 #CGI
 if __name__ == '__main__':
-    from FeatureServer.Server import Server, cfgfiles, cgi
+    from featureserver.server import Server, cfgfiles, cgi
     service = Server.load(*cfgfiles)
     cgi(service.dispatchWorkspaceRequest)
 
@@ -17,7 +17,7 @@ else:
     path = os.path.dirname(__file__)
     sys.path.append(path)
 
-    from FeatureServer.Server import Server, wsgi, cfgfiles
+    from featureserver.server import Server, wsgi, cfgfiles
     # make all the paths absolute as well.
     cfgfiles = list(cfgfiles) + [os.path.join(path, f) for f in cfgfiles if not f.startswith('/')]
 

@@ -7,8 +7,8 @@ import os, re
 from lxml import etree
 from copy import deepcopy
 
-from FeatureServer.Parsers.WebFeatureService.FilterEncoding.FilterEncoding import FilterEncoding
-from FeatureServer.Parsers.WebFeatureService.FilterEncoding.FilterResources import FilterResources
+from ..FilterEncoding.FilterEncoding import FilterEncoding
+from ..FilterEncoding.FilterResources import FilterResources
 
 class TransactionAction(object):
     ''' represents a <wfs:Insert/>, <wfs:Update/> or <wfs:Delete/> '''

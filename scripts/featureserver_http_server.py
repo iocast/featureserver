@@ -10,7 +10,7 @@ __copyright__ = "2006-2008 MetaCarta"
 import mimetypes, os
 from optparse import OptionParser
 
-from FeatureServer.Server import wsgi_app
+from featureserver.server import wsgi_app
 
 local_path_location = None
 

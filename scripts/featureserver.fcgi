@@ -1,5 +1,5 @@
 #!/usr/bin/python
-from FeatureServer.Server import wsgi_app
+from featureserver.server import wsgi_app
 
 import sys
 

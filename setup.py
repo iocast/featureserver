@@ -20,21 +20,21 @@ classifiers = [
 # otherwise. 
 extra = { }
 if "--debian" in sys.argv:
-   extra['data_files']=[('/etc', ['FeatureServer/assets/config/featureserver.cfg']),
-                        ('~/.featureserver/workspace/', ['FeatureServer/assets/config/workspace.db']),
-                        ('~/.featureserver/templates/', ['FeatureServer/assets/templates/default-withmap.html',
-                                                         'FeatureServer/assets/templates/default.html',
-                                                         'FeatureServer/assets/templates/exception_report.html'])]
+   extra['data_files']=[('/etc', ['featureserver/assets/config/featureserver.cfg']),
+                        ('~/.featureserver/workspace/', ['featureserver/assets/config/workspace.db']),
+                        ('~/.featureserver/templates/', ['featureserver/assets/templates/default-withmap.html',
+                                                         'featureserver/assets/templates/default.html',
+                                                         'featureserver/assets/templates/exception_report.html'])]
    sys.argv.remove("--debian")
 else:
-   extra['data_files']=[('config/', ['FeatureServer/assets/config/featureserver.cfg',
-                                                   'FeatureServer/assets/config/workspace.db']),
-                        ('templates/', ['FeatureServer/assets/templates/default-withmap.html',
-                                                      'FeatureServer/assets/templates/default.html',
-                                                      'FeatureServer/assets/templates/exception_report.html'])]
+   extra['data_files']=[('config/', ['featureserver/assets/config/featureserver.cfg',
+                                                   'featureserver/assets/config/workspace.db']),
+                        ('templates/', ['featureserver/assets/templates/default-withmap.html',
+                                                      'featureserver/assets/templates/default.html',
+                                                      'featureserver/assets/templates/exception_report.html'])]
 
 setup(name='FeatureServer',
-      version='1.15.1',
+      version='2.0',
       description='A server for geographic features on the web.',
       long_description=read('doc/Readme.txt'),
       author='FeatureServer (iocast)',
@@ -57,7 +57,6 @@ setup(name='FeatureServer',
                'scripts/workspace_http_server.py'],
       
       install_requires=['wsgiref>=0.1.2',
-                        'dxfwrite>=1.2.0',
                         'lxml>=2.3.5',
                         'pyspatialite>=3.0.1',
                         'Cheetah>=2.4.4',

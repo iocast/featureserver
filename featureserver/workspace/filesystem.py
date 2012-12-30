@@ -1,8 +1,8 @@
 '''
-Created on Mar 12, 2012
-
-@author: michel
-'''
+    Created on Mar 12, 2012
+    
+    @author: michel
+    '''
 
 import shortuuid, time
 
@@ -10,7 +10,7 @@ class FileHandler(object):
     
     __path = ""
     __expiration = float(7776000)
-
+    
     def __init__(self, path, expiration=float(7776000)):
         self.__path = path
         self.__expiration = expiration
@@ -54,7 +54,7 @@ class FileHandler(object):
             
             seekpoint = fro.tell()
             line = fro.readline()
-            
+        
         fro.close()
     
     def remove(self, key):
@@ -82,14 +82,14 @@ class FileHandler(object):
             
             seekpoint = fro.tell()
             line = fro.readline()
-            
+        
         fro.close()
     
     def updateLastAccess(self, key):
         data = self.getByKey(key)
         if len(data) > 0:
             self.remove(key)
-        
+            
             frw = open(self.__path, 'a')
             frw.write("%s,%s,%s,%s,%s\n" % (data[0], data[1], data[2], data[3], str(time.time())))
             frw.close()
@@ -130,4 +130,3 @@ class FileHandler(object):
         fro.close()
         
         return workspaces
-        

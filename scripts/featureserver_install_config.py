@@ -14,6 +14,7 @@ def install(dest):
     
     try:    
         import pkg_resources
+        # TODO: Change config path
         filename = pkg_resources.resource_filename("FeatureServer", "featureserver.cfg")
         cfg = open(filename, "r")
     except Exception, E:
