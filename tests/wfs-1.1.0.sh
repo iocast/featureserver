@@ -7,7 +7,7 @@ END
 
 
 
-
+: <<'END'
 server='http://localhost:8080/?service=WFS&request=GetFeature&version=1.1.0&typeName=fs_polygon,fs_line&outputFormat=WFS&filter='
 post=''
 filter=$(cat <<EOF
@@ -25,14 +25,22 @@ filter=$(cat <<EOF
     <BBOX>
         <PropertyName>geometry</PropertyName>
         <Envelope srsName="EPSG:4326">
-            <lowerCorner>1.7969082858066 044.555248132086</lowerCorner>
-            <upperCorner>14.650912192056 49.065808099499</upperCorner>
+            <lowerCorner>2.7969082858066 34.555248132086</lowerCorner>
+            <upperCorner>24.650912192056 39.065808099499</upperCorner>
         </Envelope>
     </BBOX>
 </Filter>)
 EOF
 )
+END
 
+: <<'END'
+Testing constraints
+END
+
+server='http://localhost:8080/?service=WFS&request=GetFeature&version=1.1.0&typeName=fs_point,fs_line&outputFormat=WFS&sortby=name_ASC,fid_DESC&queryable=name,street&name__like=test&street__eq=waynne'
+filter=''
+post=''
 
 
 
