@@ -1,9 +1,9 @@
 from OutputFormat import OutputFormat
-import FeatureServer.VectorFormats.Formats.OSM
+from vectorformats.formats.osm import OSM as OSMFormat
 
 class OSM(OutputFormat):
     def encode(self, result):
-        osm = FeatureServer.VectorFormats.Formats.OSM.OSM()
+        osm = OSMFormat()
         
         results = osm.encode(result)
         

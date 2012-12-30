@@ -1,18 +1,18 @@
 from OutputFormat import OutputFormat
-import FeatureServer.VectorFormats.Formats.KML
+from vectorformats.formats.kml import KML as KMLFormat
 
 class KML(OutputFormat):
     mime_type = "application/vnd.google-earth.kml+xml"
 
     def encode(self, result):
-        kml = FeatureServer.VectorFormats.Formats.KML.KML(url=self.host, layername=self.datasources[0])
+        kml = KMLFormat(url=self.host, layername=self.datasources[0])
         results = kml.encode(result)
         return ("application/vnd.google-earth.kml+xml", results, None, 'utf-8')        
     
     def parse(self, params, path_info, host, post_data, request_method):
         self.get_layer(path_info, params)
 
-        kml = FeatureServer.VectorFormats.Formats.KML.KML(url=self.host, layername=self.datasources[0])
+        kml = KMLFormat(url=self.host, layername=self.datasources[0])
         Request.parse(self, params, path_info, host, post_data, request_method, format_obj=kml) 
     
     def encode_metadata(self, action):

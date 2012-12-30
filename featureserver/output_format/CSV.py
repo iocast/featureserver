@@ -1,10 +1,10 @@
 from OutputFormat import OutputFormat
-import FeatureServer.VectorFormats.Formats.CSV
+from vectorformats.formats.csv import CSV as CSVFormat
 
 
 class CSV(OutputFormat):
     def encode(self, results):
-        csv = FeatureServer.VectorFormats.Formats.CSV.CSV(layername=self.datasources[0])
+        csv = CSVFormat(layername=self.datasources[0])
 
         output = csv.encode(results)
         
@@ -16,7 +16,7 @@ class CSV(OutputFormat):
         return ("application/octet-stream;", output, headers, '')
 
     def encode_exception_report(self, exceptionReport):
-        csv = FeatureServer.VectorFormats.Formats.CSV.CSV()
+        csv = CSVFormat()
         headers = {
             'Accept': '*/*',
             'Content-Disposition' : 'attachment; filename=poidownload.csv'

@@ -1,5 +1,5 @@
 from OutputFormat import OutputFormat
-import FeatureServer.VectorFormats.Formats.HTML
+from vectorformats.formats.html import HTML as HTMLFormat
 
 class HTML (OutputFormat):
     #def encode_metadata(self, action):
@@ -12,14 +12,14 @@ class HTML (OutputFormat):
     #    return  "text/html; charset=utf-8", str(output).decode("utf-8")
 
     def encode(self, result):
-        html = FeatureServer.VectorFormats.Formats.HTML.HTML(datasource=self.service.datasources[self.datasources[0]])
+        html = HTMLFormat(datasource=self.service.datasources[self.datasources[0]])
         
         output = html.encode(result)
         
         return ("text/html; charset=utf-8", str(output).decode("utf-8"), None, 'utf-8')
     
     def encode_exception_report(self, exceptionReport):
-        html = FeatureServer.VectorFormats.Formats.HTML.HTML()
+        html = HTMLFormat()
         
         output = html.encode_exception_report(exceptionReport)
         

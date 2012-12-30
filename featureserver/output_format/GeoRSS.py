@@ -1,5 +1,5 @@
 from OutputFormat import OutputFormat
-import FeatureServer.VectorFormats.Formats.GeoRSS
+from vectorformats.formats.georss import GeoRSS as GeoRSSFormat
 
 class GeoRSS(OutputFormat):
     def encode_metadata(self, action):
@@ -19,16 +19,16 @@ class GeoRSS(OutputFormat):
         return ("application/rss+xml", action.metadata, None)
     
     def encode(self, result):
-        atom = FeatureServer.VectorFormats.Formats.GeoRSS.GeoRSS(url=self.host, feedname=self.datasources[0])
+        atom = GeoRSSFormat(url=self.host, feedname=self.datasources[0])
         results = atom.encode(result)
         return ("application/atom+xml", results, None, 'utf-8')
     
     def parse(self, params, path_info, host, post_data, request_method):
         self.get_layer(path_info, params)
 
-        atom = FeatureServer.VectorFormats.Formats.GeoRSS.GeoRSS(url=self.host, feedname=self.datasources[0])
+        atom = GeoRSSFormat(url=self.host, feedname=self.datasources[0])
         Request.parse(self, params, path_info, host, post_data, request_method, format_obj = atom) 
             
     def encode_exception_report(self, exceptionReport):
-        atom = FeatureServer.VectorFormats.Formats.GeoRSS.GeoRSS(url=self.host)
+        atom = GeoRSSFormat(url=self.host)
         return ("application/atom+xml", atom.encode_exception_report(exceptionReport), None, 'utf-8')

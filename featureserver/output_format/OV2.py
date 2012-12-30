@@ -5,11 +5,11 @@ Created on Jul 30, 2011
 '''
 
 from OutputFormat import OutputFormat
-import FeatureServer.VectorFormats.Formats.OV2
+from vectorformats.formats.ov2 import OV2 as OV2Format
 
 class OV2(OutputFormat):
     def encode(self, results):
-        ov2 = FeatureServer.VectorFormats.Formats.OV2.OV2(layername=self.datasources[0])
+        ov2 = OV2Format(layername=self.datasources[0])
         
         output = ov2.encode(results)
 
