@@ -4,6 +4,7 @@ from WFSParser import WFSParser
 from WebFeatureService.FilterEncoding.Select import Select
 from WebFeatureService.Transaction.Transaction import Transaction
 
+
 import re
 from lxml import etree, objectify
 from copy import deepcopy
@@ -49,16 +50,14 @@ class WFS_V1_Parser(WFSParser):
                 # no filter exists. create for each typename a empty filter = query all
                 else:
                     for typename in typenames:
-                        self.add_action(self.actions.append(self.parse_without_filter(datasource=self.service.request.server.datasources[typename])))
+                        self.add_action(self.parse_without_filter(datasource=self.service.request.server.datasources[typename]))
         
             # single layer
             elif len(typenames) == 1:
                 if self.service.request.params.has_key('filter'):
                     parser = objectify.makeparser(remove_blank_text=True, ns_clean=True)
                     dom = etree.XML(self.service.request.params['filter'], parser=parser)
-    
                     self.add_action(self.parse_filter(datasource=self.service.request.server.datasources[self.service.request.params['typename']], dom=deepcopy(dom)))
-            
                 else:
                     self.add_action(self.parse_without_filter(datasource=self.service.request.server.datasources[self.service.request.params['typename']]))
 
@@ -88,21 +87,18 @@ class WFS_V1_Parser(WFSParser):
         else:
             ''' '''
         
-    
     def parse_query_property_names(self, dom):
         ''' parses <wfs:PropertyName/> in a OGC FE XML '''
         return [str(property.text) for property in dom.xpath("/*[local-name() = 'Query']/*[local-name() = 'PropertyName']")]
     
     def parse_without_filter(self, datasource, properties=[], ids=[]):
         ''' creates a select action which should return all records of a datasource '''
-        #import FeatureServer.WebRequest.Actions.Select
-        #return FeatureServer.WebRequest.Actions.Select.Select(datasource=datasource)
-        return Select(datasource=datasource, data=None, service=self.service, ids=ids, attributes=properties, constraints=constraints)
+        return Select(datasource=datasource, data=None, service=self.service, ids=ids, attributes=properties, constraints=self.parse_constraints(), sort=self.parse_sort())
     
     def parse_filter(self, datasource, dom, properties=[]):
         ''' parses a OGC <wfs:Filter/> tag '''
-        return Select(datasource=datasource, data=etree.tostring(dom), properties=properties, service=self.service)
-    
+        return Select(datasource=datasource, data=etree.tostring(dom), service=self.service, attributes=properties, constraints=self.parse_constraints(), sort=self.parse_sort())
+
     def parse_transaction(self, dom):
         ''' parses the whole <wfs:Transaction/> and returns a list of actions '''
         transaction = Transaction(self.service)
