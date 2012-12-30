@@ -9,25 +9,25 @@ import time
 import os
 import traceback
 import ConfigParser
-from FeatureServer.WebRequest.handlers import wsgi, mod_python, cgi
-from FeatureServer.WebRequest.Request import Request
+from .web_request.handlers import wsgi, mod_python, cgi
+from .web_request.request import Request
 from lxml import etree
 import cgi as cgimod
 
-from FeatureServer.Parsers.WebFeatureService.Response.TransactionResponse import TransactionResponse
-from FeatureServer.Parsers.WebFeatureService.Response.TransactionSummary import TransactionSummary
-from FeatureServer.Parsers.WebFeatureService.Response.ActionResult import ActionResult
+from .parsers.WebFeatureService.Response.TransactionResponse import TransactionResponse
+from .parsers.WebFeatureService.Response.TransactionSummary import TransactionSummary
+from .parsers.WebFeatureService.Response.ActionResult import ActionResult
 
-from FeatureServer.Workspace.FileHandler import FileHandler
+from .workspace.filesystem import FileHandler
 
-from FeatureServer.Exceptions.ExceptionReport import ExceptionReport
-from FeatureServer.Exceptions.WebFeatureService.InvalidValueException import InvalidValueException
-from FeatureServer.Exceptions.ConnectionException import ConnectionException
-from FeatureServer.Exceptions.LayerNotFoundException import LayerNotFoundException
+from .exceptions.core import ExceptionReport
+from .exceptions.wfs import InvalidValueException
+from .exceptions.datasource import ConnectionException
+from .exceptions.configuration import LayerNotFoundException
 
 
-import FeatureServer.Processing 
-from FeatureServer.WebRequest.Response import Response
+import processing
+from .web_request.response import Response
 
 # First, check explicit FS_CONFIG env var
 if 'FS_CONFIG' in os.environ:
@@ -102,7 +102,7 @@ class Server (object):
         objclass = getattr(module, type)
         for opt in config.options(section):
             objargs[opt] = config.get(section, opt)
-        if module_type is 'DataSource':
+        if module_type is 'datasource':
             return objclass(section, **objargs)
         else:
             return objclass(**objargs)
@@ -129,7 +129,7 @@ class Server (object):
                 except Exception, E:
                     pass 
             else:     
-                datasources[section] = cls.loadFromSection(config, section, 'DataSource')
+                datasources[section] = cls.loadFromSection(config, section, 'datasource')
 
         return cls(datasources, metadata, processes)
     load = classmethod(_load)
@@ -189,6 +189,7 @@ class Server (object):
             for typename in request.service.datasources.keys():
                 self.datasources[typename].commit()
         except Exception as e:
+            raise e
             # TODO: only rollback if connection is open
             # call rollback on every requested datasource
             for typename in request.service.datasources.keys():
@@ -208,7 +209,7 @@ class Server (object):
     #                    default_exception -> servcie -> default_output -> WFS
     def respond_report(self, report, service, status_code="500 Internal Error"):
         try:
-            output_module = __import__("OutputFormat.%s" % self.metadata_exception, globals(), locals(), self.metadata_exception)
+            output_module = __import__("output_format.%s" % self.metadata_exception, globals(), locals(), self.metadata_exception)
             output = getattr(output_module, self.metadata_exception)
             default_exception = output(self)
                 
@@ -225,7 +226,7 @@ class Server (object):
             else:
                 try:
                     # get default service and instantiate
-                    output_module = __import__("OutputFormat.%s" % self.metadata_output, globals(), locals(), self.metadata_output)
+                    output_module = __import__("output_format.%s" % self.metadata_output, globals(), locals(), self.metadata_output)
                     output = getattr(output_module, self.metadata_output)
                     default_output = output(self)
                 
@@ -234,7 +235,7 @@ class Server (object):
                         return self.respond(mime=mime, data=data, headers=headers, encoding=encoding, status_code=status_code)
                     else:
                         # load WFS for exception handling
-                        from FeatureServer.OutputFormat.WFS import WFS
+                        from .output_format.wfs import WFS
                         wfs_output = WFS(self)
                         mime, data, headers, encoding = wfs_output.encode_exception_report(report)
                         return self.respond(mime=mime, data=data, headers=headers, encoding=encoding, status_code=status_code)
