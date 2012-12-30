@@ -6,16 +6,16 @@ __version__ = "$Id: PostGIS.py 615 2009-09-23 00:47:48Z jlivni $"
 from psycopg2 import errorcodes
 
 from DataSource import DataSource
-from FeatureServer.VectorFormats.Feature import Feature
-from FeatureServer.VectorFormats.Formats import WKT
+from vectorformats.feature import Feature
+from vectorformats.formats.wkt import WKT
 
-from FeatureServer.Parsers.WebFeatureService.Response.InsertResult import InsertResult
-from FeatureServer.Parsers.WebFeatureService.Response.UpdateResult import UpdateResult
-from FeatureServer.Parsers.WebFeatureService.Response.DeleteResult import DeleteResult
-from FeatureServer.Parsers.WebFeatureService.Response.ReplaceResult import ReplaceResult
+from ..parsers.WebFeatureService.Response.InsertResult import InsertResult
+from ..parsers.WebFeatureService.Response.UpdateResult import UpdateResult
+from ..parsers.WebFeatureService.Response.DeleteResult import DeleteResult
+from ..parsers.WebFeatureService.Response.ReplaceResult import ReplaceResult
 
-from FeatureServer.Exceptions.WebFeatureService.InvalidValueException import InvalidValueException
-from FeatureServer.Exceptions.ConnectionException import ConnectionException
+from ..exceptions.wfs import InvalidValueException
+from ..exceptions.datasource import ConnectionException
 
 try:
     import psycopg2 as psycopg

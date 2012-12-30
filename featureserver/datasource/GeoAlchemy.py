@@ -1,7 +1,7 @@
 
 from DataSource import DataSource
-from FeatureServer.VectorFormats.Feature import Feature
-from FeatureServer.VectorFormats.Formats import WKT
+from vectorformats.feature import Feature
+from vectorformats.formats.wkt import WKT
 
 from sqlalchemy import create_engine, func
 from sqlalchemy.sql import expression, visitors, operators

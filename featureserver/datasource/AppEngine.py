@@ -1,8 +1,8 @@
-from FeatureServer.DataSource import DataSource
-from FeatureServer.Service import Action 
+from .DataSource import DataSource
+from ..web_request.actions import Action
 
-from FeatureServer.VectorFormats.Feature import Feature
-from FeatureServer.VectorFormats.Formats.WKT import to_wkt, from_wkt
+from vectorformats.feature import Feature
+from vectorformats.formats.wkt import to_wkt, from_wkt
 
 from google.appengine.ext import db
 

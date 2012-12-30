@@ -1,6 +1,6 @@
 from DataSource import DataSource
-from FeatureServer.VectorFormats.Feature import Feature
-from FeatureServer.Exceptions.NoGeometryException import NoGeometryException
+from vectorformats.feature import Feature
+from ..exceptions.syntax import NoGeometryException
 
 import oauth2 as oauth
 
