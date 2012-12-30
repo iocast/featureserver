@@ -5,8 +5,8 @@
 import sys, os, traceback, urllib, StringIO
 import cgi as cgimod
 
-from Response import Response
-from Request import Request
+from response import Response
+from request import Request
 
 
 class ApplicationException(Exception): 
