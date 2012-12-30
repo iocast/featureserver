@@ -5,6 +5,8 @@ class DataSource (object):
         and delete methods to support those actions, and can optionally
         use begin, commit, and rollback methods to perform locking."""
     
+    _query_actions = {}
+    
     def __init__(self, name, **kwargs):
         self.name = name
         for key, val in kwargs.iteritems():
@@ -45,3 +47,9 @@ class DataSource (object):
     def render(self, action):
         ''' Returns a data source specific statement based on the action object. E.g. a SQL statement for SpatialLite. '''
         pass
+
+    @property
+    def query_actions(self):
+        return self._query_actions
+
+
