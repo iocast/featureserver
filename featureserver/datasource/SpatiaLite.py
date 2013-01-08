@@ -16,7 +16,7 @@ from ..parsers.WebFeatureService.Response.DeleteResult import DeleteResult
 from ..parsers.WebFeatureService.Response.ReplaceResult import ReplaceResult
 
 from ..exceptions.syntax import SyntaxException
-from ..exceptions.datasource import ConnectionException
+from ..exceptions.datasource import ConnectionException, PredicateNotFoundException
 
 from pyspatialite import dbapi2 as db
 
@@ -28,7 +28,7 @@ class SpatiaLite (DataSource):
     
     _query_actions  = { 'eq' : '=', 'neq' : '!=',
                         'lt': '<', 'gt': '>',
-                        'ilike' : 'ilike', 'like' : 'like',
+                        'like' : 'LIKE',
                         'gte': '>=', 'lte': '<=' }
 
     def __init__(self, name, file, fid = "gid", geometry = "the_geom", fe_attributes = 'true', srid = 4326, srid_out = 4326, encoding = "utf-8", writable = True, attribute_cols = "*", **kwargs):
@@ -48,6 +48,13 @@ class SpatiaLite (DataSource):
         self.fe_attributes = True
         if fe_attributes.lower() == 'false':
             self.fe_attributes  = False
+
+    def get_predicate(self, constraint):
+        if constraint.operator.lower() in self.query_actions:
+            if constraint.operator.lower() == 'like':
+                return "'" + constraint.attribute + "' " + self.query_actions[constraint.operator.lower()] + " '%" + constraint.value + "%'"
+            return "'" + constraint.attribute + "' " + self.query_actions[constraint.operator.lower()] + " '" + constraint.value + "'"
+        raise PredicateNotFoundException(**{'locator':self.__class__.__name__, 'predicate':constraint.operator})
 
 
     def begin(self):
@@ -153,17 +160,17 @@ class SpatiaLite (DataSource):
         sql += " FROM \"%s\"" % (self.table)
         
         
+        filter = []
         if action.statement is not None:
-            sql += " WHERE " + action.statement
+            filter.append(action.statement)
         
-        from pprint import pprint
-        pprint(action.constraints)
-        pprint(action.sort)
+        for constraint in action.constraints:
+            filter.append(self.get_predicate(constraint))
+                
         
-        if action.constraints.has_key('order_by'):
-            sql += " ORDER BY " + action.constraints['order_by']
-            if action.constraints.has_key('order') and action.constraints['order'].upper() in ['ASC', 'DESC']:
-                sql += " " + action.constraints['order'].upper()
+        if len(filter) > 0:
+            sql += " WHERE "
+            sql += " AND ".join(filter)
 
         print sql
         
