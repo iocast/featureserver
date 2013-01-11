@@ -1,2 +1,0 @@
-
-  >>> import FeatureServer.Service.GeoJSON as G
