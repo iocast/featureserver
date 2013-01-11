@@ -66,7 +66,7 @@ setup(name='FeatureServer',
                         'SQLAlchemy>=0.7.9',
                         'vectorformats>=0.2'],
       
-      test_suite = 'tests.run_doc_tests',
+      test_suite = 'tests.test_suite',
       zip_safe = False,
       **extra
 )
