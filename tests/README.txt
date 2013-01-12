@@ -1,10 +1,10 @@
 <!-- https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet -->
-# Database
+# Database #
 
 ## PostgreSQL
 
 ### Setup
-````sql
+```sql
 CREATE DATABASE featureserver OWNER michel ENCODING 'UTF8';
 CREATE EXTENSION hstore;
 CREATE EXTENSION postgis;
