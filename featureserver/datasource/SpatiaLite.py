@@ -56,8 +56,8 @@ class SpatiaLite (DataSource):
     def get_predicate(self, constraint):
         if constraint.operator.lower() in self.query_actions:
             if constraint.operator.lower() == 'like':
-                return "'" + constraint.attribute + "' " + self.query_actions[constraint.operator.lower()] + " '%" + constraint.value + "%'"
-            return "'" + constraint.attribute + "' " + self.query_actions[constraint.operator.lower()] + " '" + constraint.value + "'"
+                return "\"" + constraint.attribute + "\" " + self.query_actions[constraint.operator.lower()] + " '%" + constraint.value + "%'"
+            return "\"" + constraint.attribute + "\" " + self.query_actions[constraint.operator.lower()] + " '" + constraint.value + "'"
         raise PredicateNotFoundException(**{'locator':self.__class__.__name__, 'predicate':constraint.operator})
 
 
@@ -144,7 +144,7 @@ class SpatiaLite (DataSource):
             sql += "%s as ele, " % self.ele
             
         sql += "\"%s\"" % self.fid_col
-        
+            
         if len(self.attribute_cols) > 0:
             sql += ", %s" % self.attribute_cols
             

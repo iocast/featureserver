@@ -40,12 +40,13 @@ class WFSParser(Parser):
         if "queryable" in self.service.request.params:
             query_list = self.service.request.params['queryable'].split(",")
             
-            for key, value in self.service.request.params.iteritems():
-                if "__" in key:
-                    attribute, operator = key.split("__")
-                    if attribute in query_list:
-                        constraints.append(Constraint(attribute=attribute, value=self.service.request.params[key], operator=operator))
-    
+            for query in query_list:
+                for key, value in self.service.request.params.iteritems():
+                    if "__" in key:
+                        attribute, operator = key.split("__")
+                        if query == attribute:
+                            constraints.append(Constraint(attribute=attribute, value=self.service.request.params[key], operator=operator))
+        
         return constraints
 
     def parse_sort(self):
