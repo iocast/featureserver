@@ -8,7 +8,7 @@ import os
 
 from DataSource import DataSource
 from vectorformats.feature import Feature
-from vectorformats.formats.wkt import WKT
+from vectorformats.formats import wkt
 
 from ..parsers.WebFeatureService.Response.InsertResult import InsertResult
 from ..parsers.WebFeatureService.Response.UpdateResult import UpdateResult
@@ -49,6 +49,10 @@ class SpatiaLite (DataSource):
         if fe_attributes.lower() == 'false':
             self.fe_attributes  = False
 
+    @property
+    def connection(self):
+        return self._connection
+
     def get_predicate(self, constraint):
         if constraint.operator.lower() in self.query_actions:
             if constraint.operator.lower() == 'like':
@@ -58,9 +62,11 @@ class SpatiaLite (DataSource):
 
 
     def begin(self):
-        if not os.path.exists(self.file):
+        if self.file != ':memory:' and not os.path.exists(self.file):
             raise ConnectionException(**{'layer':self.name,'locator':'SpatialLite'})
-        self._connection = db.connect(self.file, check_same_thread = False)
+        
+        if self._connection is None:
+            self._connection = db.connect(self.file, check_same_thread = False)
     
     def close(self):
         if self._connection:
@@ -172,8 +178,6 @@ class SpatiaLite (DataSource):
             sql += " WHERE "
             sql += " AND ".join(filter)
 
-        print sql
-        
         try:
             cursor.execute(str(sql))
         except Exception as e:
@@ -188,7 +192,7 @@ class SpatiaLite (DataSource):
         for row in result:
             props = dict(zip(columns, row))
             if not props['fs_text_geom']: continue
-            geom  = WKT.from_wkt(props['fs_text_geom'])
+            geom  = wkt.from_wkt(props['fs_text_geom'])
             id = props[self.fid_col]
             del props[self.fid_col]
             if self.attribute_cols == '*':
