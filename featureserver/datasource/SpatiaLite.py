@@ -172,7 +172,10 @@ class SpatiaLite (DataSource):
         
         for constraint in action.constraints:
             filter.append(self.get_predicate(constraint))
-                
+
+        for id in action.ids:
+            filter.append("%s = %s" % (self.fid_col, str(id)))
+
         
         if len(filter) > 0:
             sql += " WHERE "
