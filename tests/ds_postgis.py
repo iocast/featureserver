@@ -4,7 +4,6 @@ from featureserver.server import Server
 from featureserver.web_request.response import Response
 from featureserver.web_request.request import Request
 
-from featureserver.datasource.GeoAlchemy import GeoAlchemy
 from featureserver.datasource.PostGIS import PostGIS
 
 
