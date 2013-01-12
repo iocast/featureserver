@@ -20,7 +20,7 @@ from .parsers.WebFeatureService.Response.ActionResult import ActionResult
 
 from .workspace.filesystem import FileHandler
 
-from .exceptions.core import ExceptionReport
+from .exceptions.core import BaseException, ExceptionReport
 from .exceptions.wfs import InvalidValueException
 from .exceptions.datasource import ConnectionException
 from .exceptions.configuration import LayerNotFoundException
@@ -147,8 +147,11 @@ class Server (object):
         except Exception as e:
             # TODO: handle fatal error correctly
             # fatal error occured during parsing request
-            raise e
-            exceptions.add(e)
+            if "code" not in e:
+                exc_type, exc_value, exc_traceback = sys.exc_info()
+                exceptions.add(BaseException(**{'message':str(e), 'code':"", 'locator':"", 'layer':"", 'dump':repr(traceback.format_exception(exc_type, exc_value, exc_traceback))}))
+            else:
+                exceptions.add(e)
             return self.respond_report(report=exceptions, service=service)
         
         if exceptions.has_exceptions():
@@ -191,12 +194,15 @@ class Server (object):
             for typename in request.service.datasources.keys():
                 self.datasources[typename].commit()
         except Exception as e:
-            raise e
             # TODO: only rollback if connection is open
             # call rollback on every requested datasource
             for typename in request.service.datasources.keys():
                 self.datasources[typename].rollback()
-            exceptions.add(e)
+            if "code" not in e:
+                exc_type, exc_value, exc_traceback = sys.exc_info()
+                exceptions.add(BaseException(**{'message':str(e), 'code':"", 'locator':"", 'layer':"", 'dump':repr(traceback.format_exception(exc_type, exc_value, exc_traceback))}))
+            else:
+                exceptions.add(e)
 
         if exceptions.has_exceptions():
             return self.respond_report(report=exceptions, service=request.service)
@@ -252,7 +258,11 @@ class Server (object):
     def respond(self, mime, data, headers, encoding, status_code="200 OK"):
         return Response(data=data, content_type=mime, headers=headers, status_code=status_code, encoding=encoding)
         
-    
+
+
+
+
+
     def dispatchWorkspaceRequest (self, request):
         handler = FileHandler('workspace.db')
         handler.removeExpired()
