@@ -8,7 +8,7 @@ from featureserver.datasource.GeoAlchemy import GeoAlchemy
 from featureserver.datasource.PostGIS import PostGIS
 
 
-class WFSTestCase(unittest.TestCase):
+class PostGISTestCase(unittest.TestCase):
     
     @property
     def fs(self):
@@ -47,5 +47,5 @@ class WFSTestCase(unittest.TestCase):
         
 
 def test_suite():
-    return unittest.TestLoader().loadTestsFromTestCase(WFSTestCase)
+    return unittest.TestLoader().loadTestsFromTestCase(PostGISTestCase)
 
