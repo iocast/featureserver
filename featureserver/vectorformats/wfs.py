@@ -48,26 +48,26 @@ class WFS (WFSVectorFormat):
         operations.append(etree.Element('Query'))
         featureList.append(operations)
         
-        for layer in self.service.datasources:
+        for layer in self.service.request.server.datasources:
             type = etree.Element('FeatureType')
             name = etree.Element('Name')
             name.text = layer
             type.append(name)
             
             title = etree.Element('Title')
-            if hasattr(self.datasources[layer], 'title'):
-                title.text = self.datasources[layer].title
+            if hasattr(self.service.request.server.datasources[layer], 'title'):
+                title.text = self.service.request.server.datasources[layer].title
             type.append(title)
             
             abstract = etree.Element('Abstract')
-            if hasattr(self.datasources[layer], 'abstract'):
-                abstract.text = self.datasources[layer].abstract
+            if hasattr(self.service.request.server.datasources[layer], 'abstract'):
+                abstract.text = self.service.request.server.datasources[layer].abstract
             type.append(abstract)
             
             
             srs = etree.Element('SRS')
-            if hasattr(self.datasources[layer], 'srid_out') and self.datasources[layer].srid_out is not None:
-                srs.text = 'EPSG:' + str(self.datasources[layer].srid_out)
+            if hasattr(self.service.request.server.datasources[layer], 'srid_out') and self.service.request.server.datasources[layer].srid_out is not None:
+                srs.text = 'EPSG:' + str(self.service.request.server.datasources[layer].srid_out)
             else:
                 srs.text = 'EPSG:4326'
             type.append(srs)
@@ -78,7 +78,7 @@ class WFS (WFSVectorFormat):
             featureOperations.append(etree.Element('Delete'))
             type.append(featureOperations)
             
-            latlong = self.getBBOX(self.datasources[layer])
+            latlong = self.getBBOX(self.service.request.server.datasources[layer])
             type.append(latlong)
             
             featureList.append(type)
@@ -103,7 +103,7 @@ class WFS (WFSVectorFormat):
     def addDataSourceImport(self, root, datasource):
         root.append(
                     etree.Element('import', attrib={'namespace':self.namespaces['fs'],
-                                  'schemaLocation':self.host+'?request=DescribeFeatureType&typeName='+datasource.name})
+                                  'schemaLocation':self.service.request.host+'?request=DescribeFeatureType&typeName='+datasource.name})
                     )
         return root
     

@@ -40,7 +40,7 @@ class WFS_V2(WFS):
     
         # check url after featureserver.org/{service}/{single typename}/features.wfs
         # request path should be > 2
-        if len(self.request.path) > 2:
+        if len(self.request.path) > 2 and "." not in self.request.path[2]:
             self.datasources.update({ str(self.request.path[2]) : [] })
         
         if len(self.datasources) == 0:
