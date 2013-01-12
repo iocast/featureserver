@@ -15,6 +15,7 @@ CREATE EXTENSION postgis;
 BEGIN; 
 
 -- PostGIS
+DropGeometryColumn('', 'fs_point', 'geom');
 DROP TABLE fs_point
 
 CREATE TABLE fs_point (id SERIAL, name TEXT );
@@ -36,6 +37,7 @@ COMMIT;
 BEGIN; 
 
 -- PostGIS with hstore
+DropGeometryColumn('', 'fs_point_hstore', 'geom');
 DROP TABLE fs_point_hstore
 
 CREATE TABLE fs_point_hstore (id SERIAL, kvp HSTORE );
