@@ -2,7 +2,7 @@
 from OutputFormat import OutputFormat
 from ..parsers.WebFeatureService.Response.TransactionResponse import TransactionResponse
 
-from vectorformats.formats.wfs import WFS as WFSFormat
+from ..vectorformats.wfs import WFS as WFSFormat
 
 class WFS(OutputFormat):
     def encode(self, results):
@@ -19,7 +19,7 @@ class WFS(OutputFormat):
         return ("text/xml", wfs.encode_exception_report(exceptionReport), None, 'utf-8')
 
     def get_capabilities(self):
-        wfs = WFSFormat(self.service)
+        wfs = WFSFormat(service=self.service)
         return ("text/xml", wfs.get_capabilities())
     
     def describe_feature_type(self):
