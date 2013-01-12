@@ -181,6 +181,12 @@ class SpatiaLite (DataSource):
             sql += " WHERE "
             sql += " AND ".join(filter)
 
+        if len(action.sort) > 0:
+            sql += " ORDER BY "
+            for sort in action.sort:
+                sql += "%s %s, " % (sort.attribute, sort.operator)
+            sql = sql[:-2]
+
         try:
             cursor.execute(str(sql))
         except Exception as e:

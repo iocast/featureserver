@@ -45,8 +45,19 @@ class WFSParser(Parser):
                     attribute, operator = key.split("__")
                     if attribute in query_list:
                         constraints.append(Constraint(attribute=attribute, value=self.service.request.params[key], operator=operator))
-        
+    
         return constraints
+
+    def parse_sort(self):
+        sort_list = []
+        
+        if "sortby" in self.service.request.params:
+            list = self.service.request.params['sortby'].split(",")
+            for item in list:
+                attribute, operator = item.split("_")
+                sort_list.append(Sort(attribute=attribute, operator=operator))
+
+        return sort_list
 
 
 

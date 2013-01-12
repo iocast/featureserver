@@ -58,7 +58,7 @@ class Request(object):
     def find_service_name(self):
         service_name = None
         # first parameter in the path http://featureserver.org/wfs/
-        if len(self.path[1]) > 0:
+        if len(self.path) > 1 and len(self.path[1]) > 0:
             service_name = self.path[1].upper()
         
         # check if parameter 'SERVICE' is set

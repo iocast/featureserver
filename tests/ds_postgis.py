@@ -27,7 +27,7 @@ class PostGISTestCase(unittest.TestCase):
                                               'attribut_cols' : 'name',
                                               'additional_cols' : ''
                                               })
-                         })
+                         }, metadata = {'default_output':'WFS', 'default_exception':'WFS'})
     
     @classmethod
     def tearDownClass(cls):
