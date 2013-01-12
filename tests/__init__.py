@@ -1,13 +1,16 @@
 from unittest import TestSuite
 
-import wfs
+import wfs_base
 
+import ds_postgis
 import ds_geoalchemy
 
 def test_suite():
     suite = TestSuite()
     
-    suite.addTest(wfs.test_suite())
+    suite.addTest(wfs_base.test_suite())
+    
+    suite.addTest(ds_postgis.test_suite())
     
     #suite.addTest(ds_geoalchemy.test_suite())
     
