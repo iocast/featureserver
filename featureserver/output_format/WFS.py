@@ -20,9 +20,9 @@ class WFS(OutputFormat):
 
     def get_capabilities(self):
         wfs = WFSFormat(service=self.service)
-        return ("text/xml", wfs.get_capabilities())
+        return ("text/xml", wfs.get_capabilities(), None, 'utf-8')
     
     def describe_feature_type(self):
-        wfs = WFSFormat(self.service)
-        return ("text/xml; subtype=gml/3.1.1", wfs.describe_feature_type())
+        wfs = WFSFormat(service=self.service)
+        return ("text/xml; subtype=gml/3.1.1", wfs.describe_feature_type(), None, 'utf-8')
     

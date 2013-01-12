@@ -86,16 +86,16 @@ class WFS (WFSVectorFormat):
         return featureList
     
     def describe_feature_type(self):
-        tree = etree.parse("resources/wfs-featuretype.xsd")
+        tree = etree.parse("featureserver/assets/transformation/wfs-featuretype.xsd")
         root = tree.getroot()
         
-        if len(self.layers) == 1:
+        if len(self.service.datasources) == 1:
             ''' special case when only one datasource is requested --> other xml schema '''
-            root = self.addDataSourceFeatureType(root, self.datasources[self.layers[0]])
+            root = self.addDataSourceFeatureType(root, self.service.request.server.datasources[self.service.datasources.keys()[0]])
         else:
             ''' loop over all requested datasources '''
-            for layer in self.layers:
-                root = self.addDataSourceImport(root, self.datasources[layer])
+            for layer in self.service.datasources:
+                root = self.addDataSourceImport(root, self.service.request.server.datasources[layer])
         #root = self.addDataSourceFeatureType(root, self.datasources[layer])
         
         return etree.tostring(tree, pretty_print=True)
@@ -108,7 +108,6 @@ class WFS (WFSVectorFormat):
         return root
     
     def addDataSourceFeatureType(self, root, datasource):
-        
         root.append(etree.Element('element', attrib={'name':datasource.name,
                                   'type':'fs:'+datasource.name+'_Type',
                                   'substitutionGroup':'gml:_Feature'}))

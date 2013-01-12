@@ -161,7 +161,9 @@ class Server (object):
         #   - GetCapabilities or DescribeFeatureType
         for action in request.service.actions:
             # if datasource is empty, try to find the method on the service object
-            return getattr(request.service.output, action.method.lower())()
+            mime, data, headers, encoding = getattr(request.service.output, action.method.lower())()
+            return self.respond(mime = mime, data = data, headers = headers, encoding = encoding)                
+
 
         
         transactions = TransactionResponse()
