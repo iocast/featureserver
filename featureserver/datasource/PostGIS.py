@@ -7,7 +7,7 @@ from psycopg2 import errorcodes
 
 from DataSource import DataSource
 from vectorformats.feature import Feature
-from vectorformats.formats.wkt import WKT
+from vectorformats.formats import wkt
 
 from ..parsers.WebFeatureService.Response.InsertResult import InsertResult
 from ..parsers.WebFeatureService.Response.UpdateResult import UpdateResult
@@ -111,7 +111,7 @@ class PostGIS (DataSource):
                 else:
                     predicates.append("%s = %s" % pair)
         if feature.geometry and feature.geometry.has_key("coordinates"):
-            predicates.append(" %s = SetSRID('%s'::geometry, %s) " % (self.getGeometry(), WKT.to_wkt(feature.geometry), self.srid))
+            predicates.append(" %s = SetSRID('%s'::geometry, %s) " % (self.getGeometry(), wkt.to_wkt(feature.geometry), self.srid))
         return predicates
 
     def feature_values (self, feature):
@@ -230,7 +230,7 @@ class PostGIS (DataSource):
         for row in result:
             props = dict(zip(columns, row))
             if not props['fs_text_geom']: continue
-            geom  = WKT.from_wkt(props['fs_text_geom'])
+            geom  = wkt.from_wkt(props['fs_text_geom'])
             id = props[self.fid_col]
             del props[self.fid_col]
             if self.attribute_cols == '*':
