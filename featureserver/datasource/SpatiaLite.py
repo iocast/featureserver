@@ -156,27 +156,26 @@ class SpatiaLite (DataSource):
                 ad_cols = self.getColumns()
                 # removes attributes that already are defined in the configuration file
                 fe_cols = filter(lambda x: x not in ad_cols, action.attributes)
-            
+                
                 if len(fe_cols) > 0:
                     sql += ", %s" % ",".join(fe_cols)
 
         sql += " FROM \"%s\"" % (self.table)
-        
-        
-        filter = []
+    
+        where = []
         if action.statement is not None:
-            filter.append(action.statement)
+            where.append(action.statement)
         
         for constraint in action.constraints:
-            filter.append(self.get_predicate(constraint))
+            where.append(self.get_predicate(constraint))
 
         for id in action.ids:
-            filter.append("%s = %s" % (self.fid_col, str(id)))
+            where.append("%s = %s" % (self.fid_col, str(id)))
 
         
-        if len(filter) > 0:
+        if len(where) > 0:
             sql += " WHERE "
-            sql += " AND ".join(filter)
+            sql += " AND ".join(where)
 
         if len(action.sort) > 0:
             sql += " ORDER BY "
