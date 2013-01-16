@@ -170,7 +170,7 @@ class SpatiaLite (DataSource):
             where.append(self.get_predicate(constraint))
 
         for id in action.ids:
-            where.append("%s = %s" % (self.fid_col, str(id)))
+            where.append("\"%s\" = '%s'" % (self.fid_col, str(id)))
 
         
         if len(where) > 0:

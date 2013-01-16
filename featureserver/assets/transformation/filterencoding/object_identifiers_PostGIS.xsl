@@ -21,5 +21,9 @@
 	<xsl:template match="*[local-name(.)='FeatureId']">
         <Statement>"<xsl:value-of select="$attributeIdName" />" = '<xsl:value-of select="@fid" />'</Statement>
 	</xsl:template>
+    
+	<xsl:template match="*[local-name(.)='GmlObjectId']">
+        <Statement>"<xsl:value-of select="$attributeIdName" />" = '<xsl:value-of select="@*[local-name() = 'id']" />'</Statement>
+	</xsl:template>
 
 </xsl:stylesheet>

@@ -73,11 +73,15 @@ class SpatiaLiteTestCase(unittest.TestCase):
         response = self.fs.dispatchRequest(Request(base_path = "", path_info = "", params = {}, request_method = "POST", post_data = '<wfs:GetFeature xmlns:wfs="http://www.opengis.net/wfs" service="WFS" version="1.1.0" xsi:schemaLocation="http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.1.0/wfs.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><wfs:Query typeName="fs_point" srsName="EPSG:4326" /></wfs:GetFeature>'))
         self.assertEqual(response.data.replace("\n", "").replace("\t", ""), self.data_features)
     
+    def test_post_by_gml_id(self):
+        response = self.fs.dispatchRequest(Request(base_path = "", path_info = "", params = {}, request_method = "POST", post_data = '<wfs:GetFeature xmlns:wfs="http://www.opengis.net/wfs" service="WFS" version="1.1.0" xsi:schemaLocation="http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.1.0/wfs.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><wfs:Query typeName="fs_point" srsName="EPSG:4326" /><ogc:Filter xmlns:ogc="http://www.opengis.net/ogc"><ogc:GmlObjectId xmlns:gml="http://www.opengis.net/gml" gml:id="2"/></ogc:Filter></wfs:GetFeature>'))
+        self.assertEqual(response.data.replace("\n", "").replace("\t", ""), self.data_feature_two)
     
-    
+    def test_post_by_feat_id(self):
+        response = self.fs.dispatchRequest(Request(base_path = "", path_info = "", params = {}, request_method = "POST", post_data = '<wfs:GetFeature xmlns:wfs="http://www.opengis.net/wfs" service="WFS" version="1.1.0" xsi:schemaLocation="http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.1.0/wfs.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><wfs:Query typeName="fs_point" srsName="EPSG:4326" /><ogc:Filter xmlns:ogc="http://www.opengis.net/ogc"><ogc:FeatureId fid="2"/></ogc:Filter></wfs:GetFeature>'))
+        self.assertEqual(response.data.replace("\n", "").replace("\t", ""), self.data_feature_two)
     
 
-    
     
     
     def test_sort(self):
