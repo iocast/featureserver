@@ -22,16 +22,12 @@ extra = { }
 if "--debian" in sys.argv:
    extra['data_files']=[('/etc', ['featureserver/assets/config/featureserver.cfg']),
                         ('~/.featureserver/workspace/', ['featureserver/assets/config/workspace.db']),
-                        ('~/.featureserver/templates/', ['featureserver/assets/templates/default-withmap.html',
-                                                         'featureserver/assets/templates/default.html',
-                                                         'featureserver/assets/templates/exception_report.html'])]
+                        ('~/.featureserver/templates/', [])]
    sys.argv.remove("--debian")
 else:
    extra['data_files']=[('config/', ['featureserver/assets/config/featureserver.cfg',
                                                    'featureserver/assets/config/workspace.db']),
-                        ('templates/', ['featureserver/assets/templates/default-withmap.html',
-                                                      'featureserver/assets/templates/default.html',
-                                                      'featureserver/assets/templates/exception_report.html'])]
+                        ('templates/', [])]
 
 setup(name='FeatureServer',
       version='2.0',
