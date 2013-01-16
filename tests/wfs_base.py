@@ -65,6 +65,25 @@ class WFSTestCase(unittest.TestCase):
         response = self.fs.dispatchRequest(Request(base_path = "", path_info = "/wfs/describe.wfs", params = {'typename':'roads,fs_point', 'version':'1.1.0'}))
         self.assertEqual(response.data.replace("\n", "").replace("\t", ""), self.data_describe_feature_types)
     
+    def test_get_describe_feature_type(self):
+        response = self.fs.dispatchRequest(Request(base_path = "", path_info = "", params = {'service':'WFS', 'request':'DescribeFeatureType', 'typename':'roads', 'version':'1.1.0'}))
+        self.assertEqual(response.data.replace("\n", "").replace("\t", ""), self.data_describe_feature_type)
+
+    def test_get_describe_feature_types(self):
+        response = self.fs.dispatchRequest(Request(base_path = "", path_info = "", params = {'service':'WFS','request':'DescribeFeatureType', 'typename':'roads,fs_point', 'version':'1.1.0'}))
+        self.assertEqual(response.data.replace("\n", "").replace("\t", ""), self.data_describe_feature_types)
+    
+    def test_post_describe_feature_type(self):
+        response = self.fs.dispatchRequest(Request(base_path = "", path_info = "", params = {}, request_method = "POST", post_data = '<DescribeFeatureType version="1.1.0" service="WFS" xmlns="http://www.opengis.net/wfs" xmlns:myns="http://www.myserver.com/myns" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/wfs ../wfs/1.1.0/WFS.xsd"><TypeName>roads</TypeName></DescribeFeatureType>'))
+        self.assertEqual(response.data.replace("\n", "").replace("\t", ""), self.data_describe_feature_type)
+    
+    def test_post_describe_feature_types(self):
+        response = self.fs.dispatchRequest(Request(base_path = "", path_info = "", params = {}, request_method = "POST", post_data = '<DescribeFeatureType version="1.1.0" service="WFS" xmlns="http://www.opengis.net/wfs" xmlns:myns="http://www.myserver.com/myns" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/wfs ../wfs/1.1.0/WFS.xsd"><TypeName>roads</TypeName><TypeName>fs_point</TypeName></DescribeFeatureType>'))
+        self.assertEqual(response.data.replace("\n", "").replace("\t", ""), self.data_describe_feature_types)
+
+    
+    
+    
     
     
     @property
