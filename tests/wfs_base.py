@@ -42,9 +42,20 @@ class WFSTestCase(unittest.TestCase):
     def tearDownClass(cls):
         ''' '''
     
+    
     def test_keyword_capabilities(self):
         response = self.fs.dispatchRequest(Request(base_path = "", path_info = "/wfs/capabilities.wfs", params = {'version':'1.1.0'}))
         self.assertEqual(response.data.replace("\n", "").replace("\t", ""), self.data_capability)
+    
+    def test_get_capabilities(self):
+        response = self.fs.dispatchRequest(Request(base_path = "", path_info = "", params = {'version':'1.1.0', 'service':'WFS','request':'GetCapabilities'}))
+        self.assertEqual(response.data.replace("\n", "").replace("\t", ""), self.data_capability)
+    
+    def test_post_capabilities(self):
+        response = self.fs.dispatchRequest(Request(base_path = "", path_info = "", params = {}, request_method = "POST", post_data = '<GetCapabilities service="WFS" xmlns="http://www.opengis.net/wfs" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/wfs ../wfs/1.1.0/WFS.xsd"/>'))
+        self.assertEqual(response.data.replace("\n", "").replace("\t", ""), self.data_capability)
+    
+    
     
     def test_keyword_describe_feature_type(self):
         response = self.fs.dispatchRequest(Request(base_path = "", path_info = "/wfs/roads/describe.wfs", params = {'version':'1.1.0'}))
@@ -53,7 +64,6 @@ class WFSTestCase(unittest.TestCase):
     def test_describe_feature_types(self):
         response = self.fs.dispatchRequest(Request(base_path = "", path_info = "/wfs/describe.wfs", params = {'typename':'roads,fs_point', 'version':'1.1.0'}))
         self.assertEqual(response.data.replace("\n", "").replace("\t", ""), self.data_describe_feature_types)
-    
     
     
     
