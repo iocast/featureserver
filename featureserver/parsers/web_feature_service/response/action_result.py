@@ -37,3 +37,27 @@ class ActionResult(object):
     def get(self, index):
         return self._resources[index]
     
+
+class DeleteResult(ActionResult):
+    
+    def __init__(self, handle):
+        ActionResult.__init__(self, handle)
+        self.type = 'delete'
+
+class InsertResult(ActionResult):
+    
+    def __init__(self, handle):
+        ActionResult.__init__(self, handle)
+        self.type = 'insert'
+
+class UpdateResult(ActionResult):
+    
+    def __init__(self, handle):
+        ActionResult.__init__(self, handle)
+        self.type = 'update'
+
+class ReplaceResult(ActionResult):
+    
+    def __init__(self, handle):
+        ActionResult.__init__(self, handle)
+        self.type = 'replace'

@@ -1,6 +1,6 @@
 
 from OutputFormat import OutputFormat
-from ..parsers.WebFeatureService.Response.TransactionResponse import TransactionResponse
+from ..parsers.web_feature_service.response.transaction import TransactionResponse
 
 from ..vectorformats.wfs import WFS as WFSFormat
 

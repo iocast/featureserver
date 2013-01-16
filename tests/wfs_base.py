@@ -18,6 +18,7 @@ class WFSTestCase(unittest.TestCase):
     def setUpClass(cls):
         cls._fs = Server({
                          'roads' : GeoAlchemy('roads', **{
+                                              'type':'GeoAlchemy',
                                               'model': 'tests.model_geoalchemy',
                                               'dburi': 'postgres://michel@localhost/featureserver',
                                               'cls': 'Road',
@@ -25,6 +26,7 @@ class WFSTestCase(unittest.TestCase):
                                               'geometry': 'geom'
                                                }),
                          'fs_point' : PostGIS('fs_point', **{
+                                              'type':'PostGIS',
                                               'dsn' : 'host=localhost dbname=featureserver user=michel',
                                               'layer' : 'fs_point',
                                               'fid' : 'id',

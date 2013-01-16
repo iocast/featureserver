@@ -1,14 +1,37 @@
 '''
-Created on Oct 21, 2011
+    Created on Oct 21, 2011
+    
+    @author: michel
+    '''
 
-@author: michel
-'''
-from TransactionSummary import TransactionSummary
+from action_result import InsertResult, UpdateResult, DeleteResult, ReplaceResult
 
-from InsertResult import InsertResult
-from UpdateResult import UpdateResult
-from DeleteResult import DeleteResult
-from ReplaceResult import ReplaceResult
+class TransactionSummary(object):
+    
+    def __init__(self):
+        self.totalInserted = 0
+        self.totalDeleted = 0
+        self.totalUpdated = 0
+        self.totalReplaced = 0
+    
+    def increaseInserted(self, amount = 1):
+        self.totalInserted += amount
+    def increaseDeleted(self, amount = 1):
+        self.totalDeleted += amount
+    def increaseUpdated(self, amount = 1):
+        self.totalUpdated += amount
+    def increaseReplaced(self, amount = 1):
+        self.totalReplaced += amount
+    
+    def getTotalInserted(self):
+        return self.totalInserted
+    def getTotalDeleted(self):
+        return self.totalDeleted
+    def getTotalUpdated(self):
+        return self.totalUpdated
+    def getTotalReplaced(self):
+        return self.totalReplaced
+
 
 class TransactionResponse(object):
     
@@ -35,7 +58,7 @@ class TransactionResponse(object):
             self.addDeleteResult(actionResult)
         elif type(actionResult) is ReplaceResult:
             self.addReplaceResult(actionResult)
-        
+    
     
     def addInsertResult(self, insertResult):
         self.insertResults.append(insertResult)
@@ -44,7 +67,7 @@ class TransactionResponse(object):
     def getInsertResults(self):
         return self.insertResults
     
-
+    
     def addUpdateResult(self, updateResult):
         self.updateResults.append(updateResult)
         self.getSummary().increaseUpdated()
@@ -52,7 +75,7 @@ class TransactionResponse(object):
     def getUpdateResults(self):
         return self.updateResults
     
-
+    
     def addReplaceResult(self, replaceResult):
         self.replaceResults.append(replaceResult)
         self.getSummary().increaseReplaced()
@@ -67,4 +90,5 @@ class TransactionResponse(object):
     
     def getDeleteResults(self):
         return self.deleteResults
+
 

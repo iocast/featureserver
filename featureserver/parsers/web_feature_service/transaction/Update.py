@@ -7,7 +7,7 @@ import os, re
 from lxml import etree
 
 from TransactionAction import TransactionAction
-from FeatureServer.WebRequest.Actions.Update import Update as UpdateResult
+from featureserver.web_request.actions import Update as UpdateResult
 
 class Update(TransactionAction, UpdateResult):
     

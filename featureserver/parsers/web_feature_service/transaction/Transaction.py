@@ -8,7 +8,8 @@ import sys
 from lxml import etree
 from lxml import objectify
 from copy import deepcopy
-from TransactionAction import TransactionAction
+
+from .TransactionAction import TransactionAction
 
 class Transaction(object):
     ''' parses the whole transaction '''

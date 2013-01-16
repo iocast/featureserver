@@ -17,6 +17,7 @@ class PostGISTestCase(unittest.TestCase):
     def setUpClass(cls):
         cls._fs = Server({
                          'fs_point' : PostGIS('fs_point', **{
+                                              'type': 'PostGIS',
                                               'dsn' : 'host=localhost dbname=featureserver user=michel',
                                               'layer' : 'fs_point',
                                               'fid' : 'id',

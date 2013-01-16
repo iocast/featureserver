@@ -6,8 +6,8 @@ Created on Oct 16, 2011
 import os, re
 from lxml import etree
 
-from TransactionAction import TransactionAction
-from FeatureServer.WebRequest.Actions.Delete import Delete as DeleteAction
+from .TransactionAction import TransactionAction
+from featureserver.web_request.actions import Delete as DeleteAction
 
 class Delete(TransactionAction, DeleteAction):
     

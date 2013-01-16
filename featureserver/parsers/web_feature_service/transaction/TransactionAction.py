@@ -7,8 +7,8 @@ import os, re
 from lxml import etree
 from copy import deepcopy
 
-from ..FilterEncoding.FilterEncoding import FilterEncoding
-from ..FilterEncoding.FilterResources import FilterResources
+from ..filter_encoding.filter_encoding import FilterEncoding
+from ..filter_encoding.filter_resources import FilterResources
 
 class TransactionAction(object):
     ''' represents a <wfs:Insert/>, <wfs:Update/> or <wfs:Delete/> '''

@@ -22,15 +22,14 @@ class GeoAlchemyTestCase(unittest.TestCase):
     def setUpClass(cls):
         metadata.create_all()
         
-        params = {
-            'model': 'tests.model_geoalchemy',
-            'dburi': 'postgres://michel@localhost/featureserver',
-            'cls': 'Road',
-            'fid': 'id',
-            'geometry': 'geom'
-        }
-        
-        ds = GeoAlchemy('roads', **params)
+        ds = GeoAlchemy('roads', **{
+                        'type': 'GeoAlchemy',
+                        'model': 'tests.model_geoalchemy',
+                        'dburi': 'postgres://michel@localhost/featureserver',
+                        'cls': 'Road',
+                        'fid': 'id',
+                        'geometry': 'geom'
+                        })
         cls._fs = Server({'roads': ds})
     
     @classmethod

@@ -10,10 +10,7 @@ from DataSource import DataSource
 from vectorformats.feature import Feature
 from vectorformats.formats import wkt
 
-from ..parsers.WebFeatureService.Response.InsertResult import InsertResult
-from ..parsers.WebFeatureService.Response.UpdateResult import UpdateResult
-from ..parsers.WebFeatureService.Response.DeleteResult import DeleteResult
-from ..parsers.WebFeatureService.Response.ReplaceResult import ReplaceResult
+from ..parsers.web_feature_service.response.action_result import InsertResult, UpdateResult, DeleteResult, ReplaceResult
 
 from ..exceptions.syntax import SyntaxException
 from ..exceptions.datasource import ConnectionException, PredicateNotFoundException

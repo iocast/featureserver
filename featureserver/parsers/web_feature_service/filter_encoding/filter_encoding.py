@@ -4,10 +4,8 @@ Created on Apr 5, 2011
 @author: michel
 '''
 
-import os
-import sys
-from lxml import etree
-from lxml import objectify
+import os, sys
+from lxml import etree, objectify
 
 class FilterEncoding (object):
     ''' parses a single <Filter/> node '''
@@ -69,10 +67,10 @@ class FilterEncoding (object):
     def getFilterInstance(self, node):
         try:
             sys.path.append(os.path.dirname(os.path.abspath(__file__)))
-            sys.path.append(os.path.dirname(os.path.abspath(__file__))+"/ComparisonOperators")
-            sys.path.append(os.path.dirname(os.path.abspath(__file__))+"/LogicalOperators")
-            sys.path.append(os.path.dirname(os.path.abspath(__file__))+"/ObjectIdentifiers")
-            sys.path.append(os.path.dirname(os.path.abspath(__file__))+"/SpatialOperators")
+            sys.path.append(os.path.dirname(os.path.abspath(__file__))+"/comparison_operators")
+            sys.path.append(os.path.dirname(os.path.abspath(__file__))+"/logical_operators")
+            sys.path.append(os.path.dirname(os.path.abspath(__file__))+"/object_identifiers")
+            sys.path.append(os.path.dirname(os.path.abspath(__file__))+"/spatial_operators")
             operator_module = __import__(str(node.xpath('local-name()')), globals(), locals())
         except ImportError:
             raise Exception("Could not find filter for %s" % node.xpath('local-name()'))

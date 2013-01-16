@@ -14,9 +14,8 @@ from .web_request.request import Request
 from lxml import etree
 import cgi as cgimod
 
-from .parsers.WebFeatureService.Response.TransactionResponse import TransactionResponse
-from .parsers.WebFeatureService.Response.TransactionSummary import TransactionSummary
-from .parsers.WebFeatureService.Response.ActionResult import ActionResult
+from .parsers.web_feature_service.response.transaction import TransactionResponse, TransactionSummary
+from .parsers.web_feature_service.response.action_result import ActionResult
 
 from .workspace.filesystem import FileHandler
 

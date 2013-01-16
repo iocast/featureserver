@@ -1,7 +1,7 @@
 
 from wfs import WFS
 from ..exceptions.syntax import MissingParameterException
-from ..parsers.WFS_V1_Parser import WFS_V1_Parser
+from ..parsers.wfs_parser import WFS_V1_Parser
 
 class WFS_V1(WFS):
     ''' implements WFS version 1.1.0 specification '''

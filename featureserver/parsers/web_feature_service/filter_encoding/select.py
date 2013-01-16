@@ -3,7 +3,7 @@ Created on Dec 10, 2011
 
 @author: michel
 '''
-from FilterEncoding import FilterEncoding
+from .filter_encoding import FilterEncoding
 from featureserver.web_request.actions import Select as SelectRequest
 
 class Select(SelectRequest):

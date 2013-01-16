@@ -5,7 +5,7 @@ Created on Apr 5, 2011
 '''
 import os
 from lxml import etree
-from ..Operator import Operator
+from featureserver.parsers.web_feature_service.filter_encoding.operator import Operator
 
 class SpatialOperator(Operator):
     def __init__(self, node):
