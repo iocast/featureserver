@@ -108,7 +108,7 @@ class FilterEncoding (object):
 
     def getAttributes(self, service):
         ''' returns the attributes of a <ogc:Filter/> node '''
-        from FilterAttributes import FilterAttributes
+        from filter import FilterAttributes
         filter = FilterAttributes(self.dom)
         return filter.render(service=service)
 
