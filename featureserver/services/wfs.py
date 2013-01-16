@@ -91,8 +91,8 @@ class WFS(Service):
         if self.request.params.has_key('request'):
             self._operation = self.request.params['request']
     
-        # check file name
-        if len(self.request.path) > 1:
+        # check file name (first parameter is serice name e.g. featureserver.org/wfs/features...)
+        if len(self.request.path) > 2:
             path_pieces = self.request.path[-1].split(".")
             if len(path_pieces) > 0:
                 # file name is a keyword
