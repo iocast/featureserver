@@ -64,6 +64,10 @@ class SpatiaLiteTestCase(unittest.TestCase):
         response = self.fs.dispatchRequest(Request(base_path = "", path_info = "/wfs/fs_point/2.wfs", params = {'version':'1.1.0'}))
         self.assertEqual(response.data.replace("\n", "").replace("\t", ""), self.data_feature_two)
     
+    def test_get_features(self):
+        response = self.fs.dispatchRequest(Request(base_path = "", path_info = "/wfs", params = {'version':'1.1.0', 'request':'GetFeature', 'typename':'fs_point'}))
+        self.assertEqual(response.data.replace("\n", "").replace("\t", ""), self.data_features)    
+    
     def test_sort(self):
         response = self.fs.dispatchRequest(Request(base_path = "", path_info = "", params = {
                                                    'version':'1.1.0',
