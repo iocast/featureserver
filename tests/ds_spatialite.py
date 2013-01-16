@@ -70,8 +70,8 @@ class SpatiaLiteTestCase(unittest.TestCase):
         self.assertEqual(response.data.replace("\n", "").replace("\t", ""), self.data_features)
     
     def test_post_features(self):
-        response = self.fs.dispatchRequest(Request(base_path = "", path_info = "", params = {}, request_method = "POST", post_data = '<wfs:GetFeature xmlns:wfs="http://www.opengis.net/wfs" service="WFS" version="1.1.0" xsi:schemaLocation="http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.1.0/wfs.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><wfs:Query typeName="fs_point" srsName="EPSG:4326" xmlns:feature="http://featureserver.org/fs"><wfs:PropertyName>url</wfs:PropertyName><wfs:PropertyName>street</wfs:PropertyName><wfs:PropertyName>name</wfs:PropertyName><ogc:Filter xmlns:ogc="http://www.opengis.net/ogc"><ogc:BBOX><ogc:PropertyName>geometry</ogc:PropertyName><gml:Envelope xmlns:gml="http://www.opengis.net/gml" srsName="EPSG:4326"><gml:lowerCorner>1.7969082858066 44.555248132086</gml:lowerCorner><gml:upperCorner>14.650912192056 49.065808099499</gml:upperCorner></gml:Envelope></ogc:BBOX></ogc:Filter></wfs:Query></wfs:GetFeature>'))
-        self.assertEqual(response.data.replace("\n", "").replace("\t", ""), '')
+        response = self.fs.dispatchRequest(Request(base_path = "", path_info = "", params = {}, request_method = "POST", post_data = '<wfs:GetFeature xmlns:wfs="http://www.opengis.net/wfs" service="WFS" version="1.1.0" xsi:schemaLocation="http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.1.0/wfs.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><wfs:Query typeName="fs_point" srsName="EPSG:4326" /></wfs:GetFeature>'))
+        self.assertEqual(response.data.replace("\n", "").replace("\t", ""), self.data_features)
     
     
     

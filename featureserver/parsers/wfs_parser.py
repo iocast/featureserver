@@ -84,7 +84,14 @@ class WFS_V1_Parser(WFSParser):
                 # TODO: maybe loop over self.service.datasources instead of dom
                 queries = self.service.request.post_xml.xpath("/*[local-name() = 'GetFeature']/*[local-name() = 'Query'][@typeName]")
                 for query in queries:
-                    self.add_action(self.parse_filter(datasource=self.service.request.server.datasources[query.attrib['typeName']], dom=deepcopy(query.xpath("./*[local-name() = 'Filter']")[0]), properties=self.parse_query_property_names(deepcopy(query))))
+                    # check if query as a filter node
+                    filters = self.service.request.post_xml.xpath("./*[local-name() = 'Filter']")
+                    if len(filters) > 0:
+                        # filter child node found
+                        self.add_action(self.parse_filter(datasource=self.service.request.server.datasources[query.attrib['typeName']], dom=deepcopy(filters[0]), properties=self.parse_query_property_names(deepcopy(query))))
+                    else:
+                        self.add_action(self.parse_without_filter(datasource=self.service.request.server.datasources[query.attrib['typeName']]))
+                    
             
             elif self.service.operation == "Transaction":
                 # Transaction is only in POST mode possible
