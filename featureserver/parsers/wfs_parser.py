@@ -8,7 +8,7 @@ from lxml import etree, objectify
 from copy import deepcopy
 
 from parser import Parser
-from ..web_request.operators import Constraint, Sort
+from ..web_request.operators import Constraint, Sort, BoundingBox
 
 
 from .web_feature_service.filter_encoding.select import Select
@@ -57,8 +57,13 @@ class WFSParser(Parser):
                         if query == attribute:
                             constraints.append(Constraint(attribute=attribute, value=self.service.request.params[key], operator=operator))
         
+        if "bbox" in self.service.request.params:
+            values = map(float, self.service.request.params['bbox'].split(","))
+            constraints.append(BoundingBox(values))
+        
+        
         return constraints
-
+    
     def parse_sort(self):
         sort_list = []
         
