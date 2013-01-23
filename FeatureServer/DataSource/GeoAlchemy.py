@@ -64,8 +64,10 @@ class GeoAlchemy (DataSource):
             return self.query_operators[operator_name](key,value)
 
     def bbox2wkt(self, bbox):
-        return "POLYGON((%s %s, %s %s, %s %s, %s %s, %s %s))" % (bbox[1],
-        bbox[0],bbox[1],bbox[2],bbox[3],bbox[2],bbox[3],bbox[0],bbox[1],bbox[0])
+        #return "POLYGON((%s %s, %s %s, %s %s, %s %s, %s %s))" % (bbox[1], bbox[0],bbox[1],bbox[2],bbox[3],bbox[2],bbox[3],bbox[0],bbox[1],bbox[0])
+        return "POLYGON((%s %s, %s %s, %s %s, %s %s, %s %s))" % (bbox[0], bbox[1],bbox[0],bbox[3],bbox[2],bbox[3],bbox[2],bbox[1],bbox[0],bbox[1])
+    
+    
 
     def begin (self):
         pass
@@ -164,11 +166,14 @@ class GeoAlchemy (DataSource):
                     geom_element = getattr(geom_cls, self.geom_col)
                 else:
                     geom_element = getattr(cls, self.geom_col)
+                        
                 query = query.filter(geom_element.intersects(
-                    self.session.scalar(func.GeomFromText(
+                    self.session.scalar(func.ST_GeomFromText(
                         self.bbox2wkt(action.bbox), self.srid)
                     )
                 ))
+                
+
             if self.order:
                 query = query.order_by(getattr(cls, self.order))
             if action.maxfeatures:
@@ -177,8 +182,9 @@ class GeoAlchemy (DataSource):
                 query.limit(1000)
             if action.startfeature:
                 query.offset(action.startfeature)
-            
+
             result = query.all()
+            
 
         features = []
         for row_tuple in result:
