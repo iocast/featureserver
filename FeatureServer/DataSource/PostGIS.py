@@ -40,7 +40,8 @@ class PostGIS (DataSource):
 
     query_action_sql = {'lt': '<', 'gt': '>', 
                         'ilike': 'ilike', 'like':'like',
-                        'gte': '>=', 'lte': '<='}
+                        'gte': '>=', 'lte': '<=',
+                        'eq': '='}
      
     def __init__(self, name, srid = 4326, srid_out = 4326, fid = "gid", geometry = "the_geom", fe_attributes = 'true', order = "", attribute_cols = '*', writable = True, encoding = "utf-8", hstore = 'false', hstore_attr = "", **args):
         DataSource.__init__(self, name, **args)
@@ -116,7 +117,7 @@ class PostGIS (DataSource):
                 else:
                     predicates.append("%s = %s" % pair)
         if feature.geometry and feature.geometry.has_key("coordinates"):
-            predicates.append(" %s = SetSRID('%s'::geometry, %s) " % (self.geom_col, WKT.to_wkt(feature.geometry), self.srid))
+            predicates.append(" %s = ST_SetSRID('%s'::geometry, %s) " % (self.geom_col, WKT.to_wkt(feature.geometry), self.srid))
         return predicates
 
     def feature_values (self, feature):
@@ -137,7 +138,7 @@ class PostGIS (DataSource):
         if action.feature != None:
             feature = action.feature
             columns = ", ".join(self.column_names(feature)+[self.geom_col])
-            values = ", ".join(self.value_formats(feature)+["SetSRID('%s'::geometry, %s) " % (WKT.to_wkt(feature.geometry), self.srid)])
+            values = ", ".join(self.value_formats(feature)+["ST_SetSRID('%s'::geometry, %s) " % (WKT.to_wkt(feature.geometry), self.srid)])
 
             sql = "INSERT INTO \"%s\" (%s) VALUES (%s)" % (self.table, columns, values)
 
@@ -214,7 +215,7 @@ class PostGIS (DataSource):
         cursor = self.db.cursor()
 
         if action.id is not None:
-            sql = "SELECT AsText(Transform(%s, %d)) as fs_text_geom, " % (self.geom_col, int(self.srid_out))
+            sql = "SELECT ST_AsText(ST_Transform(%s, %d)) as fs_text_geom, " % (self.geom_col, int(self.srid_out))
             
             if hasattr(self, 'version'):
                 sql += "%s as version, " % self.version
@@ -233,7 +234,7 @@ class PostGIS (DataSource):
 
             sql += " FROM \"%s\" WHERE %s = %%(%s)s" % (self.table, self.fid_col, self.fid_col)
             
-            #sql = "SELECT AsText(Transform(%s, %d)) as fs_text_geom, %s as ele, %s as version, \"%s, %s FROM \"%s\" WHERE %s = %%(%s)s" % (
+            #sql = "SELECT ST_AsText(ST_Transform(%s, %d)) as fs_text_geom, %s as ele, %s as version, \"%s, %s FROM \"%s\" WHERE %s = %%(%s)s" % (
             #        self.geom_col, int(self.srid_out), self.ele, self.version, self.fid_col, self.attribute_cols, self.table, self.fid_col, self.fid_col )
 
             cursor.execute(str(sql), {self.fid_col: str(action.id)})
@@ -251,9 +252,9 @@ class PostGIS (DataSource):
                     else:
                         attrs[key] = value
             if action.bbox:
-                filters.append( "%s && Transform(SetSRID('BOX3D(%f %f,%f %f)'::box3d, %s), %s) AND intersects(%s, Transform(SetSRID('BOX3D(%f %f,%f %f)'::box3d, %s), %s))" % (
+                filters.append( "%s && ST_Transform(ST_SetSRID('BOX3D(%f %f,%f %f)'::box3d, %s), %s) AND ST_Intersects(%s, ST_Transform(ST_SetSRID('BOX3D(%f %f,%f %f)'::box3d, %s), %s))" % (
                                         (self.geom_col,) + tuple(action.bbox) + (self.srid_out,) + (self.srid,) + (self.geom_col,) + (tuple(action.bbox) + (self.srid_out,) + (self.srid,))))
-            sql = "SELECT AsText(Transform(%s, %d)) as fs_text_geom, " % (self.geom_col, int(self.srid_out))
+            sql = "SELECT ST_AsText(ST_Transform(%s, %d)) as fs_text_geom, " % (self.geom_col, int(self.srid_out))
             if hasattr(self, 'ele'):
                 sql += "%s as ele, " % self.ele
             if hasattr(self, 'version'):
@@ -281,7 +282,7 @@ class PostGIS (DataSource):
 
             sql += " FROM \"%s\"" % (self.table)
             
-            #sql = "SELECT AsText(Transform(%s, %d)) as fs_text_geom, %s as ele, %s as version, \"%s\", %s FROM \"%s\"" % (self.geom_col, int(self.srid_out), self.ele, self.version, self.fid_col, self.attribute_cols, self.table)
+            #sql = "SELECT ST_AsText(Transform(%s, %d)) as fs_text_geom, %s as ele, %s as version, \"%s\", %s FROM \"%s\"" % (self.geom_col, int(self.srid_out), self.ele, self.version, self.fid_col, self.attribute_cols, self.table)
             if filters:
                 sql += " WHERE " + " AND ".join(filters)
             if action.wfsrequest:
