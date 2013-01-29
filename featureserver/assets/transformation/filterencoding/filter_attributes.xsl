@@ -7,7 +7,7 @@
     
 	<xsl:template match="/">
 		<Attributes>
-			<xsl:apply-templates select="//*[local-name(.) = 'PropertyName']" />, <xsl:apply-templates select="//*[local-name(.) = 'ValueReference']" />
+			<xsl:apply-templates select="//*[local-name(.) = 'PropertyName']" />,<xsl:apply-templates select="//*[local-name(.) = 'ValueReference']" />
 		</Attributes>
 	</xsl:template>
     

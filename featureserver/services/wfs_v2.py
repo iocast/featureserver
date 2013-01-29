@@ -45,7 +45,7 @@ class WFS_V2(WFS):
         
         if len(self.datasources) == 0:
             raise MissingParameterException(locator = "Service/" + self.__class__.__name__, parameter = "typeNames")
-
+        
     def create_parser(self):
         return WFS_V2_Parser(self)
     

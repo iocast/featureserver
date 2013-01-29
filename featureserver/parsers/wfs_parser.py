@@ -189,80 +189,97 @@ class WFS_V2_Parser(WFSParser):
         super(WFS_V2_Parser, self).__init__(service)
     
     def parse(self):
-        try:
-            # try to parse post data:
-            parser = objectify.makeparser(remove_blank_text=True, ns_clean=True)
-            dom = etree.XML(self.service.request.post_data, parser=parser)
-            
-            if len(dom.xpath("/*[local-name() = 'GetFeature']")) > 0:
-                print "POST Query"
-                queries = dom.xpath("/*[local-name() = 'GetFeature']/*[local-name() = 'Query'][@typeNames]")
-                
+        # POST data is set as filter
+        if self.service.request.post_xml is not None:
+            if self.service.operation == "GetFeature":
+                # TODO: maybe loop over self.service.datasources instead of dom
+                queries = self.service.request.post_xml.xpath("/*[local-name() = 'GetFeature']/*[local-name() = 'Query'][@typeNames]")
                 for query in queries:
-                    typenames = query.attrib['typeNames'].split(" ")
-                    if len(typenames) == 1:
-                        self.actions.append(self.parse_filter(datasource=self.service.request.server.datasources[typenames[0]], dom=deepcopy(query.xpath("./*[local-name() = 'Filter']")[0]), properties=self.parse_query_property_names(deepcopy(query))))
-                    elif len(typenames) > 1:
-                        #TODO: join query
-                        print("join query")
+                    # check if query as a filter node
+                    filters = self.service.request.post_xml.xpath("./*[local-name() = 'Filter']")
+                    if len(filters) > 0:
+                        # filter child node found
+                        self.add_action(self.parse_filter(datasource=self.service.request.server.datasources[query.attrib['typeName']], dom=deepcopy(filters[0]), properties=self.parse_query_property_names(deepcopy(query))))
+                    else:
+                        self.add_action(self.parse_without_filter(datasource=self.service.request.server.datasources[query.attrib['typeName']]))
             
             
-            elif len(dom.xpath("/*[local-name() = 'Transaction']")) > 0:
-                print "POST Transaction"
+            elif self.service.operation == "Transaction":
                 # Transaction is only in POST mode possible
                 # TODO: raise exception if request.type is not 'transaction'
                 
                 # WFS transaction can only be handled as a whole
-                self.actions.extend(self.parse_transaction(dom))
+                self.add_actions(self.parse_transaction(self.service.request.post_xml))
         
-        except Exception as e:
-            # try to parse filter parameter(s)
+        
+        # try to parse parameters
+        if self.service.request.params.has_key('typenames'):
             typenames = self.service.request.params['typenames'].split(",")
+            # multiple layers
             if len(typenames) > 1:
-                print "GET more than 1 filter"
                 if self.service.request.params.has_key('filter'):
                     for (i, filter) in enumerate(re.findall(r'\((.*?)\)', self.service.request.params['filter'])):
                         try:
                             parser = objectify.makeparser(remove_blank_text=True, ns_clean=True)
                             dom = etree.XML(filter, parser=parser)
                             
-                            print "    - filter found: " + str(typenames[i])
-                            
-                            self.actions.append(self.parse_filter(datasource=self.service.request.server.datasources[typenames[i]], dom=deepcopy(dom)))
+                            self.add_action(self.parse_filter(datasource=self.service.request.server.datasources[typenames[i]], dom=deepcopy(dom)))
                         except Exception as e:
                             # no filter is set (query all)
-                            print "    - filter not found: " + str(typenames[i])
-                            self.actions.append(self.parse_without_filter(datasource=self.service.request.server.datasources[typenames[i]]))
+                            self.add_action(self.parse_without_filter(datasource=self.service.request.server.datasources[typenames[i]]))
+                
+                # no filter exists. create for each typename a empty filter = query all
                 else:
                     for typename in typenames:
-                        print "    - filter not found: " + str(typename)
-                        self.actions.append(self.parse_without_filter(datasource=self.service.request.server.datasources[typename]))
+                        self.add_action(self.parse_without_filter(datasource=self.service.request.server.datasources[typename]))
             
-            else:
-                try:
-                    print "GET 1 filter"
+            # single layer
+            elif len(typenames) == 1:
+                if self.service.request.params.has_key('filter'):
                     parser = objectify.makeparser(remove_blank_text=True, ns_clean=True)
                     dom = etree.XML(self.service.request.params['filter'], parser=parser)
-                    
-                    self.actions.append(self.parse_filter(datasource=self.service.request.server.datasources[self.service.request.params['typenames']], dom=deepcopy(dom)))
-                except Exception as e:
-                    print "no filter"
-                    # no filter is set (query all)
-                    self.actions.append(self.parse_without_filter(datasource=self.service.request.server.datasources[self.service.request.params['typenames']]))
-    
+                    self.add_action(self.parse_filter(datasource=self.service.request.server.datasources[self.service.request.params['typenames']], dom=deepcopy(dom)))
+                else:
+                    self.add_action(self.parse_without_filter(datasource=self.service.request.server.datasources[self.service.request.params['typenames']]))
+        
+        
+        # check if layer exists in path name
+        if len(self.service.request.path) > 2:
+            
+            # check if file name exists
+            path_pieces = self.service.request.path[-1].split(".")
+            if len(path_pieces) > 0:
+                # file name is a keyword
+                if path_pieces[0].lower() in self.service.supported_keywords.keys():
+                    if self.service.request.params.has_key('filter'):
+                        parser = objectify.makeparser(remove_blank_text=True, ns_clean=True)
+                        dom = etree.XML(self.service.request.params['filter'], parser=parser)
+                        
+                        self.add_action(self.parse_filter(datasource=self.service.request.server.datasources[str(self.service.request.path[2])], dom=deepcopy(dom)))
+                    else:
+                        self.add_action(self.parse_without_filter(datasource=self.service.request.server.datasources[str(self.service.request.path[2])]))
+                
+                # file name is a id
+                else:
+                    self.add_action(self.parse_without_filter(datasource=self.service.request.server.datasources[str(self.service.request.path[2])], ids=[path_pieces[0]]))
+        
+        
+        # TODO: maybee add for all layers in self.service.datasources a 'query all' action
+        else:
+            ''' '''
+        
     
     def parse_query_property_names(self, dom):
         ''' parses <wfs:PropertyName/> in a OGC FE XML '''
-        return [str(property.text) for property in dom.xpath("/*[local-name() = 'Query']/*[local-name() = 'PropertyName']")]
+        return [str(property.text) for property in dom.xpath("/*[local-name() = 'Query']/*[local-name() = 'ValueReference']")]
     
-    def parse_without_filter(self, datasource, properties=[]):
+    def parse_without_filter(self, datasource, properties=[], ids=[]):
         ''' creates a select action which should return all records of a datasource '''
-        import FeatureServer.WebRequest.Actions.Select
-        return FeatureServer.WebRequest.Actions.Select.Select(datasource=datasource)
+        return Select(datasource=datasource, data=None, service=self.service, ids=ids, attributes=properties, constraints=self.parse_constraints(), sort=self.parse_sort())
     
     def parse_filter(self, datasource, dom, properties=[]):
         ''' parses a OGC <wfs:Filter/> tag '''
-        return Select(datasource=datasource, data=etree.tostring(dom), properties=properties, service=self.service)
+        return Select(datasource=datasource, data=etree.tostring(dom), service=self.service, attributes=properties, constraints=self.parse_constraints(), sort=self.parse_sort())
     
     def parse_transaction(self, dom):
         ''' parses the whole <wfs:Transaction/> and returns a list of actions '''

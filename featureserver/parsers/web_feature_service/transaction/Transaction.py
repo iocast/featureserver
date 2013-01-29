@@ -65,7 +65,6 @@ class Transaction(object):
         self._tree = transaction
             
     def getTransactionInstance(self, transaction, typename, node):
-        print ">>> transaction: " + typename
         try:
             sys.path.append(os.path.dirname(os.path.abspath(__file__)))
             transaction_module = __import__(transaction, globals(), locals())
