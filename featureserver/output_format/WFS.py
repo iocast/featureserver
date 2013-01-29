@@ -45,7 +45,7 @@ class WFS(OutputFormat):
         summary = response.summary
         result = """<?xml version="1.0" encoding="UTF-8"?>
             <wfs:TransactionResponse version="1.1.0"
-            xsi:schemaLocation='http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.0.0/WFS-transaction.xsd'
+            xsi:schemaLocation="http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.0.0/WFS-transaction.xsd"
             xmlns:og="http://opengeo.org"
             xmlns:ogc="http://www.opengis.net/ogc"
             xmlns:tiger="http://www.census.gov"

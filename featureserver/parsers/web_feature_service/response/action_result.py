@@ -8,7 +8,7 @@ class ActionResult(object):
     
     def __init__(self, handle):
         '''
-            hande : String
+            hande : String (The purpose of the handle attribute is to allow a client application to associate a mnemonic name with a request for error handling purposes. If a handle is specified, and an exception is encountered, a Web Feature Service may use the handle to identify the offending element.)
         '''
         self._handle    = handle
         self._resources = []
