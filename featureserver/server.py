@@ -169,7 +169,7 @@ class Server (object):
 
         
         transactions = TransactionResponse()
-        transactions.setSummary(TransactionSummary())
+        transactions.summary = TransactionSummary()
         
         try:
             # handle normal actions on the datasource
@@ -184,7 +184,7 @@ class Server (object):
                     result = method(action)
                     
                     if isinstance(result, ActionResult):
-                        transactions.addResult(result)
+                        transactions.add(result)
                     elif result is not None:
                         response += result
             
@@ -206,7 +206,7 @@ class Server (object):
         if exceptions.has_exceptions():
             return self.respond_report(report=exceptions, service=request.service)
 
-        if transactions.summary.totalDeleted > 0 or transactions.summary.totalInserted > 0 or transactions.summary.totalUpdated > 0 or transactions.summary.totalReplaced > 0:
+        if transactions.summary.deletes > 0 or transactions.summary.inserts > 0 or transactions.summary.updates > 0 or transactions.summary.replaces > 0:
             response = transactions
 
         return self.respond_service(response=response, service=request.service)

@@ -103,7 +103,7 @@ class WFS_V1_Parser(WFSParser):
                 # TODO: raise exception if request.type is not 'transaction'
                 
                 # WFS transaction can only be handled as a whole
-                self.add_actions(self.parse_transaction(dom))
+                self.add_actions(self.parse_transaction(self.service.request.post_xml))
         
         
         # try to parse parameters

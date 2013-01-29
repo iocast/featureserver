@@ -9,86 +9,85 @@ from action_result import InsertResult, UpdateResult, DeleteResult, ReplaceResul
 class TransactionSummary(object):
     
     def __init__(self):
-        self.totalInserted = 0
-        self.totalDeleted = 0
-        self.totalUpdated = 0
-        self.totalReplaced = 0
+        self._inserts = 0
+        self._deletes = 0
+        self._updates = 0
+        self._replaces = 0
     
-    def increaseInserted(self, amount = 1):
-        self.totalInserted += amount
-    def increaseDeleted(self, amount = 1):
-        self.totalDeleted += amount
-    def increaseUpdated(self, amount = 1):
-        self.totalUpdated += amount
-    def increaseReplaced(self, amount = 1):
-        self.totalReplaced += amount
+    def increase_inserts(self, amount = 1):
+        self._inserts += amount
+    def increase_deletes(self, amount = 1):
+        self._deletes += amount
+    def increase_updates(self, amount = 1):
+        self._updates += amount
+    def increase_replaces(self, amount = 1):
+        self._replaces += amount
     
-    def getTotalInserted(self):
-        return self.totalInserted
-    def getTotalDeleted(self):
-        return self.totalDeleted
-    def getTotalUpdated(self):
-        return self.totalUpdated
-    def getTotalReplaced(self):
-        return self.totalReplaced
-
+    @property
+    def inserts(self):
+        return self._inserts
+    @property
+    def deletes(self):
+        return self._deletes
+    @property
+    def updates(self):
+        return self._updates
+    @property
+    def replaces(self):
+        return self._replaces
+    
 
 class TransactionResponse(object):
     
     def __init__(self):
-        self.summary = None
-        self.insertResults = []
-        self.updateResults = []
-        self.replaceResults = []
-        self.deleteResults = []
-        self.version = '2.0.0'
+        self._summary = None
+        self._inserts = []
+        self._updates = []
+        self._replaces = []
+        self._deletes = []
+        self._version = '2.0.0'
     
-    def setSummary(self, summary):
-        self.summary = summary
-    
-    def getSummary(self):
-        return self.summary
-    
-    def addResult(self, actionResult):
-        if type(actionResult) is InsertResult:
-            self.addInsertResult(actionResult)
-        elif type(actionResult) is UpdateResult:
-            self.addUpdateResult(actionResult)
-        elif type(actionResult) is DeleteResult:
-            self.addDeleteResult(actionResult)
+    def add(self, action_result):
+        if type(action_result) is InsertResult:
+            self.add_insert(action_result)
+        elif type(action_result) is UpdateResult:
+            self.add_update(action_result)
+        elif type(action_result) is DeleteResult:
+            self.add_delete(action_result)
         elif type(actionResult) is ReplaceResult:
-            self.addReplaceResult(actionResult)
+            self.add_replace(action_result)
     
-    
-    def addInsertResult(self, insertResult):
-        self.insertResults.append(insertResult)
-        self.getSummary().increaseInserted()
-    
-    def getInsertResults(self):
-        return self.insertResults
-    
-    
-    def addUpdateResult(self, updateResult):
-        self.updateResults.append(updateResult)
-        self.getSummary().increaseUpdated()
-    
-    def getUpdateResults(self):
-        return self.updateResults
-    
-    
-    def addReplaceResult(self, replaceResult):
-        self.replaceResults.append(replaceResult)
-        self.getSummary().increaseReplaced()
-    
-    def getReplaceResults(self):
-        return self.replaceResults
-    
-    
-    def addDeleteResult(self, deleteResult):
-        self.deleteResults.append(deleteResult)
-        self.getSummary().increaseDeleted()
-    
-    def getDeleteResults(self):
-        return self.deleteResults
+    @property
+    def summary(self):
+        return self._summary
+    @summary.setter
+    def summary(self, summary):
+        self._summary = summary
 
+    @property
+    def inserts(self):
+        return self._inserts
+    def add_insert(self, insert):
+        self._inserts.append(insert)
+        self.summary.increase_inserts()
 
+    @property
+    def updates(self):
+        return self._updates
+    def add_update(self, update):
+        self._updates.append(update)
+        self.summary.increase_updates()
+
+    @property
+    def replaces(self):
+        return self._replaces
+    def add_replace(self, replace):
+        self._replaces.append(replace)
+        self.summary.increase_replaces()
+
+    @property
+    def deletes(self):
+        return self._deletes
+    def add_delete(self, delete):
+        self._deletes.append(delete)
+        self.summary.increase_deletes()

@@ -96,7 +96,7 @@ class SpatiaLite (DataSource):
         cursor.execute("SELECT last_insert_rowid()")
         id =  cursor.fetchone()[0]
         
-        result = InsertResult("")
+        result = InsertResult(self.__class__.__name__)
         result.add(id)
                 
         return result
@@ -111,7 +111,7 @@ class SpatiaLite (DataSource):
         except Exception as e:
             raise SyntaxException(locator = self.__class__.__name__, dump = str(e))
         
-        result = UpdateResult("")
+        result = UpdateResult(self.__class__.__name__)
         result.extend(action.ids)
         
         return result
@@ -127,7 +127,7 @@ class SpatiaLite (DataSource):
         except Exception as e:
             raise SyntaxException(locator = self.__class__.__name__, dump = str(e))
         
-        result = DeleteResult("")
+        result = DeleteResult(self.__class__.__name__)
         result.extend(action.ids)
         
         return result

@@ -7,6 +7,9 @@ Created on Oct 21, 2011
 class ActionResult(object):
     
     def __init__(self, handle):
+        '''
+            hande : String
+        '''
         self._handle    = handle
         self._resources = []
         self._index     = 0
