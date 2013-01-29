@@ -85,7 +85,7 @@ class SpatiaLiteTestCase(unittest.TestCase, datasource.Base):
     def test_post_insert_single(self):
         request = Request(base_path = "", path_info = "", params = {}, request_method = "PUT", post_data = '<wfs:Transaction xmlns:wfs="http://www.opengis.net/wfs" service="WFS" version="1.1.0" xsi:schemaLocation="http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.1.0/wfs.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><wfs:Insert><fs_point xmlns:feature="http://example.com/featureserver"><geom><gml:Point xmlns:gml="http://www.opengis.net/gml" srsName="EPSG:4326"><gml:pos>8.65237703580643 47.2491447055323</gml:pos></gml:Point></geom></fs_point></wfs:Insert></wfs:Transaction>')
 
-        transactions = self.ds_dispatch('fs_point', request)
+        transactions = self.ds_process('fs_point', request)
         
         # test WFS resonse summary
         response = self.fs.respond_service(response=transactions, service=request.service)

@@ -8,7 +8,7 @@ class Base(object):
     def fs(self):
         return self._fs
 
-    def ds_dispatch(self, ds_id, request):
+    def ds_process(self, ds_id, request):
         request.parse(self.fs)
         
         transactions = TransactionResponse()
