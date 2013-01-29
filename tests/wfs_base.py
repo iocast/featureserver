@@ -8,7 +8,7 @@ from featureserver.datasource.GeoAlchemy import GeoAlchemy
 from featureserver.datasource.PostGIS import PostGIS
 
 
-class WFSTestCase(unittest.TestCase):
+class WFSBaseTestCase(unittest.TestCase):
     
     @property
     def fs(self):
@@ -105,5 +105,5 @@ class WFSTestCase(unittest.TestCase):
         return '<schema xmlns:fs="http://featureserver.org/fs" xmlns="http://www.w3.org/2001/XMLSchema" xmlns:gml="http://www.opengis.net/gml" targetNamespace="http://featureserver.org/fs" elementFormDefault="qualified" attributeFormDefault="unqualified" version="0.1"><import namespace="http://www.opengis.net/gml" schemaLocation="http://schemas.opengis.net/gml/2.0.0/feature.xsd"/><import schemaLocation="?request=DescribeFeatureType&amp;typeName=roads" namespace="http://featureserver.org/fs"/><import schemaLocation="?request=DescribeFeatureType&amp;typeName=fs_point" namespace="http://featureserver.org/fs"/></schema>'
 
 def test_suite():
-    return unittest.TestLoader().loadTestsFromTestCase(WFSTestCase)
+    return unittest.TestLoader().loadTestsFromTestCase(WFSBaseTestCase)
 
