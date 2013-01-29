@@ -114,10 +114,10 @@ class WFS(OutputFormat):
         
         result += """<wfs:TransactionResult>
             <wfs:Status> """
-
-        if (len(response.inserts) + len(response.updates) + len(response.replaces)) == failedCount:
+        
+        if (len(response.inserts) + len(response.updates) + len(response.replaces) + len(response.deletes)) == failedCount:
             result += "<wfs:FAILED/>"
-        elif (len(response.inserts) + len(response.updates) + len(response.replaces)) > failedCount and failedCount > 0:
+        elif (len(response.inserts) + len(response.updates) + len(response.replaces) + len(response.deletes)) > failedCount and failedCount > 0:
             result += "<wfs:PARTIAL/>"
         else:
             result += "<wfs:SUCCESS/>"
