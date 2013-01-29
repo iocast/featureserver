@@ -55,7 +55,7 @@ class TransactionAction(object):
         # create dummy <ogc:Or/>
         operator = None
         if len(filter_node.getchildren()) > 1:
-            from FeatureServer.Parsers.WebFeatureService.FilterEncoding.LogicalOperators.Or import Or
+            from ..filter_encoding.logical_operators.Or import Or
             operator = Or(etree.XML("<Or></Or>"))
 
         filter_encoding = FilterEncoding(etree.tostring(filter_node))

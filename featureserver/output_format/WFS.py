@@ -102,7 +102,7 @@ class WFS(OutputFormat):
         result += """</wfs:ReplaceResults>"""
         
         result += "<wfs:DeleteResults>"
-        for delete in response.replaces:
+        for delete in response.deletes:
             result += """<wfs:Feature handle="%s">""" % str(delete.handle)
             for id in delete:
                 result += """<ogc:ResourceId fid="%s"/>""" % str(id)

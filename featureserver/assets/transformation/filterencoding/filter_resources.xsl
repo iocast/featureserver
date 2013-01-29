@@ -7,7 +7,7 @@
     
 	<xsl:template match="/">
 		<Resources>
-			<xsl:apply-templates select="//*[local-name(.) = 'ResourceId']" />, <xsl:apply-templates select="//*[local-name(.) = 'FeatureId']" />
+			<xsl:apply-templates select="//*[local-name(.) = 'ResourceId']" />,<xsl:apply-templates select="//*[local-name(.) = 'FeatureId']" />
 		</Resources>
 	</xsl:template>
     
