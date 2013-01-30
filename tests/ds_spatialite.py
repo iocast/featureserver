@@ -267,7 +267,48 @@ class SpatiaLiteWFS200TestCase(SpatiaLiteTestCase):
         self.assertEqual(re.sub(' +', ' ', response.data.replace("\n", "").replace("\t", "")), self.data_update_single_feature)
 
 
+    def test_post_delete_single(self):
+        # delete feature 2
+        request = Request(base_path = "", path_info = "", params = {}, request_method = "PUT", post_data = '<wfs:Transaction xmlns:wfs="http://www.opengis.net/wfs" service="WFS" version="2.0.0" xsi:schemaLocation="http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.1.0/wfs.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ogc="http://www.opengis.net/ogc" xmlns:gml="http://www.opengis.net/gml"><wfs:Delete typeName="fs_point"><ogc:Filter><ogc:ResourceId rid="2"/></ogc:Filter></wfs:Delete></wfs:Transaction>')
+        transactions = self.ds_process('fs_point', request)
+        
+        # test WFS resonse summary
+        response = self.fs.respond_service(response=transactions, service=request.service)
+        self.assertEqual(re.sub(' +', ' ', response.data.replace("\n", "").replace("\t", "")), self.data_delete_single_response)
+        
+        # test if feature is gone from database
+        response = self.fs.dispatchRequest(Request(base_path = "", path_info = "/wfs/fs_point/2.wfs", params = {'version':'2.0.0'}))
+        self.assertEqual(re.sub(' +', ' ', response.data.replace("\n", "").replace("\t", "")), self.data_empty)
 
+
+    def test_post_delete_multiple(self):
+        response = self.fs.dispatchRequest(Request(base_path = "", path_info = "", params = {}, request_method = "PUT", post_data = '<wfs:Transaction xmlns:wfs="http://www.opengis.net/wfs" service="WFS" version="2.0.0" xsi:schemaLocation="http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.1.0/wfs.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ogc="http://www.opengis.net/ogc" xmlns:gml="http://www.opengis.net/gml"><wfs:Delete typeName="fs_point"><ogc:Filter><ogc:ResourceId rid="2"/><ogc:ResourceId rid="4"/></ogc:Filter></wfs:Delete></wfs:Transaction>'))
+        self.assertEqual(re.sub(' +', ' ', response.data.replace("\n", "").replace("\t", "")), self.data_delete_multiple_response)
+    
+    
+    def test_sort(self):
+        response = self.fs.dispatchRequest(Request(base_path = "", path_info = "", params = {
+                                                   'version':'2.0.0',
+                                                   'service':'WFS',
+                                                   'request':'GetFeature',
+                                                   'typenames':'fs_point',
+                                                   'outputformat':'WFS',
+                                                   'sortby':'name_DESC,salary_ASC'
+                                                   }))
+        self.assertEqual(re.sub(' +', ' ', response.data.replace("\n", "").replace("\t", "")), self.data_features_ordered)
+    
+    def test_constraints(self):
+        response = self.fs.dispatchRequest(Request(base_path = "", path_info = "", params = {
+                                                   'version':'2.0.0',
+                                                   'service':'WFS',
+                                                   'request':'GetFeature',
+                                                   'typenames':'fs_point',
+                                                   'outputformat':'WFS',
+                                                   'queryable':'name,salary',
+                                                   'name__like':'ll',
+                                                   'salary__gte':'120000'
+                                                   }))
+        self.assertEqual(re.sub(' +', ' ', response.data.replace("\n", "").replace("\t", "")), self.data_features_queryable)
 
 
 def test_suites():
