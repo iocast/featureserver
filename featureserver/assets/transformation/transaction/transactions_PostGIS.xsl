@@ -109,8 +109,7 @@
                             <xsl:if test="position() &lt; $total">,</xsl:if>
                         </xsl:for-each>
                     </xsl:when>
-                </xsl:choose>
-                
+                </xsl:choose>                
             </xsl:for-each>
             <xsl:if test="//*[local-name() = 'Filter']">
                 WHERE

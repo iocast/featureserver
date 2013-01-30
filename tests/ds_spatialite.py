@@ -237,6 +237,36 @@ class SpatiaLiteWFS200TestCase(SpatiaLiteTestCase):
         response = self.fs.dispatchRequest(Request(base_path = "", path_info = "", params = {}, request_method = "POST", post_data = '<wfs:GetFeature xmlns:wfs="http://www.opengis.net/wfs" service="WFS" version="2.0.0" xsi:schemaLocation="http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.1.0/wfs.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><wfs:Query typeNames="fs_point" srsName="EPSG:4326" /><ogc:Filter xmlns:ogc="http://www.opengis.net/ogc"><ogc:ResourceId rid="2"/></ogc:Filter></wfs:GetFeature>'))
         self.assertEqual(re.sub(' +', ' ', response.data.replace("\n", "").replace("\t", "")), self.data_feature_two)
 
+    def test_post_insert_single(self):
+        request = Request(base_path = "", path_info = "", params = {}, request_method = "PUT", post_data = '<wfs:Transaction xmlns:wfs="http://www.opengis.net/wfs" service="WFS" version="2.0.0" xsi:schemaLocation="http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.1.0/wfs.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><wfs:Insert><fs_point xmlns:feature="http://example.com/featureserver"><geom><gml:Point xmlns:gml="http://www.opengis.net/gml" srsName="EPSG:4326"><gml:pos>8.65237703580643 47.2491447055323</gml:pos></gml:Point></geom></fs_point></wfs:Insert></wfs:Transaction>')
+        transactions = self.ds_process('fs_point', request)
+        
+        # test WFS resonse summary
+        response = self.fs.respond_service(response=transactions, service=request.service)
+        self.assertEqual(re.sub(' +', ' ', response.data.replace("\n", "").replace("\t", "")), self.data_insert_single_response)
+        
+        # test if feature was inserted into database by querying by its id
+        response = self.fs.dispatchRequest(Request(base_path = "", path_info = "/wfs/fs_point/7.wfs", params = {'version':'2.0.0'}))
+        self.assertEqual(re.sub(' +', ' ', response.data.replace("\n", "").replace("\t", "")), self.data_insert_single_feature)
+    
+    
+    def test_post_update_single(self):
+        request = Request(base_path = "", path_info = "", params = {}, request_method = "PUT", post_data = '<wfs:Transaction xmlns:wfs="http://www.opengis.net/wfs" service="WFS" version="2.0.0" xsi:schemaLocation="http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.1.0/wfs.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><wfs:Insert><fs_point xmlns:feature="http://example.com/featureserver"><geom><gml:Point xmlns:gml="http://www.opengis.net/gml" srsName="EPSG:4326"><gml:pos>8.65237703580643 47.2491447055323</gml:pos></gml:Point></geom></fs_point></wfs:Insert></wfs:Transaction>')
+        transactions = self.ds_process('fs_point', request)
+        
+        # update feature recently inserted
+        request = Request(base_path = "", path_info = "", params = {}, request_method = "PUT", post_data = '<wfs:Transaction xmlns:wfs="http://www.opengis.net/wfs" service="WFS" version="2.0.0" xsi:schemaLocation="http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.1.0/wfs.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ogc="http://www.opengis.net/ogc" xmlns:gml="http://www.opengis.net/gml"><wfs:Update typeName="fs_point"><wfs:Property><wfs:ValueReference>name</wfs:ValueReference><wfs:Value>Alfredo</wfs:Value></wfs:Property><wfs:Property><wfs:ValueReference>salary</wfs:ValueReference><wfs:Value>90900</wfs:Value></wfs:Property><ogc:Filter><ogc:FeatureId fid="7"/></ogc:Filter></wfs:Update></wfs:Transaction>')
+        transactions = self.ds_process('fs_point', request)
+        
+        # test WFS resonse summary
+        response = self.fs.respond_service(response=transactions, service=request.service)
+        self.assertEqual(re.sub(' +', ' ', response.data.replace("\n", "").replace("\t", "")), self.data_update_single_response)
+        
+        # test if feature was inserted into database by querying by its id
+        response = self.fs.dispatchRequest(Request(base_path = "", path_info = "/wfs/fs_point/7.wfs", params = {'version':'2.0.0'}))
+        self.assertEqual(re.sub(' +', ' ', response.data.replace("\n", "").replace("\t", "")), self.data_update_single_feature)
+
+
 
 
 
