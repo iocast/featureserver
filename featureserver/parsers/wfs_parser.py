@@ -199,9 +199,9 @@ class WFS_V2_Parser(WFSParser):
                     filters = self.service.request.post_xml.xpath("./*[local-name() = 'Filter']")
                     if len(filters) > 0:
                         # filter child node found
-                        self.add_action(self.parse_filter(datasource=self.service.request.server.datasources[query.attrib['typeName']], dom=deepcopy(filters[0]), properties=self.parse_query_property_names(deepcopy(query))))
+                        self.add_action(self.parse_filter(datasource=self.service.request.server.datasources[query.attrib['typeNames']], dom=deepcopy(filters[0]), properties=self.parse_query_property_names(deepcopy(query))))
                     else:
-                        self.add_action(self.parse_without_filter(datasource=self.service.request.server.datasources[query.attrib['typeName']]))
+                        self.add_action(self.parse_without_filter(datasource=self.service.request.server.datasources[query.attrib['typeNames']]))
             
             
             elif self.service.operation == "Transaction":

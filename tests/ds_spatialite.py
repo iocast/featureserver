@@ -222,6 +222,22 @@ class SpatiaLiteWFS200TestCase(SpatiaLiteTestCase):
         response = self.fs.dispatchRequest(Request(base_path = "", path_info = "/wfs", params = {'version':'2.0.0', 'request':'GetFeature', 'typenames':'fs_point'}))
         self.assertEqual(re.sub(' +', ' ', response.data.replace("\n", "").replace("\t", "")), self.data_features)
 
+    def test_get_bbox(self):
+        response = self.fs.dispatchRequest(Request(base_path = "", path_info = "", params = {'service':'WFS','version':'2.0.0', 'request':'GetFeature', 'typenames':'fs_point', 'bbox':'7.0,46.0,8.0,47.0'}))
+        self.assertEqual(re.sub(' +', ' ', response.data.replace("\n", "").replace("\t", "")), self.data_features_bbox)
+
+    def test_post_features(self):
+        response = self.fs.dispatchRequest(Request(base_path = "", path_info = "", params = {}, request_method = "POST", post_data = '<wfs:GetFeature xmlns:wfs="http://www.opengis.net/wfs" service="WFS" version="2.0.0" xsi:schemaLocation="http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.1.0/wfs.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><wfs:Query typeNames="fs_point" srsName="EPSG:4326" /></wfs:GetFeature>'))
+        self.assertEqual(re.sub(' +', ' ', response.data.replace("\n", "").replace("\t", "")), self.data_features)
+
+    def test_post_by_gml_id(self):
+        ''' could not found in WFS 2.0.0 '''
+
+    def test_post_by_feat_id(self):
+        response = self.fs.dispatchRequest(Request(base_path = "", path_info = "", params = {}, request_method = "POST", post_data = '<wfs:GetFeature xmlns:wfs="http://www.opengis.net/wfs" service="WFS" version="2.0.0" xsi:schemaLocation="http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.1.0/wfs.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><wfs:Query typeNames="fs_point" srsName="EPSG:4326" /><ogc:Filter xmlns:ogc="http://www.opengis.net/ogc"><ogc:ResourceId rid="2"/></ogc:Filter></wfs:GetFeature>'))
+        self.assertEqual(re.sub(' +', ' ', response.data.replace("\n", "").replace("\t", "")), self.data_feature_two)
+
+
 
 
 def test_suites():
