@@ -14,11 +14,12 @@ class Base(object):
         transactions = TransactionResponse()
         transactions.summary = TransactionSummary()
         
-        self.fs.datasources['fs_point'].begin()
+        self.fs.datasources[ds_id].begin()
         for action in request.service.datasources[ds_id]:
             method = getattr(self.fs.datasources[ds_id], action.method)
             result = method(action)
             transactions.add(result)
-
+        self.fs.datasources[ds_id].commit(close=False)
+        
         return transactions
 

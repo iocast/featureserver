@@ -14,6 +14,6 @@ def test_suite():
     suite.addTests(ds_spatialite.test_suites())
     #suite.addTest(ds_geoalchemy.test_suite())
     
-    suite.addTest(ds_postgis.test_suite())
+    suite.addTests(ds_postgis.test_suites())
     
     return suite
