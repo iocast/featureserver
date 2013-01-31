@@ -130,9 +130,7 @@ class PostGISTestCase(unittest.TestCase, datasource.Base):
 
 
 
-
-
-class SpatiaLiteWFS110TestCase(PostGISTestCase):
+class PostGISWFS110TestCase(PostGISTestCase):
     
     def test_keyword_features(self):
         response = self.fs.dispatchRequest(Request(base_path = "", path_info = "/wfs/fs_point/features.wfs", params = {'version':'1.1.0'}))
@@ -229,7 +227,9 @@ class SpatiaLiteWFS110TestCase(PostGISTestCase):
         self.assertEqual(re.sub(' +', ' ', response.data.replace("\n", "").replace("\t", "")), self.data_features_queryable)
 
 
-class SpatiaLiteWFS200TestCase(PostGISTestCase):
+
+
+class PostGISWFS200TestCase(PostGISTestCase):
     def test_keyword_features(self):
         response = self.fs.dispatchRequest(Request(base_path = "", path_info = "/wfs/fs_point/features.wfs", params = {'version':'2.0.0'}))
         self.assertEqual(re.sub(' +', ' ', response.data.replace("\n", "").replace("\t", "")), self.data_features)
@@ -334,6 +334,6 @@ class SpatiaLiteWFS200TestCase(PostGISTestCase):
 
 
 def test_suites():
-    return [unittest.TestLoader().loadTestsFromTestCase(SpatiaLiteWFS110TestCase), unittest.TestLoader().loadTestsFromTestCase(SpatiaLiteWFS200TestCase)]
+    return [unittest.TestLoader().loadTestsFromTestCase(PostGISWFS110TestCase), unittest.TestLoader().loadTestsFromTestCase(PostGISWFS200TestCase)]
 
 
