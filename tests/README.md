@@ -5,7 +5,7 @@
 | ---------- | -------- | --------- | --------- | --- |
 | SpatiaLite | Done | Done | Done | |
 | PostGIS | Done | Done | Done | |
-| PostGISHstore | ~ | ~ | ~ | |
+| PostGISHstore | Done | ~ | ~ | |
 
 
 # Database #

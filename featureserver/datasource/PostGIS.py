@@ -118,7 +118,9 @@ class PostGIS (DataSource):
     
     def update (self, action):
         sql = action.statement
-        
+
+        print sql
+
         cursor = self.db.cursor()
         try:
             cursor.execute(str(sql))
