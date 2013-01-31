@@ -12,7 +12,8 @@ from vectorformats.formats import wkt
 from ..parsers.web_feature_service.response.action_result import InsertResult, UpdateResult, DeleteResult, ReplaceResult
 
 from ..exceptions.wfs import InvalidValueException
-from ..exceptions.datasource import ConnectionException
+from ..exceptions.syntax import SyntaxException
+from ..exceptions.datasource import ConnectionException, PredicateNotFoundException
 
 try:
     import psycopg2 as psycopg
@@ -32,12 +33,13 @@ class PostGIS (DataSource):
     """PostGIS datasource. Setting up the table is beyond the scope of
        FeatureServer."""
     
-    query_action_types = ['lt', 'gt', 'ilike', 'like', 'gte', 'lte']
-
-    query_action_sql = {'lt': '<', 'gt': '>', 
-                        'ilike': 'ilike', 'like':'like',
-                        'gte': '>=', 'lte': '<='}
-     
+    _query_actions  = { 'eq' : '=', 'neq' : '!=',
+                        'lt' : '<', 'gt' : '>',
+                        'gte': '>=', 'lte': '<=',
+                        'like' : 'LIKE',
+                        'bbox' : 'ST_Intersects("{geometry!s}", ST_Transform(ST_MakeEnvelope({bbox[0]:f}, {bbox[1]:f}, {bbox[2]:f}, {bbox[3]:f}, {srs_out:d}), {srs:d}))'
+                        }
+    
     def __init__(self, name, srid = 4326, srid_out = 4326, fid = "gid", geometry = "the_geom", fe_attributes = 'true', order = "", attribute_cols = '*', writable = True, encoding = "utf-8", **kwargs):
         super(PostGIS, self).__init__(name, **kwargs)
         self.table          = kwargs["layer"]
@@ -62,63 +64,36 @@ class PostGIS (DataSource):
         except Exception as e:
             raise ConnectionException(**{'dump':str(e),'layer':self.name,'locator':'PostGIS','code':e.pgcode})
     
-    def commit (self):
+    def commit (self, close=True):
         if self.db:
             if self.writable:
                 self.db.commit()
-            self.db.close()
+            if close:
+                self.close()
 
-    def rollback (self):
+    def rollback (self, close=True):
         if self.db:
             if self.writable and self.db:
                 self.db.rollback()
+            if close:
+                self.close()
+
+    def close (self):
+        if self.db:
             self.db.close()
+    
 
-    def column_names (self, feature):
-        return feature.properties.keys()
-
-    def value_formats (self, feature):
-        values = ["%%(%s)s" % self.getGeometry()]
-        values = []
-        for key, val in feature.properties.items():
-            valtype = type(val).__name__
-            if valtype == "dict":
-                val['pred'] = "%%(%s)s" % (key,)
-                values.append(val)
-            else:
-                fmt     = "%%(%s)s" % (key, )
-                values.append(fmt)
-        return values
-
-    def feature_predicates (self, feature):
-        columns = self.column_names(feature)
-        values  = self.value_formats(feature)
-        predicates = []
-        for pair in zip(columns, values):
-            if pair[0] != self.getGeometry():
-                if isinstance(pair[1], dict):
-                    # Special Query: pair[0] is 'a', pair[1] is {'type', 'pred', 'value'}
-                    # We build a Predicate here, then we replace pair[1] with pair[1] value below
-                    if pair[1].has_key('value'):
-                        predicates.append("%s %s %s" % (pair[1]['column'], 
-                                                        self.query_action_sql[pair[1]['type']],
-                                                        pair[1]['pred']))
-
-                else:
-                    predicates.append("%s = %s" % pair)
-        if feature.geometry and feature.geometry.has_key("coordinates"):
-            predicates.append(" %s = SetSRID('%s'::geometry, %s) " % (self.getGeometry(), wkt.to_wkt(feature.geometry), self.srid))
-        return predicates
-
-    def feature_values (self, feature):
-        props = copy.deepcopy(feature.properties)
-        for key, val in props.iteritems():
-            if type(val) is unicode: ### b/c psycopg1 doesn't quote unicode
-                props[key] = val.encode(self.encoding)
-            if type(val)  is dict:
-                props[key] = val['value']
-        return props
-
+    def get_predicate(self, constraint):
+        if constraint.operator.lower() in self.query_actions:
+            if constraint.operator.lower() == 'like':
+                return "\"" + constraint.attribute + "\" " + self.query_actions[constraint.operator.lower()] + " '%" + constraint.value + "%'"
+            
+            elif constraint.operator.lower() == 'bbox':
+                return self.query_actions['bbox'].format(**{'geometry':self.geom_col, 'bbox':constraint.value, 'srs':self.srid, 'srs_out':self.srid_out})
+        
+            return "\"" + constraint.attribute + "\" " + self.query_actions[constraint.operator.lower()] + " '" + constraint.value + "'"
+        raise PredicateNotFoundException(**{'locator':self.__class__.__name__, 'predicate':constraint.operator})
+    
 
     def id_sequence (self):
         return self.table + "_" + self.fid_col + "_seq"
@@ -205,19 +180,32 @@ class PostGIS (DataSource):
 
         sql += " FROM \"%s\"" % (self.table)
         
-        
+        where = []
         if action.statement is not None:
-            sql += " WHERE " + action.statement
-                    
-        if self.order:
-            sql += " ORDER BY " + self.order
-            
+            where.append(action.statement)
+        
+        for constraint in action.constraints:
+            where.append(self.get_predicate(constraint))
+                
+        for id in action.ids:
+            where.append("\"%s\" = '%s'" % (self.fid_col, str(id)))
+        
+        if len(where) > 0:
+            sql += " WHERE "
+            sql += " AND ".join(where)
+
+        if len(action.sort) > 0:
+            sql += " ORDER BY "
+            for sort in action.sort:
+                sql += "%s %s, " % (sort.attribute, sort.operator)
+            sql = sql[:-2]
+
         try:
             cursor.execute(str(sql))
         except Exception as e:
             if e.pgcode[:2] == errorcodes.CLASS_SYNTAX_ERROR_OR_ACCESS_RULE_VIOLATION:
                 raise InvalidValueException(**{'dump':e.pgerror,'layer':self.name,'locator':'PostGIS'})
-            
+
         result = cursor.fetchall()
         
 

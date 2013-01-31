@@ -75,15 +75,17 @@ class SpatiaLite (DataSource):
         if self._connection:
             self._connection.close()
 
-    def commit(self):
+    def commit(self, close=True):
         if self.writable:
             self._connection.commit()
-        self.close()
+        if close:
+            self.close()
 
-    def rollback(self):
+    def rollback(self, close=True):
         if self.writable and self._connection:
             self._connection.rollback()
-        self.close()
+        if close:
+            self.close()
 
     def insert(self, action):
         sql = action.statement

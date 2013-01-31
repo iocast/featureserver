@@ -28,8 +28,9 @@ class DataSource (object):
         pass
     
     def begin (self): pass
-    def commit (self): pass
-    def rollback (self): pass
+    def commit (self, close=True): pass
+    def rollback (self, close=True): pass
+    def close (self): pass
     
     def getBBOX(self):
         return '0 0 0 0'
