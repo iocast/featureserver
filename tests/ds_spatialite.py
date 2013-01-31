@@ -23,12 +23,12 @@ class SpatiaLiteTestCase(unittest.TestCase, datasource.Base):
     @property
     def table_tuples(self):
         return [
-                "INSERT INTO fs_point ( name, salary, geom ) VALUES ( 'Carrasquillo', 109000, ST_GeomFromText('POINT(8.515048 47.461261)', 4326));",
-                "INSERT INTO fs_point ( name, salary, geom ) VALUES ( 'Fewell', 129000, ST_GeomFromText('POINT(7.581210 47.379493)', 4326));",
-                "INSERT INTO fs_point ( name, salary, geom ) VALUES ( 'Mcmillon', 125000, ST_GeomFromText('POINT(7.383456 46.983736)', 4326));",
-                "INSERT INTO fs_point ( name, salary, geom ) VALUES ( 'Sykes', 112000, ST_GeomFromText('POINT(7.877841 46.384567)', 4326));",
-                "INSERT INTO fs_point ( name, salary, geom ) VALUES ( 'Steger', 130000, ST_GeomFromText('POINT(8.811679 46.788513)', 4326));",
-                "INSERT INTO fs_point ( name, salary, geom ) VALUES ( 'Conroy', 120000, ST_GeomFromText('POINT(8.157992 47.081082)', 4326));",
+                "INSERT INTO fs_point ( name, salary, geom ) VALUES ( 'Carrasquillo', 109000, GeomFromText('POINT(8.515048 47.461261)', 4326));",
+                "INSERT INTO fs_point ( name, salary, geom ) VALUES ( 'Fewell', 129000, GeomFromText('POINT(7.581210 47.379493)', 4326));",
+                "INSERT INTO fs_point ( name, salary, geom ) VALUES ( 'Mcmillon', 125000, GeomFromText('POINT(7.383456 46.983736)', 4326));",
+                "INSERT INTO fs_point ( name, salary, geom ) VALUES ( 'Sykes', 112000, GeomFromText('POINT(7.877841 46.384567)', 4326));",
+                "INSERT INTO fs_point ( name, salary, geom ) VALUES ( 'Steger', 130000, GeomFromText('POINT(8.811679 46.788513)', 4326));",
+                "INSERT INTO fs_point ( name, salary, geom ) VALUES ( 'Conroy', 120000, GeomFromText('POINT(8.157992 47.081082)', 4326));",
         ]
 
     

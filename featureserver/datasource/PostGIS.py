@@ -16,7 +16,6 @@ from ..exceptions.datasource import ConnectionException
 
 try:
     import psycopg2 as psycopg
-    
 except:
     import psycopg
 

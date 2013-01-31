@@ -8,17 +8,16 @@ from geoalchemy.postgis import pg_functions
 
 from datetime import datetime
 
-engine = create_engine('postgres://michel@localhost/featureserver', echo=False)
+engine = create_engine('sqlite:///:memory:', echo=False)
 session = sessionmaker(bind=engine)()
 metadata = MetaData(engine)
 Base = declarative_base(metadata=metadata)
 
-class Road(Base):
-    __tablename__ = 'roads'
+class FSPoint(Base):
+    __tablename__ = 'fs_point'
     id = Column(Integer, primary_key=True)
     name = Column(Unicode, nullable=False)
-    width = Column(Integer)
-    created = Column(DateTime, default=datetime.now())
-    geom = GeometryColumn(LineString(2))
+    salary = Column(Integer)
+    geom = GeometryColumn(Point(2))
 
-GeometryDDL(Road.__table__)
+GeometryDDL(FSPoint.__table__)
