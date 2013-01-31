@@ -1,10 +1,19 @@
 <!-- https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet -->
+# Progress #
+
+| DataSource | Keywords | WFS 1.1.0 | WFS 2.0.0 |
+| ---------- | -------- | --------- | --------- |
+| SpatiaLite | Done | Done | Done |
+| PostGIS | Done | Done | Done |
+
+
 # Database #
 
 ## PostgreSQL
 
-### Setup
+<!--
 psql -h localhost -U michel -d featureserver -c ""
+-->
 
 ```sql
 CREATE DATABASE featureserver OWNER michel ENCODING 'UTF8';
