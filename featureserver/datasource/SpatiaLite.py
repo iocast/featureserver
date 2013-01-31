@@ -25,9 +25,10 @@ class SpatiaLite (DataSource):
     
     _query_actions  = { 'eq' : '=', 'neq' : '!=',
                         'lt': '<', 'gt': '>',
-                        'like' : 'LIKE',
                         'gte': '>=', 'lte': '<=',
-                        'bbox' : 'Intersects(Transform(BuildMBR(%f, %f, %f, %f, %s), %s), geometry)'}
+                        'like' : 'LIKE',
+                        'bbox' : 'Intersects(Transform(BuildMBR({bbox[0]:f}, {bbox[1]:f}, {bbox[2]:f}, {bbox[3]:f}, {srs_out:d}), {srs:d}), {geometry!s})'
+                        }
 
     def __init__(self, name, file, fid = "gid", geometry = "the_geom", fe_attributes = 'true', srid = 4326, srid_out = 4326, encoding = "utf-8", writable = True, attribute_cols = "*", **kwargs):
         DataSource.__init__(self, name, **kwargs)
@@ -57,7 +58,7 @@ class SpatiaLite (DataSource):
                 return "\"" + constraint.attribute + "\" " + self.query_actions[constraint.operator.lower()] + " '%" + constraint.value + "%'"
             
             elif constraint.operator.lower() == 'bbox':
-                return "Intersects(Transform(BuildMBR(%f, %f, %f, %f, %s), %s), %s)" % (tuple(constraint.value) + (self.srid_out,) + (self.srid,) + (self.geom_col,))
+                return self.query_actions['bbox'].format(**{'bbox':constraint.value, 'srs':self.srid, 'srs_out':self.srid_out, 'geometry':self.geom_col})
 
             return "\"" + constraint.attribute + "\" " + self.query_actions[constraint.operator.lower()] + " '" + constraint.value + "'"
         raise PredicateNotFoundException(**{'locator':self.__class__.__name__, 'predicate':constraint.operator})
