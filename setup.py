@@ -60,6 +60,7 @@ setup(name='FeatureServer',
                         'psycopg2>=2.4.5',
                         'GeoAlchemy>=0.7.1',
                         'SQLAlchemy>=0.7.9',
+                        'shortuuid>=0.3',
                         'vectorformats>=0.2'],
       
       test_suite = 'tests.test_suite',
