@@ -125,6 +125,7 @@ class PostGIS (DataSource):
         try:
             cursor.execute(str(sql))
         except Exception as e:
+            print str(e)
             raise SyntaxException(locator = self.__class__.__name__, dump = str(e))
         
         result = UpdateResult("")

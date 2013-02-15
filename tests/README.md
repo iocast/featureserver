@@ -1,4 +1,6 @@
 <!-- https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet -->
+<!-- http://warpedvisions.org/projects/markdown-cheat-sheet/ -->
+<!-- http://support.mashery.com/docs/customizing_your_portal/Markdown_Cheat_Sheet -->
 # Progress #
 
 | DataSource | <a href="http://featureserver.org/api.html#api-rest-keywords" target="_blank">Keywords</a> | WFS 1.1.0 | WFS 2.0.0 | Comments |
