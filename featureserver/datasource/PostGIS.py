@@ -62,7 +62,7 @@ class PostGIS (DataSource):
         try:
             self.db = psycopg.connect(self.dsn)
         except Exception as e:
-            raise ConnectionException(**{'dump':str(e),'layer':self.name,'locator':'PostGIS','code':e.pgcode})
+            raise ConnectionException(**{'dump':str(e),'layer':self.name,'locator':self.__class__.__name__,'code':e.pgcode})
     
     def commit (self, close=True):
         if self.db:
@@ -118,8 +118,6 @@ class PostGIS (DataSource):
     
     def update (self, action):
         sql = action.statement
-
-        print sql
 
         cursor = self.db.cursor()
         try:
@@ -202,12 +200,12 @@ class PostGIS (DataSource):
             for sort in action.sort:
                 sql += "%s %s, " % (sort.attribute, sort.operator)
             sql = sql[:-2]
-
+    
         try:
             cursor.execute(str(sql))
         except Exception as e:
             if e.pgcode[:2] == errorcodes.CLASS_SYNTAX_ERROR_OR_ACCESS_RULE_VIOLATION:
-                raise InvalidValueException(**{'dump':e.pgerror,'layer':self.name,'locator':'PostGIS'})
+                raise InvalidValueException(**{'dump':e.pgerror,'layer':self.name,'locator':self.__class__.__name__})
 
         result = cursor.fetchall()
         

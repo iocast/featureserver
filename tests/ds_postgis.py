@@ -275,7 +275,7 @@ class PostGISWFS200TestCase(PostGISTestCase):
     
     def test_post_update_single(self):
         # update feature 1
-        request = Request(base_path = "", path_info = "", params = {}, request_method = "PUT", post_data = '<wfs:Transaction xmlns:wfs="http://www.opengis.net/wfs" service="WFS" version="2.0.0" xsi:schemaLocation="http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.1.0/wfs.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ogc="http://www.opengis.net/ogc" xmlns:gml="http://www.opengis.net/gml"><wfs:Update typeName="fs_point"><wfs:Property><wfs:ValueReference>name</wfs:ValueReference><wfs:Value>Alfredo</wfs:Value></wfs:Property><wfs:Property><wfs:ValueReference>salary</wfs:ValueReference><wfs:Value>90900</wfs:Value></wfs:Property><ogc:Filter><ogc:FeatureId fid="1"/></ogc:Filter></wfs:Update></wfs:Transaction>')
+        request = Request(base_path = "", path_info = "", params = {}, request_method = "PUT", post_data = '<wfs:Transaction xmlns:wfs="http://www.opengis.net/wfs" service="WFS" version="2.0.0" xsi:schemaLocation="http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.1.0/wfs.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ogc="http://www.opengis.net/ogc" xmlns:gml="http://www.opengis.net/gml"><wfs:Update typeName="fs_point"><wfs:Property><wfs:ValueReference>name</wfs:ValueReference><wfs:Value>Alfredo</wfs:Value></wfs:Property><wfs:Property><wfs:ValueReference>salary</wfs:ValueReference><wfs:Value>90900</wfs:Value></wfs:Property><ogc:Filter><ogc:ResourceId rid="1"/></ogc:Filter></wfs:Update></wfs:Transaction>')
         transactions = self.ds_process('fs_point', request)
         
         # test WFS resonse summary
