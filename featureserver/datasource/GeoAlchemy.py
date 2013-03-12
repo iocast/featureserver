@@ -143,6 +143,12 @@ class GeoAlchemy (DataSource):
         geom_cls = None
         if self.geom_cls:
             geom_cls = getattr(model, self.geom_cls)
+        
+        
+        
+        
+        
+        
         if action.id is not None:
             result = [self.session.query(cls).get(action.id)]
         else:
@@ -178,7 +184,14 @@ class GeoAlchemy (DataSource):
             if action.startfeature:
                 query.offset(action.startfeature)
             result = query.all()
-
+        
+        
+        
+        
+        
+        
+        
+        
         features = []
         for row_tuple in result:
             props = {}
