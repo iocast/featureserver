@@ -4,7 +4,7 @@
 | _/ -_) _` |  _| || | '_/ -_)__ \/ -_) '_\ V / -_) '_|  / / | () |
 |_|\___\__,_|\__|\_,_|_| \___|___/\___|_|  \_/\___|_|   /___(_)__/
 </pre>
-<!-- stop, standard, smslant, small -->
+<!-- http://http://www.network-science.de [stop, standard, smslant, small] -->
 <a href="http://featureserver.org" target="_new">FeatureServer</a> is an implementation of a RESTful Geographic Feature Service. Using standard HTTP methods, you can fetch a representation of a feature or a collection of features, add new data to the service, or delete data from the service. Use it as an aggregator -- post your GeoRSS feeds to it, and then browse them using WFS. Use it as a translator: use the OGR DataSource to load a shapefile and open it in Google Earth.
 
 DataSource (Storage)
