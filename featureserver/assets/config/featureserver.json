@@ -1,0 +1,10 @@
+{
+    "featureserver" : {
+        "services" : ["rest", "wfs"],
+        "datasources" : ["postgis"]
+    },
+    
+    "datasources" : {
+        
+    }
+}
