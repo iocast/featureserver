@@ -1,5 +1,5 @@
 from ConfigParser import ConfigParser
-from featureserver.exceptions import ExceptionReport
+from .errors import ExceptionMiddleware
 
 
 class Application(object):
@@ -12,14 +12,9 @@ class Application(object):
     def services(self):
         return self._config["featureserver"]["services"]
     
-    @property
-    def errors(self):
-        return self._errors
-    
     def __init__(self, config=None):
         super(Application, self).__init__()
         self._config = config
-        self._errors = ExceptionReport()
 
 
 
@@ -50,5 +45,5 @@ def get(config=None):
     main.app.mount(app=wfs.app, prefix=wfs.app.config.prefix)
     
     
-    return main.app
+    return ExceptionMiddleware(main.app)
 
