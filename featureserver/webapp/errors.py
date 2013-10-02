@@ -1,8 +1,10 @@
-from featureserver.exceptions import ExceptionReport
+from vectorformats.exceptions import ExceptionReport
 
 
 def custom500(error):
-    return "your fucked 500 " + str(len(error.exception.report))
+    return str(error.exception.report.encode_exception_report())
+    
+#return "your fucked 500 " + str(len(error.exception.report))
 
 error_handlers = {
     500: custom500,
@@ -15,7 +17,8 @@ class ExceptionWrapper(Exception):
         return self._report
     
     def __init__(self, report):
-        Exception.__init__(self, "Wrapper for the Exceptoin Report")
+        print report.encode_exception_report()
+        Exception.__init__(self, "Wrapper for the Exception Report")
         self._report = report
 
 class ExceptionMiddleware(object):
@@ -33,6 +36,7 @@ class ExceptionMiddleware(object):
             :param sub_app: wheter to install exception plugin on all sub_applications or not
             :type sub_app: boolean
         """
+        
         if exception is None:
             exception = ExceptionPlugin()
         
