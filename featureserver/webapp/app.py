@@ -10,7 +10,11 @@ class Application(object):
     
     @property
     def services(self):
-        return self._config["featureserver"]["services"]
+        return self._config["server"]["services"]
+    
+    @property
+    def default_format(self):
+        return self._config["server"]["defaults"]["format"]
     
     def __init__(self, config=None):
         super(Application, self).__init__()
@@ -37,12 +41,14 @@ def get(config=None):
     main.app.mount(app=rest.app, prefix=rest.app.config.prefix)
     
     
+    
     from .services import wfs
     wfs.app.config.id = lambda: main.app.config.id + ".wfs"
     wfs.app.config.prefix = "/wfs"
     wfs.app.config.path = lambda: main.app.config.path + wfs.app.config.prefix
     wfs.app.config.app = application
     main.app.mount(app=wfs.app, prefix=wfs.app.config.prefix)
+    
     
     
     return ExceptionMiddleware(main.app)

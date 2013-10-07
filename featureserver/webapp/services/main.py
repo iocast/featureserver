@@ -7,6 +7,12 @@ app = bottle.Bottle()
 @app.route('/services.<format>')
 @app.route('/index.<format>')
 def wfs_list(format=None):
+    if format is None:
+        format = app.config.app.default_format
+    
+    
+    
+    
     if format is not None:
         if format not in app.config.app.services:
             app.add_error(ServiceException("main", format))
