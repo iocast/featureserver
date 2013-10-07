@@ -1,10 +1,30 @@
 {
-    "featureserver" : {
-        "services" : ["rest", "wfs"],
-        "datasources" : ["postgis"]
-    },
-    
-    "datasources" : {
-        
-    }
+	"server": {
+		"services": ["rest", "wfs"],
+        "defaults": {
+            "format": "wfs"
+        }
+	},
+	"layers": {
+		"spatiallite_points": {
+			"type": "SpatialLite",
+			"title": "SpatialLite feature server test",
+			"abstract": "abstract text",
+			
+			"dsn": "./featureserver/data/pois.sqlite",
+			"layer": "featureserver",
+			"feature-id": "fid",
+			"geometry": "geometry",
+			
+			"attributes": {
+				"columns": ["shop", "street", "housenumber", "postcode", "operator", "city", "opening_hours", "website"],
+				"additionals": [{}],
+			},
+			
+			"srs": {
+				"source": 4326,
+				"out": 4326
+			}
+		}
+	}
 }
