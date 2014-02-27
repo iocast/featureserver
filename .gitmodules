@@ -1,0 +1,3 @@
+[submodule "libfeatureserver"]
+	path = libfeatureserver
+	url = git@github.com:iocast/libfeatureserver.git
