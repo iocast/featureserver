@@ -1,3 +1,6 @@
 [submodule "libfeatureserver"]
 	path = libfeatureserver
 	url = git@github.com:iocast/libfeatureserver.git
+[submodule "vectorformats"]
+	path = vectorformats
+	url = git@github.com:iocast/vectorformats.git
